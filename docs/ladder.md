@@ -134,6 +134,7 @@ stopping.
 | bracket at `k/k+1` | finite `L*` plus CI |
 | every tested level passes | `censored="upper"`, lower bound at Lmax |
 | flat 50% curve | `censored="ambiguous"`, midpoint |
+| final 0.5 plateau (e.g. 2/5 then 3/5) | `censored="ambiguous"`, plateau midpoint; tested max as bound |
 | fewer than 3 valid tasks at a level | level incomplete; not used for the bracket |
 | prompt exceeds context | `not_testable`; not a wrong answer |
 

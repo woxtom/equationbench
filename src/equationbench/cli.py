@@ -33,12 +33,14 @@ from .dataset import (
     verify_dataset,
     write_dataset,
 )
+from .frontier_run import run_frontier
 from .ladder import (
     DEFAULT_SEASON_SEED,
     MAX_PUBLIC_LEVEL,
     OFFICIAL_CAP_LEVEL,
     build_ladder_task,
     ladder_manifest,
+    size_for_level,
 )
 from .providers import load_models, models_by_key
 from .runner import RunConfig, run_benchmark, select_tasks
@@ -68,6 +70,27 @@ def _parse_seed(value: str | None) -> int | str | None:
         return int(value)
     except ValueError:
         return value
+
+
+def _parse_levels(value: str) -> list[int]:
+    levels: set[int] = set()
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start_text, end_text = part.split("-", 1)
+            start, end = int(start_text), int(end_text)
+            if start > end:
+                raise ValueError(f"invalid level range: {part}")
+            levels.update(range(start, end + 1))
+        else:
+            levels.add(int(part))
+    if not levels:
+        raise ValueError("no levels supplied")
+    if min(levels) < 1:
+        raise ValueError("levels must be at least 1")
+    return sorted(levels)
 
 
 def _resolve_models(
@@ -522,6 +545,135 @@ def run_command(
             f"{result.summary.score:.1f}",
             f"{result.summary.score_ci[0]:.1f}–{result.summary.score_ci[1]:.1f}",
             "n/a" if not result.summary.cost_known else f"${result.summary.total_cost_usd:.3f}",
+            result.status,
+        )
+    console.print(table)
+
+
+@app.command("run-frontier")
+def run_frontier_command(
+    model: Optional[List[str]] = typer.Option(None, "--model", "-m", help="Model key(s)."),
+    all_models: bool = typer.Option(False, "--all", help="Run every enabled model."),
+    division: Optional[str] = typer.Option(None, "--division", help="Only models in this division."),
+    config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
+    levels: str = typer.Option("1-8", "--levels", help="Levels to run, e.g. 1-8 or 4,5,8-10."),
+    tasks_per_level: int = typer.Option(5, "--tasks-per-level", min=1, max=10),
+    out: Optional[Path] = typer.Option(None, "--out", "-o", help="Run directory (single model only)."),
+    concurrency: int = typer.Option(2, "--concurrency", "-j", min=1, max=16),
+    timeout: float = typer.Option(900.0, "--timeout", help="Per-task seconds; 0 means no limit."),
+    retries: int = typer.Option(2, "--retries", min=0, max=8),
+    thinking: Optional[str] = typer.Option(None, "--thinking", help="Override the model's thinking level."),
+    max_cost: Optional[float] = typer.Option(None, "--max-cost", help="Abort a model after this USD cost."),
+    bootstrap: int = typer.Option(1000, "--bootstrap", min=0, help="Frontier bootstrap replicates."),
+    season_seed: Optional[str] = typer.Option(None, "--season-seed", help="Override the task-bank seed."),
+    force: bool = typer.Option(False, "--force", help="Re-run tasks even if cached."),
+    notes: str = typer.Option("", "--notes", help="Free-form run note."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print the plan without calling models."),
+    include_disabled: bool = typer.Option(False, "--include-disabled"),
+) -> None:
+    """Run a fixed ladder set and score the 50% frontier."""
+    try:
+        selected_levels = _parse_levels(levels)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(2) from exc
+    if selected_levels[-1] > MAX_PUBLIC_LEVEL:
+        console.print(f"[red]levels must be at most L{MAX_PUBLIC_LEVEL}.[/red]")
+        raise typer.Exit(2)
+
+    models = _resolve_models(
+        config,
+        model,
+        all_models=all_models,
+        division=division,
+        include_disabled=include_disabled,
+    )
+    if out is not None and len(models) > 1:
+        console.print("[red]--out can only be used with one model.[/red]")
+        raise typer.Exit(2)
+
+    seed = _parse_seed(season_seed) if season_seed is not None else DEFAULT_SEASON_SEED
+    total_tasks = len(selected_levels) * tasks_per_level
+    console.print(
+        f"[bold]{BENCHMARK_NAME} frontier run[/bold] · "
+        f"L{selected_levels[0]}–L{selected_levels[-1]} · "
+        f"{len(selected_levels)} levels × {tasks_per_level} tasks = {total_tasks} tasks"
+    )
+    console.print(f"  levels: {', '.join(f'L{level}={size_for_level(level)}×{size_for_level(level)}' for level in selected_levels)}")
+    for item in models:
+        console.print(
+            f"  • {item.name} [dim]({item.provider}/{item.model}, thinking={thinking or item.thinking})[/dim]"
+        )
+    if dry_run:
+        console.print("[yellow]Dry run: no provider calls made.[/yellow]")
+        return
+
+    rows = []
+    for item in models:
+        # The bundle is rebuilt inside run_frontier; print progress by task.
+        def progress(done: int, total: int, prediction) -> None:
+            console.print(
+                f"  [{done}/{total}] {prediction.parse_status} "
+                f"{prediction.latency_ms / 1000:.0f}s"
+            )
+
+        result, score, bundle = run_frontier(
+            item,
+            selected_levels,
+            out_dir=out if len(models) == 1 else None,
+            tasks_per_level=tasks_per_level,
+            concurrency=concurrency,
+            timeout=timeout,
+            retries=retries,
+            thinking=thinking,
+            max_cost=max_cost,
+            force=force,
+            notes=notes,
+            season_seed=seed,
+            bootstrap_replicates=bootstrap,
+            on_progress=progress,
+        )
+        valid = sum(
+            1
+            for prediction in result.predictions
+            if prediction.parse_status not in ("provider_error", "timeout")
+        )
+        rows.append((item, result, score, valid / len(bundle.tasks) if bundle.tasks else 0.0))
+        console.print(f"[green]Wrote {result.run_dir / 'frontier.json'}[/green]")
+
+    table = Table(title="Frontier summary")
+    table.add_column("Model")
+    table.add_column("EQB-L", justify="right")
+    table.add_column("Frontier size", justify="right")
+    table.add_column("95% CI", justify="right")
+    table.add_column("Cost", justify="right")
+    table.add_column("Valid")
+    table.add_column("Status")
+    for item, result, score, completion in rows:
+        if score.censored == "upper":
+            label = f"≥{score.bound:.1f}" if score.bound is not None else "≥max"
+        elif score.censored == "lower":
+            label = f"<{score.bound:.1f}" if score.bound is not None else "<min"
+        elif score.score is not None:
+            label = f"{score.score:.2f}"
+        else:
+            label = "—"
+        size_label = f"{score.size:.1f}" if score.size is not None else "—"
+        ci_label = (
+            f"{score.ci[0]:.1f}–{score.ci[1]:.1f}" if score.ci is not None else "—"
+        )
+        cost = (
+            "n/a"
+            if not result.summary.cost_known
+            else f"${result.summary.total_cost_usd:.3f}"
+        )
+        table.add_row(
+            item.name,
+            label,
+            size_label,
+            ci_label,
+            cost,
+            f"{completion:.0%}",
             result.status,
         )
     console.print(table)

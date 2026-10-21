@@ -32,8 +32,13 @@ Done in the first implementation pass:
   old datasets, one-off scripts, server/db code, and caches were removed; the
   package is linear-only; secrets now live outside the repo.
 - CI workflow, short README, linear-only docs, and a pilot model slate.
+- `eqb run-frontier` fixed-set runner and `frontier_run.py`; first DeepSeek
+  Flash pilot (L5–L10, 5 tasks/level) written under `runs/pilot/`.
+- Frontier estimator fix: a final 0.5 plateau is reported as ambiguous at the
+  plateau midpoint, not as `≥ Lmax`.
 
-Still to do: wire the frontier score into `runner.py`, materialize staircase
+Still to do: adapt the staircase to stop at the bracket and use the precision
+bank; run more models; build the site. wire the frontier score into `runner.py`, materialize staircase
 runs, and build a new frontier site from scratch.
 
 ---

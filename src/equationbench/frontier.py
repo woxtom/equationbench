@@ -226,6 +226,21 @@ def _estimate_from_curve(
 
     # Every tested level is at or above the threshold.
     if abs(smoothed[-1] - FRONTIER_THRESHOLD) < 1e-12:
+        # A final 0.5 plateau can span several levels when isotonic regression
+        # pools a noisy last pair (e.g. 2/5 then 3/5).  The crossing is not
+        # identified inside the plateau, so report its midpoint rather than
+        # pretending the model cleared the final level.
+        start = len(smoothed) - 1
+        while start > 0 and abs(smoothed[start - 1] - FRONTIER_THRESHOLD) < 1e-12:
+            start -= 1
+        if start < len(smoothed) - 1:
+            midpoint = (levels[start] + levels[-1]) / 2
+            return _Estimate(
+                score=midpoint,
+                size=ideal_size_for_level(midpoint),
+                censored="ambiguous",
+                bound=float(levels[-1]),
+            )
         return _Estimate(
             score=float(levels[-1]),
             size=ideal_size_for_level(levels[-1]),

@@ -188,3 +188,23 @@ def test_score_payload_is_json_serializable():
     payload = score.to_dict()
     encoded = json.dumps(payload)
     assert "score" in json.loads(encoded)
+
+
+def test_final_half_plateau_is_ambiguous_not_upper_censored():
+    # 2/5 then 3/5 at the last two levels: isotonic pools them to a 0.5
+    # plateau. The frontier is inside the plateau, not at the final level.
+    score = estimate_from_counts(
+        {
+            1: (5, 5),
+            2: (5, 5),
+            3: (5, 5),
+            4: (5, 5),
+            5: (2, 5),
+            6: (3, 5),
+        },
+        bootstrap_replicates=0,
+    )
+    assert score.score == pytest.approx(5.5)
+    assert score.censored == "ambiguous"
+    assert score.bound == 6
+    assert score.is_finite
