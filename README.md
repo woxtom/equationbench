@@ -69,27 +69,28 @@ extends the scale. A model that passes everything tested is reported as
 Read it as *"this model is good to about a 24×24 exact integer system, alone,
 with no calculator."* Not as an IQ score.
 
-## First pilot (not official)
+## First official row (2026-10)
 
-A first fixed-ladder pilot used DeepSeek V4.1 Flash at max reasoning, 5 tasks
-per level, levels L5–L10:
+DeepSeek V4.1 Flash · direct DeepSeek API · max reasoning · L1–L11 ·
+5 tasks/level · 55 tasks.
 
 | Level | n | Correct | Cost | Median latency |
 |---:|---:|---:|---:|---:|
-| L5 | 8 | 5/5 | $0.18 | 106s |
-| L6 | 10 | 5/5 | $0.22 | 138s |
-| L7 | 12 | 5/5 | $0.29 | 133s |
-| L8 | 15 | 5/5 | $0.44 | 206s |
+| L1–L8 | 3–15 | 40/40 | $1.27 | 5–206s |
 | L9 | 19 | 2/5 | $0.84 | 351s |
 | L10 | 24 | 3/5 | $1.20 | 617s |
+| L11 | 30 | 0/5 | $0.85 | 339s |
 
-Result: **EQB-L 9.5**, frontier about 21×21, 95% CI 8.6–9.75, **$3.16**,
-1h23m wall time, 100% valid, no provider errors.
+**EQB-L 10.00** · frontier 24×24 · 95% CI **8.63–10.38** · **$4.17** ·
+**55/55 valid** · no provider errors · status `complete`.
 
-The L9/L10 pair is non-monotonic (2/5 then 3/5), so isotonic regression pools
-them into a 0.5 plateau and the score is marked `ambiguous`, with L10 as the
-tested upper bound. The next step is to run L11 and the precision bank to turn
-that plateau into a finite bracket. This is a pilot, not an official row.
+The L11 failure brackets the frontier: L10 is 3/5, L11 is 0/5. The L9/L10
+pair is non-monotonic (2/5 then 3/5), so isotonic regression pools them at 0.5;
+the finite crossing is at L10. The row resumed from the pilot and reused its
+L5–L10 predictions under the same max-reasoning protocol; 25 new calls ran at
+concurrency 8 in 17.6 minutes.
+
+Pilot receipts and the high-vs-max probe are in `runs/pilot/`.
 
 ## Quick start
 
