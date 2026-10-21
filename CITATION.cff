@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use EquationBench, please cite this benchmark and its version."
-title: "EquationBench: Procedurally Generated Large-Equation Reasoning"
+title: "EquationBench Linear: An Open-Ended Frontier Benchmark for Exact Linear-System Reasoning"
 type: software
 authors:
   - name: "EquationBench Contributors"
@@ -10,16 +10,15 @@ license: MIT
 repository-code: "https://github.com/equationbench/equationbench"
 url: "https://github.com/equationbench/equationbench"
 abstract: >-
-  EquationBench is a closed-book benchmark of procedurally generated,
-  exactly verifiable large-equation reasoning tasks for language models. It
-  spans arithmetic, polynomial algebra, linear systems, calculus, modular
-  arithmetic, matrix algebra, and large-index recurrences across five
-  difficulty levels.
+  EquationBench Linear is a closed-book benchmark of dense integer linear
+  systems with exact ground truth. Tasks are generated on an open-ended
+  geometric ladder of system sizes, and models are scored by the 50% frontier:
+  the largest system they solve reliably. Because the ladder extends, the score
+  has no fixed ceiling.
 keywords:
   - large language models
   - benchmark
-  - mathematics
-  - symbolic reasoning
+  - linear systems
   - exact arithmetic
-  - evaluation
+  - frontier evaluation
   - leaderboard

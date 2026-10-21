@@ -14,7 +14,7 @@ def test_version_and_list_models():
     assert "EquationBench" in result.output
     result = runner.invoke(app, ["list-models", "--enabled-only"])
     assert result.exit_code == 0
-    assert "GPT-6 Sol" in result.output
+    assert "DeepSeek V4.1 Flash" in result.output
 
 
 def test_ladder_table_and_json():

@@ -34,9 +34,9 @@ def test_generation_is_deterministic(family):
 
 def test_task_ids_depend_on_seed_and_versions():
     profile = DatasetProfile(name="t", per_cell=1, master_seed=42)
-    a = build_task("arith", 1, 0, profile)
-    b = build_task("arith", 1, 0, profile)
-    c = build_task("arith", 1, 1, profile)
+    a = build_task("linear", 1, 0, profile)
+    b = build_task("linear", 1, 0, profile)
+    c = build_task("linear", 1, 1, profile)
     assert a.task_id == b.task_id
     assert a.task_id != c.task_id
     assert a.answer == b.answer

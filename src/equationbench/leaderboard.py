@@ -20,7 +20,6 @@ from . import (
     FAMILIES,
     FAMILY_LABELS,
     LEVEL_LABELS,
-    LEVELS,
     __version__,
 )
 from .dataset import DatasetBundle, load_dataset

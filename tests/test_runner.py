@@ -22,16 +22,16 @@ def test_runner_writes_complete_receipt(tiny_dataset, fake_provider_factory, tmp
         )
     )
     assert result.status == "complete"
-    assert result.summary.correct == 35
+    assert result.summary.correct == 5
     assert result.summary.score == 100.0
-    assert len(result.predictions) == 35
+    assert len(result.predictions) == 5
     assert (out / "run.json").exists()
     assert (out / "summary.json").exists()
     meta = json.loads((out / "run.json").read_text())
     assert meta["dataset"]["dataset_sha256"] == tiny_dataset.manifest["dataset_sha256"]
     assert meta["status"] == "complete"
     predictions = (out / "predictions.jsonl").read_text().splitlines()
-    assert len(predictions) == 35
+    assert len(predictions) == 5
 
 
 def test_runner_resumes_without_recalling_provider(tiny_dataset, fake_provider_factory, tmp_path):
@@ -50,7 +50,7 @@ def test_runner_resumes_without_recalling_provider(tiny_dataset, fake_provider_f
             provider=first,
         )
     )
-    assert first.calls == 35
+    assert first.calls == 5
     second = fake_provider_factory(spec, accuracy=1.0)
     result = run_benchmark(
         RunConfig(
@@ -63,25 +63,17 @@ def test_runner_resumes_without_recalling_provider(tiny_dataset, fake_provider_f
         )
     )
     assert second.calls == 0
-    assert result.summary.correct == 35
+    assert result.summary.correct == 5
 
 
 def test_select_tasks_is_balanced_for_small_limits(tiny_dataset):
-    selected = select_tasks(tiny_dataset.tasks, limit=7)
-    assert len(selected) == 7
-    assert {task.family for task in selected} == {
-        "arith",
-        "poly",
-        "linear",
-        "calculus",
-        "modular",
-        "matrix",
-        "recurrence",
-    }
-    assert all(task.level == 1 for task in selected)
-    selected = select_tasks(tiny_dataset.tasks, limit=14)
-    assert {task.level for task in selected} == {1, 2}
-    assert len(selected) == 14
+    selected = select_tasks(tiny_dataset.tasks, limit=2)
+    assert len(selected) == 2
+    assert {task.family for task in selected} == {"linear"}
+    assert [task.level for task in selected] == [1, 2]
+    selected = select_tasks(tiny_dataset.tasks, limit=5)
+    assert len(selected) == 5
+    assert {task.level for task in selected} == {1, 2, 3, 4, 5}
 
 
 def test_partial_run_limits_tasks(tiny_dataset, fake_provider_factory, tmp_path):
@@ -96,12 +88,12 @@ def test_partial_run_limits_tasks(tiny_dataset, fake_provider_factory, tmp_path)
             out_dir=tmp_path / "partial",
             concurrency=4,
             retries=0,
-            limit=7,
+            limit=2,
             provider=provider,
         )
     )
-    assert result.summary.n == 7
-    assert result.summary.correct == 7
+    assert result.summary.n == 2
+    assert result.summary.correct == 2
     assert result.status == "complete"
 
 

@@ -1,4 +1,0 @@
-task_id,family,level,empirical_accuracy,prompt_chars,answer_digits,answer_type
-88d31dc336a62b5b,linear,5,0.6000,2621,16,integer_list
-3069cd5b4e0d1790,linear,6,0.4000,3893,20,integer_list
-7d40f9d5b95c19fc,linear,7,0.2000,5448,24,integer_list

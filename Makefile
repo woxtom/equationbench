@@ -1,30 +1,22 @@
-.PHONY: install test dev test-dataset verify leaderboard serve preview
+.PHONY: install test lint ladder measure verify clean
 
 install:
-	uv venv --python 3.12
-	uv pip install -e ".[dev]"
+	uv sync --extra dev
 
 test:
 	uv run pytest
 
-test-dataset:
-	uv run eqb build-dataset --profile dev --out /tmp/equationbench-dev --force
+lint:
+	uv run ruff check src tests
 
-verify:
-	uv run eqb verify-dataset --path datasets/equationbench-v1-test
+ladder:
+	uv run eqb ladder --max-level 20
 
-leaderboard:
-	uv run eqb leaderboard build --runs runs/full --dataset datasets/equationbench-v1-test
+measure:
+	uv run eqb ladder --max-level 10 --measure
 
-serve:
-	uv run eqb serve --port 8000
+verify: test ladder
 
-preview:
-	uv run eqb leaderboard build --runs runs/preview --dataset datasets/equationbench-v1-test --include-preview --title "EquationBench Preview Leaderboard"
-	python -m http.server 8000 --directory leaderboard
-
-linear-dataset:
-	uv run eqb build-dataset --profile linear-test --out datasets/equationbench-v1-test-linear --force
-
-linear-leaderboard:
-	uv run eqb leaderboard build --runs runs/full-off --dataset datasets/equationbench-v1-test --family linear --subset-note "retrospective off subset" --out leaderboard-linear
+clean:
+	rm -rf .pytest_cache .ruff_cache site
+	find . -path ./.venv -prune -o -name __pycache__ -type d -exec rm -rf {} +

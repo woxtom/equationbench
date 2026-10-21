@@ -1,72 +1,63 @@
 # Contributing to EquationBench
 
-EquationBench is a benchmark, so changes to tasks, prompts, or scoring are versioned changes to the measurement instrument. Please open an issue before changing any of those.
+EquationBench is a benchmark, so changes to the ladder, prompt, parser, or
+scoring are changes to the measurement instrument. Open an issue before changing
+any of those.
+
+The benchmark is intentionally one track: dense linear systems. New task families
+are out of scope. Improvements to the ladder protocol, stability, cost reporting,
+and the site are welcome.
 
 ## Development
 
 ```bash
-uv venv --python 3.12
-uv pip install -e ".[dev]"
+uv sync --extra dev
 uv run pytest
+uv run ruff check src tests
+uv run eqb ladder --max-level 20
 ```
 
-The test suite covers all seven generators, answer extraction, exact scoring, uncertainty intervals, dataset integrity, run execution with a fake provider, and static leaderboard generation.
+## Changing the ladder or score
+
+- Ladder changes bump `LADDER_VERSION` and `GENERATOR_VERSION`.
+- Prompt changes bump `PROMPT_VERSION`.
+- Parser or scoring changes bump `SCORING_VERSION`.
+- A new season rotates the public seed and freezes a new task bank.
+- Rows are comparable only within the same ladder/prompt/scoring/season versions.
+
+Do not silently change the coefficient bound, solution bound, task count, or the
+50% threshold.
 
 ## Adding a model
 
 1. Add a `[[models]]` entry to `config/models.toml`.
-2. Run the model on the full public test set:
+2. Prefer a direct, versioned provider API. Disclose the route.
+3. Run the pilot and the official protocol.
+4. Validate the artifacts and open a pull request as described in
+   [`docs/submission.md`](docs/submission.md).
 
-```bash
-eqb run --model <key> --dataset datasets/equationbench-v1-test --concurrency 4
-```
-
-3. Inspect the run receipt and sample answers.
-4. Rebuild the leaderboard with `eqb leaderboard build`.
-5. Submit the run artifacts and a disclosure note as described in [`docs/submission.md`](docs/submission.md).
-
-Do not edit predictions or omit failed tasks. A run is only eligible when it covers the full fixed set and its dataset hash matches.
-
-## Adding a task family
-
-A new family must:
-
-- be a deterministic pure function of `(level, random.Random)`;
-- compute ground truth with exact integer/rational arithmetic;
-- have a clear five-level difficulty ladder;
-- return one of the existing answer types (`integer`, `rational`, `integer_list`);
-- be bounded in generation time and answer size;
-- include tests for determinism, correctness, and edge cases.
-
-Adding a family changes the dataset hash and therefore requires a version bump. Do not modify the public test set in place.
-
-## Changing prompts or scoring
-
-Prompt changes require `PROMPT_VERSION` to change. Scoring/canonicalization changes require `SCORING_VERSION` to change. Dataset changes require `DATASET_VERSION` to change. Leaderboard rows are only comparable within the same dataset hash and scoring version.
+A leaderboard with five clean rows is stronger than twenty unstable ones. Models
+with a high provider-error rate or a silent version change are not eligible.
 
 ## Data hygiene
 
-- Do not commit `.secrets/`.
+- Do not commit sealed keys or seeds. They live outside the repo in
+  `~/.config/equationbench` or `$EQB_SECRETS_DIR`.
 - Do not publish decrypted sealed tasks before the reveal date.
-- Do not train on public test answers during an official run.
-- Do not add private prompts, API keys, or user data to run artifacts.
+- Do not edit predictions or omit failed tasks.
+- Do not commit generated leaderboards or raw transcripts; build them from
+  receipts.
 
 ## Code style
 
 - Python 3.11+.
-- Use exact arithmetic; never use floats for ground truth.
-- Keep generators bounded and deterministic.
-- Prefer small, auditable functions over clever compression.
-- Add tests for every non-trivial parser or scoring behavior.
+- Exact integer arithmetic for ground truth; never floats.
+- Keep the generator deterministic and bounded.
+- Prefer small, auditable functions.
+- Add tests for every non-trivial scoring or parser behavior.
 
 ## Reporting issues
 
-Open an issue with:
-
-- the benchmark version and dataset hash;
-- the task id;
-- the model key and run id;
-- the raw response if the issue is about answer parsing;
-- a minimal reproduction command.
-
-Corrections to an answer must include a proof or an independent exact computation.
+Include the ladder version, scoring version, task id, model key, run id, and the
+raw response if the issue is about parsing. Corrections to an answer need an
+independent exact computation.

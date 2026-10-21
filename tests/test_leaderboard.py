@@ -30,7 +30,7 @@ def test_leaderboard_builds_from_complete_runs(tiny_dataset, fake_provider_facto
         bootstrap_replicates=100,
     )
     assert len(data["models"]) == 3
-    assert data["benchmark"]["n_tasks"] == 35
+    assert data["benchmark"]["n_tasks"] == 5
     assert (out / "index.html").exists()
     assert (out / "assets" / "style.css").exists()
     assert (out / "data" / "leaderboard.json").exists()
@@ -48,7 +48,7 @@ def test_leaderboard_builds_from_complete_runs(tiny_dataset, fake_provider_facto
     assert len(rows) == 3
     assert rows[0]["model"] == model["name"]
     assert data["benchmark"]["families"][0]["n"] == 5
-    assert data["benchmark"]["levels"][4]["n"] == 7
+    assert data["benchmark"]["levels"][4]["n"] == 1
 
 
 def test_preview_scores_common_tasks_only(tiny_dataset, fake_provider_factory, tmp_path):
@@ -63,7 +63,7 @@ def test_preview_scores_common_tasks_only(tiny_dataset, fake_provider_factory, t
                 out_dir=runs_root / spec.key,
                 concurrency=4,
                 retries=0,
-                limit=14,
+                limit=2,
                 provider=provider,
             )
         )
@@ -76,9 +76,9 @@ def test_preview_scores_common_tasks_only(tiny_dataset, fake_provider_factory, t
         include_preview=True,
     )
     assert data["benchmark"]["preview"] is True
-    assert data["benchmark"]["n_tasks"] == 35
-    assert data["benchmark"]["n_tasks_common"] == 14
-    assert all(model["n"] == 14 for model in data["models"])
+    assert data["benchmark"]["n_tasks"] == 5
+    assert data["benchmark"]["n_tasks_common"] == 2
+    assert all(model["n"] == 2 for model in data["models"])
     assert all(model["preview"] for model in data["models"])
     assert data["models"][0]["coverage"] < 0.5
 
@@ -106,8 +106,8 @@ def test_leaderboard_can_score_one_family(tiny_dataset, fake_provider_factory, t
         families=["linear"],
     )
     assert data["benchmark"]["n_tasks"] == 5
-    assert data["benchmark"]["n_tasks_available"] == 35
-    assert data["benchmark"]["track_filter"] == ["linear"]
+    assert data["benchmark"]["n_tasks_available"] == 5
+    assert data["benchmark"]["track_filter"] is None
     assert data["benchmark"]["n_tasks_common"] == 5
     assert len(data["benchmark"]["families"]) == 1
     assert data["models"][0]["n"] == 5

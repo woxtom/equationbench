@@ -12,7 +12,8 @@ This is a stronger product than the seven-track version:
 - cheaper runs, because weak models stop early,
 - an obvious visual: success probability vs. system size.
 
-Old multi-track results remain as a v1 archive. They are not comparable to v2.
+The multi-track code and artifacts were removed from `main` in the cleanup pass and
+preserved in the `v1-multitrack` git tag. They are not comparable to v2.
 
 ## Implementation status
 
@@ -27,6 +28,10 @@ Done in the first implementation pass:
   the core/extension split; `--measure` generates one real task per level;
   `--json` emits the manifest.
 - `tests/test_ladder.py`, `tests/test_frontier.py`, and CLI coverage for `eqb ladder`.
+- Repository cleanup: the six other tracks, generated leaderboards, stale runs,
+  old datasets, one-off scripts, server/db code, and caches were removed; the
+  package is linear-only; secrets now live outside the repo.
+- CI workflow, short README, linear-only docs, and a pilot model slate.
 
 Still to do: wire the frontier score into `runner.py`/`leaderboard.py`, materialize
 ladder runs, and replace the multi-track site.

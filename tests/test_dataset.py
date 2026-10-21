@@ -15,9 +15,17 @@ def test_public_dataset_roundtrip_and_verification(tiny_dataset):
     probs = verify_dataset(tiny_dataset)
     assert probs == []
     loaded = load_dataset(tiny_dataset.path)
-    assert len(loaded.tasks) == 35
+    assert len(loaded.tasks) == 5
     assert loaded.manifest["dataset_sha256"] == dataset_hash(loaded.tasks)
     assert loaded.manifest["master_seed"] == 123456789
+    assert loaded.manifest["counts"]["by_family"] == {"linear": 5}
+    assert loaded.manifest["counts"]["by_level"] == {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+    }
     assert (tiny_dataset.path / "prompts.jsonl").exists()
     prompt_rows = [
         json.loads(line)
@@ -35,7 +43,9 @@ def test_sealed_dataset_roundtrip(tmp_path):
     )
     key_file = tmp_path / "sealed.key"
     seed_file = tmp_path / "sealed.seed"
-    bundle = write_dataset(profile, tmp_path / "sealed", key_file=key_file, seed_file=seed_file)
+    bundle = write_dataset(
+        profile, tmp_path / "sealed", key_file=key_file, seed_file=seed_file
+    )
     assert (tmp_path / "sealed" / "sealed.enc").exists()
     assert not (tmp_path / "sealed" / "tasks.jsonl").exists()
     assert bundle.manifest["sealed"] is True
@@ -51,12 +61,11 @@ def test_dataset_hash_is_stable(tiny_dataset):
     assert dataset_hash(again.tasks) == dataset_hash(tiny_dataset.tasks)
 
 
-def test_linear_only_dataset_profile(tmp_path):
+def test_linear_only_profile(tmp_path):
     profile = DatasetProfile(
         name="linear-test",
         per_cell=1,
         master_seed=731992,
-        families=("linear",),
     )
     bundle = write_dataset(profile, tmp_path / "linear")
     assert len(bundle.tasks) == 5
@@ -71,7 +80,6 @@ def test_linear_hard_levels(tmp_path):
         name="linear-hard-test",
         per_cell=1,
         master_seed=731992,
-        families=("linear",),
         levels=(6, 7),
     )
     bundle = write_dataset(profile, tmp_path / "linear-hard")
@@ -83,24 +91,3 @@ def test_linear_hard_levels(tmp_path):
     assert verify_dataset(bundle) == []
     assert len(bundle.tasks[0].answer.split(",")) == 24
     assert len(bundle.tasks[1].answer.split(",")) == 30
-
-
-def test_linear_ladder_dataset(tmp_path):
-    profile = DatasetProfile(
-        name="linear-ladder-test",
-        per_cell=1,
-        master_seed=731992,
-        families=("linear",),
-        levels=(5, 6, 7),
-        prompt_version="linear-ladder-1",
-        linear_overrides=((5, 16, 32), (6, 20, 40), (7, 24, 50)),
-    )
-    bundle = write_dataset(profile, tmp_path / "linear-ladder")
-    assert len(bundle.tasks) == 3
-    assert [(task.level, task.metadata["n"], task.metadata["coeff_bound"]) for task in bundle.tasks] == [
-        (5, 16, 32),
-        (6, 20, 40),
-        (7, 24, 50),
-    ]
-    assert all(task.prompt_version == "linear-ladder-1" for task in bundle.tasks)
-    assert verify_dataset(bundle) == []

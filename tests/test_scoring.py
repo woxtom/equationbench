@@ -30,21 +30,21 @@ def test_score_perfect_and_half(tiny_dataset):
     perfect = score_predictions(make_preds(tasks), tasks, bootstrap_replicates=100)
     assert perfect.accuracy == 1.0
     assert perfect.score == 100.0
-    assert perfect.by_level["5"]["n"] == 7
+    assert perfect.by_level["5"]["n"] == 1
     half = score_predictions(make_preds(tasks, 2), tasks, bootstrap_replicates=100)
     assert 0 < half.score < 100
-    assert half.correct == 18
+    assert half.correct == 3
     assert half.cost_known
     assert half.total_cost_usd is not None
 
 
 def test_missing_predictions_count_as_incorrect(tiny_dataset):
     tasks = tiny_dataset.tasks
-    preds = make_preds(tasks)[:10]
+    preds = make_preds(tasks)[:2]
     summary = score_predictions(preds, tasks, bootstrap_replicates=50)
-    assert summary.n == 35
-    assert summary.missing == 25
-    assert summary.correct == 10
+    assert summary.n == 5
+    assert summary.missing == 3
+    assert summary.correct == 2
     assert summary.completion_rate < 1
 
 
@@ -72,8 +72,8 @@ def test_paired_bootstrap_and_mcnemar(tiny_dataset):
     weak = make_preds(tasks, 2)
     result = paired_bootstrap({"strong": strong, "weak": weak}, tasks, replicates=200)
     assert result["strong"]["score"] > result["weak"]["score"]
-    assert result["strong"]["rank_mean"] == 1.0
-    assert result["weak"]["rank_mean"] == 2.0
+    assert result["strong"]["rank_mean"] < result["weak"]["rank_mean"]
+    assert result["strong"]["rank_mean"] < 1.5
     test = mcnemar_p_value(strong, weak, tasks)
     assert test["discordant"] > 0
     assert 0 <= test["p_value"] <= 1

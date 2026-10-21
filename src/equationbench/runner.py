@@ -359,7 +359,6 @@ def run_benchmark(config: RunConfig) -> RunResult:
         assert last is not None
         return _prediction_from_error(task, model.key, last, attempts, started)
 
-    fatal = False
     with ThreadPoolExecutor(max_workers=max(1, config.concurrency)) as executor:
         futures = {executor.submit(worker, task): task for task in pending}
         for future in as_completed(futures):
@@ -373,13 +372,11 @@ def run_benchmark(config: RunConfig) -> RunResult:
                     if any(kind in prediction.error.lower() for kind in ("insufficient_balance", "402 payment required")):
                         abort.set()
                         abort_reason.append(prediction.error)
-                        fatal = True
                 if config.max_cost is not None and cost_so_far > config.max_cost:
                     abort.set()
                     abort_reason.append(
                         f"cost limit reached: ${cost_so_far:.4f} > ${config.max_cost:.4f}"
                     )
-                    fatal = True
             with progress_lock:
                 done_count += 1
                 if config.on_progress:

@@ -8,7 +8,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Iterable, Mapping, Sequence
 
-from . import FAMILIES, LEVELS, SCORING_VERSION
+from . import FAMILIES, SCORING_VERSION
 from .types import Prediction, Task
 
 

@@ -15,7 +15,6 @@ from cryptography.fernet import Fernet, InvalidToken
 
 from . import (
     BENCHMARK_NAME,
-    HARD_LEVELS,
     DATASET_VERSION,
     FAMILIES,
     FAMILY_LABELS,
@@ -38,8 +37,6 @@ class DatasetProfile:
     families: tuple[str, ...] = FAMILIES
     levels: tuple[int, ...] = LEVELS
     prompt_version: str = PROMPT_VERSION
-    linear_overrides: tuple[tuple[int, int, int], ...] = ()
-    difficulty_overrides: tuple[tuple[int, float], ...] = ()
 
 
 DEFAULT_PROFILES: dict[str, DatasetProfile] = {
@@ -47,79 +44,20 @@ DEFAULT_PROFILES: dict[str, DatasetProfile] = {
         name="dev",
         per_cell=1,
         master_seed=20261017,
-        description="Public development set: one task per family/level cell.",
+        description="Linear development set: one task per level.",
     ),
     "test": DatasetProfile(
         name="test",
         per_cell=2,
         master_seed=731992,
-        description="Public evaluation set used for the open leaderboard.",
+        description="Linear public test set: two tasks per level.",
     ),
     "sealed": DatasetProfile(
         name="sealed",
         per_cell=4,
         master_seed="__random__",
         sealed=True,
-        description="Encrypted holdout for official verification and future seasons.",
-    ),
-    "linear-test": DatasetProfile(
-        name="linear-test",
-        per_cell=2,
-        master_seed=731992,
-        families=("linear",),
-        description="Public linear-systems-only test set: 2 tasks per level.",
-    ),
-    "linear-dev": DatasetProfile(
-        name="linear-dev",
-        per_cell=1,
-        master_seed=20261017,
-        families=("linear",),
-        description="Public linear-systems-only development set.",
-    ),
-    "linear-hard-test": DatasetProfile(
-        name="linear-hard-test",
-        per_cell=1,
-        master_seed=731992,
-        families=("linear",),
-        levels=HARD_LEVELS,
-        description="Hard linear-systems-only test set: L6 (24x24) and L7 (30x30).",
-    ),
-    "linear-ladder-test": DatasetProfile(
-        name="linear-ladder-test",
-        per_cell=1,
-        master_seed=731992,
-        families=("linear",),
-        levels=(5, 6, 7),
-        prompt_version="linear-ladder-1",
-        linear_overrides=((5, 16, 32), (6, 20, 40), (7, 24, 50)),
-        description="Linear size ladder: L5 16x16, L6 20x20, L7 24x24.",
-    ),
-    "linear-ladder-6": DatasetProfile(
-        name="linear-ladder-6",
-        per_cell=2,
-        master_seed=731992,
-        families=("linear",),
-        levels=(5, 6, 7),
-        prompt_version="linear-ladder-1",
-        linear_overrides=((5, 16, 32), (6, 20, 40), (7, 24, 50)),
-        description="Two-task linear ladder: two tasks each at 16x16, 20x20, 24x24.",
-    ),
-    "linear-ladder-10": DatasetProfile(
-        name="linear-ladder-10",
-        per_cell=2,
-        master_seed=731992,
-        families=("linear",),
-        levels=(5, 8, 6, 9, 7),
-        prompt_version="linear-ladder-1",
-        linear_overrides=(
-            (5, 16, 32),
-            (8, 18, 36),
-            (6, 20, 40),
-            (9, 22, 45),
-            (7, 24, 50),
-        ),
-        difficulty_overrides=((5, 5.0), (8, 5.5), (6, 6.0), (9, 6.5), (7, 7.0)),
-        description="Fine linear ladder: two tasks each at 16, 18, 20, 22, and 24 variables.",
+        description="Encrypted linear holdout for official verification and future seasons.",
     ),
 }
 
@@ -171,8 +109,6 @@ def _resolve_profile(profile: DatasetProfile) -> DatasetProfile:
         families=profile.families,
         levels=profile.levels,
         prompt_version=profile.prompt_version,
-        linear_overrides=profile.linear_overrides,
-        difficulty_overrides=profile.difficulty_overrides,
     )
 
 
@@ -184,14 +120,6 @@ def build_task(
 ) -> Task:
     """Generate one deterministic task, retrying only generation failures."""
     last_error: Exception | None = None
-    size_override = None
-    coeff_override = None
-    if family == "linear":
-        for override_level, override_n, override_coeff in profile.linear_overrides:
-            if override_level == level:
-                size_override = override_n
-                coeff_override = override_coeff
-                break
     for attempt in range(12):
         seed, rng = rng_for(
             profile.master_seed,
@@ -203,22 +131,7 @@ def build_task(
             attempt=attempt,
         )
         try:
-            generated = generate_for(
-                family,
-                level,
-                rng,
-                n_override=size_override,
-                coeff_override=coeff_override,
-            )
-            difficulty = dict(profile.difficulty_overrides).get(level)
-            if difficulty is not None:
-                generated = type(generated)(
-                    prompt=generated.prompt,
-                    answer=generated.answer,
-                    answer_type=generated.answer_type,
-                    solution=generated.solution,
-                    metadata={**generated.metadata, "difficulty": difficulty},
-                )
+            generated = generate_for(family, level, rng)
         except Exception as exc:  # pragma: no cover - defense against generator bugs
             last_error = exc
             continue
@@ -286,8 +199,6 @@ def _manifest(
         "task_hashes": task_hashes,
         "families_included": list(profile.families),
         "levels_included": list(profile.levels),
-        "linear_overrides": list(profile.linear_overrides),
-        "difficulty_overrides": list(profile.difficulty_overrides),
         "families": {
             family: {
                 "label": FAMILY_LABELS[family],
@@ -306,6 +217,14 @@ def _manifest(
     else:
         manifest["master_seed"] = profile.master_seed
     return manifest
+
+
+def secrets_dir() -> Path:
+    """Directory for sealed keys and seeds, outside the repository by default."""
+    override = os.environ.get("EQB_SECRETS_DIR")
+    if override:
+        return Path(override).expanduser()
+    return Path.home() / ".config" / "equationbench"
 
 
 def _key_from_env() -> str | None:
@@ -353,7 +272,7 @@ def write_dataset(
     manifest = _manifest(profile, tasks, created_at, sealed=profile.sealed)
 
     if profile.sealed:
-        key_path = key_file or Path(".secrets/sealed.key")
+        key_path = key_file or secrets_dir() / "sealed.key"
         key = get_or_create_key(key_path)
         payload = canonical_json(
             [task.to_dict(include_answer=True, include_solution=True) for task in tasks]
@@ -407,7 +326,7 @@ def load_dataset(path: Path, key: str | None = None, key_file: Path | None = Non
         ]
     elif (path / "sealed.enc").exists():
         if key is None:
-            key_path = key_file or Path(".secrets/sealed.key")
+            key_path = key_file or secrets_dir() / "sealed.key"
             if key_path.exists():
                 key = key_path.read_text(encoding="utf-8").strip()
             else:

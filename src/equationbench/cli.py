@@ -29,6 +29,7 @@ from .dataset import (
     DEFAULT_PROFILES,
     DatasetProfile,
     load_dataset,
+    secrets_dir,
     verify_dataset,
     write_dataset,
 )
@@ -38,7 +39,6 @@ from .ladder import (
     OFFICIAL_CAP_LEVEL,
     build_ladder_task,
     ladder_manifest,
-    ladder_rows,
 )
 from .providers import load_models, models_by_key
 from .runner import RunConfig, run_benchmark, select_tasks
@@ -201,7 +201,7 @@ def ladder_command(
 def build_dataset_command(
     profile: str = typer.Option("dev", "--profile", "-p", help="dev, test, sealed, or a custom name."),
     out: Optional[Path] = typer.Option(None, "--out", "-o", help="Output directory."),
-    per_cell: Optional[int] = typer.Option(None, "--per-cell", help="Tasks per family x level cell."),
+    per_cell: Optional[int] = typer.Option(None, "--per-cell", help="Tasks per level cell."),
     family: Optional[List[str]] = typer.Option(None, "--family", "-f", help="Restrict the dataset to one or more tracks."),
     master_seed: Optional[str] = typer.Option(None, "--master-seed", help="Override the master seed."),
     sealed: bool = typer.Option(False, "--sealed", help="Encrypt the dataset."),
@@ -221,8 +221,6 @@ def build_dataset_command(
             families=tuple(family) if family else base.families,
             levels=base.levels,
             prompt_version=base.prompt_version,
-            linear_overrides=base.linear_overrides,
-            difficulty_overrides=base.difficulty_overrides,
         )
     else:
         resolved = DatasetProfile(
@@ -239,11 +237,11 @@ def build_dataset_command(
         console.print(f"[red]{path} already exists.[/red] Use --force to overwrite.")
         raise typer.Exit(2)
     if resolved.sealed and seed_file is None:
-        seed_file = Path(".secrets") / f"{profile}_seed.txt"
+        seed_file = secrets_dir() / f"{profile}_seed.txt"
     bundle = write_dataset(
         resolved,
         path,
-        key_file=key_file or Path(".secrets/sealed.key"),
+        key_file=key_file or secrets_dir() / "sealed.key",
         seed_file=seed_file,
     )
     problems = verify_dataset(bundle)
@@ -264,7 +262,7 @@ def build_dataset_command(
         raise typer.Exit(1)
     if resolved.sealed:
         console.print(
-            "[yellow]Sealed key and seed are in .secrets/ (gitignored). "
+            f"[yellow]Sealed key and seed are in {secrets_dir()} (outside the repo). "
             "Do not publish them before the reveal date.[/yellow]"
         )
 
@@ -327,7 +325,7 @@ def list_models_command(
 @app.command("show-task")
 def show_task_command(
     dataset: Path = typer.Option(Path("datasets/equationbench-v1-dev"), "--dataset", "-d"),
-    family: str = typer.Option("arith", "--family", "-f"),
+    family: str = typer.Option("linear", "--family", "-f"),
     level: int = typer.Option(1, "--level", "-l"),
     index: int = typer.Option(0, "--index", "-i"),
     key: Optional[str] = typer.Option(None, "--key"),
@@ -561,61 +559,14 @@ def score_command(
     console.print(f"[green]Updated {run / 'summary.json'}[/green]")
 
 
-@app.command("submit")
-def submit_command(
-    run: Path = typer.Option(..., "--run", "-r", help="Run directory to submit."),
-    url: str = typer.Option("http://127.0.0.1:8000", "--url", help="EquationBench API base URL."),
-    token: Optional[str] = typer.Option(None, "--token", envvar="EQB_ADMIN_TOKEN"),
-    notes: str = typer.Option("", "--notes"),
-) -> None:
-    """Submit a complete run to a review server."""
-    import httpx
-
-    run_json = json.loads((run / "run.json").read_text(encoding="utf-8"))
-    predictions = []
-    for line in (run / "predictions.jsonl").read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        row = json.loads(line)
-        predictions.append(
-            {
-                "task_id": row["task_id"],
-                "raw_response": row.get("raw_response", ""),
-                "latency_ms": row.get("latency_ms", 0),
-                "usage": row.get("usage", {}),
-                "cost_usd": row.get("cost_usd"),
-                "attempts": row.get("attempts", 1),
-                "model_info": row.get("model_info", {}),
-                "stop_reason": row.get("stop_reason"),
-            }
-        )
-    payload = {
-        "model": run_json.get("model", {}),
-        "dataset_sha256": run_json.get("dataset", {}).get("dataset_sha256"),
-        "selected_tasks": run_json.get("dataset", {}).get("selected_tasks", []),
-        "predictions": predictions,
-        "notes": notes,
-    }
-    headers = {"X-EQB-Token": token} if token else {}
-    try:
-        response = httpx.post(f"{url.rstrip('/')}/api/submissions", json=payload, headers=headers, timeout=120)
-    except httpx.HTTPError as exc:
-        console.print(f"[red]Submission failed:[/red] {exc}")
-        raise typer.Exit(1)
-    if response.status_code >= 400:
-        console.print(f"[red]Submission rejected ({response.status_code}):[/red] {response.text}")
-        raise typer.Exit(1)
-    console.print_json(response.text)
-
-
 leaderboard_app = typer.Typer(help="Build and inspect the static leaderboard.", no_args_is_help=True)
 
 
 @leaderboard_app.command("build")
 def leaderboard_build_command(
     runs: Path = typer.Option(Path("runs"), "--runs", "-r", help="Directory of run folders."),
-    out: Path = typer.Option(Path("leaderboard"), "--out", "-o"),
-    dataset: Path = typer.Option(Path("datasets/equationbench-v1-test"), "--dataset", "-d"),
+    out: Path = typer.Option(Path("site"), "--out", "-o"),
+    dataset: Path = typer.Option(..., "--dataset", "-d", help="Dataset directory."),
     family: Optional[List[str]] = typer.Option(None, "--family", "-f", help="Score only selected tracks."),
     subset_note: str = typer.Option("", "--subset-note", help="Disclosure note for a track subset build."),
     title: str = typer.Option("EquationBench Leaderboard", "--title"),
@@ -640,28 +591,6 @@ def leaderboard_build_command(
     console.print(
         f"[green]Leaderboard written to {out}[/green] · "
         f"{len(data['models'])} models · {data['benchmark']['n_tasks']} tasks"
-    )
-
-
-@app.command("serve")
-def serve_command(
-    db: Path = typer.Option(Path("eqb.sqlite"), "--db"),
-    dataset: Path = typer.Option(Path("datasets/equationbench-v1-test"), "--dataset", "-d"),
-    leaderboard: Path = typer.Option(Path("leaderboard"), "--leaderboard", "-l"),
-    host: str = typer.Option("127.0.0.1", "--host"),
-    port: int = typer.Option(8000, "--port"),
-    reload: bool = typer.Option(False, "--reload"),
-) -> None:
-    """Serve the API and the static leaderboard."""
-    import uvicorn
-
-    from .server import create_app
-
-    uvicorn.run(
-        create_app(db, dataset_path=dataset, leaderboard_dir=leaderboard),
-        host=host,
-        port=port,
-        reload=reload,
     )
 
 
