@@ -107,12 +107,14 @@ src/equationbench/
   dataset.py         fixed-set dataset builder and sealed holdout support
   runner.py          provider runner (fixed-set path; staircase is next)
   scoring.py         legacy fixed-set scoring
-  leaderboard.py     static site builder
   verify.py          exact answer parser and grader
   prompts.py         prompt contract
 config/models.toml   pilot model slate
 docs/
   ladder.md          protocol and scoring details
+  methodology.md     exactness, contamination, reproducibility
+  leaderboard.md     how the frontier table will read
+  submission.md      how to submit a run
   polish-plan.md     cleanup and launch roadmap
 tests/               generator, scorer, parser, runner, and CLI tests
 ```

@@ -47,7 +47,7 @@ from .types import Prediction
 
 app = typer.Typer(
     name="eqb",
-    help="EquationBench: procedural large-equation reasoning for language models.",
+    help="EquationBench: exact linear-system reasoning on an open-ended ladder.",
     add_completion=False,
     no_args_is_help=True,
 )
@@ -558,43 +558,6 @@ def score_command(
     )
     console.print(f"[green]Updated {run / 'summary.json'}[/green]")
 
-
-leaderboard_app = typer.Typer(help="Build and inspect the static leaderboard.", no_args_is_help=True)
-
-
-@leaderboard_app.command("build")
-def leaderboard_build_command(
-    runs: Path = typer.Option(Path("runs"), "--runs", "-r", help="Directory of run folders."),
-    out: Path = typer.Option(Path("site"), "--out", "-o"),
-    dataset: Path = typer.Option(..., "--dataset", "-d", help="Dataset directory."),
-    family: Optional[List[str]] = typer.Option(None, "--family", "-f", help="Score only selected tracks."),
-    subset_note: str = typer.Option("", "--subset-note", help="Disclosure note for a track subset build."),
-    title: str = typer.Option("EquationBench Leaderboard", "--title"),
-    bootstrap: int = typer.Option(2000, "--bootstrap"),
-    min_coverage: float = typer.Option(0.95, "--min-coverage", help="Exclude incomplete runs below this coverage."),
-    include_preview: bool = typer.Option(False, "--include-preview", help="Include non-standard/open-division runs."),
-) -> None:
-    """Build the static leaderboard from run artifacts."""
-    from .leaderboard import build_leaderboard
-
-    data = build_leaderboard(
-        runs,
-        out,
-        title=title,
-        bootstrap_replicates=bootstrap,
-        min_coverage=min_coverage,
-        include_preview=include_preview,
-        dataset_path=dataset,
-        families=family,
-        subset_note=subset_note,
-    )
-    console.print(
-        f"[green]Leaderboard written to {out}[/green] · "
-        f"{len(data['models'])} models · {data['benchmark']['n_tasks']} tasks"
-    )
-
-
-app.add_typer(leaderboard_app, name="leaderboard")
 
 
 if __name__ == "__main__":  # pragma: no cover

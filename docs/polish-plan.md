@@ -33,8 +33,8 @@ Done in the first implementation pass:
   package is linear-only; secrets now live outside the repo.
 - CI workflow, short README, linear-only docs, and a pilot model slate.
 
-Still to do: wire the frontier score into `runner.py`/`leaderboard.py`, materialize
-ladder runs, and replace the multi-track site.
+Still to do: wire the frontier score into `runner.py`, materialize staircase
+runs, and build a new frontier site from scratch.
 
 ---
 
@@ -389,7 +389,6 @@ Do not delete anything before the tag exists.
 │   ├── providers/
 │   ├── runner.py
 │   ├── scoring.py             # frontier score
-│   ├── leaderboard.py
 │   ├── verify.py
 │   ├── types.py
 │   └── web/
