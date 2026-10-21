@@ -1,4 +1,4 @@
-.PHONY: install test lint ladder measure verify clean
+.PHONY: install test lint ladder measure dataset verify clean
 
 install:
 	uv sync --extra dev
@@ -14,6 +14,9 @@ ladder:
 
 measure:
 	uv run eqb ladder --max-level 10 --measure
+
+dataset:
+	uv run eqb build-dataset --profile dev --out datasets/equationbench-v2-dev --force
 
 verify: test ladder
 

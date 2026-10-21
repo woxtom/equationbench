@@ -324,7 +324,7 @@ def list_models_command(
 
 @app.command("show-task")
 def show_task_command(
-    dataset: Path = typer.Option(Path("datasets/equationbench-v1-dev"), "--dataset", "-d"),
+    dataset: Path = typer.Option(Path("datasets/equationbench-v2-dev"), "--dataset", "-d"),
     family: str = typer.Option("linear", "--family", "-f"),
     level: int = typer.Option(1, "--level", "-l"),
     index: int = typer.Option(0, "--index", "-i"),
@@ -449,7 +449,7 @@ def run_command(
     all_models: bool = typer.Option(False, "--all", help="Run every enabled model."),
     division: Optional[str] = typer.Option(None, "--division", help="Only models in this division."),
     config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
-    dataset: Path = typer.Option(Path("datasets/equationbench-v1-test"), "--dataset", "-d"),
+    dataset: Path = typer.Option(Path("datasets/equationbench-v2-test"), "--dataset", "-d"),
     out: Optional[Path] = typer.Option(None, "--out", "-o", help="Run directory (single model only)."),
     concurrency: int = typer.Option(4, "--concurrency", "-j", min=1, max=32),
     timeout: float = typer.Option(0.0, "--timeout", help="Per-task wall-clock limit in seconds; 0 means wait until the model answers."),

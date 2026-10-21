@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "equationbench"
-version = "1.0.0"
+version = "2.0.0"
 description = "Linear-system frontier benchmark with an open-ended difficulty ladder and exact scoring."
 readme = "README.md"
 requires-python = ">=3.11"

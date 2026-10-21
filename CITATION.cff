@@ -4,7 +4,7 @@ title: "EquationBench Linear: An Open-Ended Frontier Benchmark for Exact Linear-
 type: software
 authors:
   - name: "EquationBench Contributors"
-version: 1.0.0
+version: 2.0.0
 date-released: "2026-10-17"
 license: MIT
 repository-code: "https://github.com/equationbench/equationbench"

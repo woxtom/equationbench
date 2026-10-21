@@ -20,12 +20,14 @@ import random
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
+from . import FRONTIER_SCORING_VERSION
 from .ladder import ideal_size_for_level, size_for_level
 
 FRONTIER_THRESHOLD = 0.5
 DEFAULT_BOOTSTRAP_REPLICATES = 2000
 DEFAULT_BOOTSTRAP_SEED = 1729
 SCORE_METHOD = "isotonic-log-interpolation"
+SCORING_VERSION = FRONTIER_SCORING_VERSION
 
 
 @dataclass(frozen=True)
@@ -87,6 +89,7 @@ class FrontierScore:
     bound_size: float | None
     levels: list[dict] = field(default_factory=list)
     method: str = SCORE_METHOD
+    scoring_version: str = SCORING_VERSION
     bootstrap_replicates: int = 0
 
     @property
@@ -113,6 +116,7 @@ class FrontierScore:
             "bound_size": self.bound_size,
             "levels": self.levels,
             "method": self.method,
+            "scoring_version": self.scoring_version,
             "bootstrap_replicates": self.bootstrap_replicates,
         }
 
@@ -371,6 +375,7 @@ __all__ = [
     "DEFAULT_BOOTSTRAP_SEED",
     "FRONTIER_THRESHOLD",
     "SCORE_METHOD",
+    "SCORING_VERSION",
     "FrontierScore",
     "LevelResult",
     "estimate_from_counts",

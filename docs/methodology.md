@@ -1,6 +1,6 @@
 # EquationBench Linear Methodology
 
-**Version:** 1.0.0 · **Status:** v2 frontier scaffolding
+**Version:** 2.0.0 · **Status:** v2 frontier scaffolding
 
 EquationBench measures one thing: can a model solve a dense integer linear
 system exactly, and how large a system can it solve before its success rate falls
