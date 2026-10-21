@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use EquationBench, please cite this benchmark and its version."
+title: "EquationBench: Procedurally Generated Large-Equation Reasoning"
+type: software
+authors:
+  - name: "EquationBench Contributors"
+version: 1.0.0
+date-released: "2026-10-17"
+license: MIT
+repository-code: "https://github.com/equationbench/equationbench"
+url: "https://github.com/equationbench/equationbench"
+abstract: >-
+  EquationBench is a closed-book benchmark of procedurally generated,
+  exactly verifiable large-equation reasoning tasks for language models. It
+  spans arithmetic, polynomial algebra, linear systems, calculus, modular
+  arithmetic, matrix algebra, and large-index recurrences across five
+  difficulty levels.
+keywords:
+  - large language models
+  - benchmark
+  - mathematics
+  - symbolic reasoning
+  - exact arithmetic
+  - evaluation
+  - leaderboard

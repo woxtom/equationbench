@@ -1,0 +1,57 @@
+[
+  {
+    "run_id": "20261019T080018Z-deepseek-v4-1-flash-f94d343b",
+    "model_key": "deepseek-v4-1-flash",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T08:16:36+00:00",
+    "thinking": {
+      "max": 6
+    },
+    "directory": "runs/linear-ladder-6/deepseek-v4-1-flash"
+  },
+  {
+    "run_id": "20261019T080018Z-openai-gpt-5-6-sol-f94d343b",
+    "model_key": "openai-gpt-5-6-sol",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T08:41:41+00:00",
+    "thinking": {
+      "max": 2
+    },
+    "directory": "runs/linear-ladder-6/openai-gpt-5-6-sol"
+  },
+  {
+    "run_id": "20261019T080018Z-openai-gpt-6-1-sol-f94d343b",
+    "model_key": "openai-gpt-6-1-sol",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T08:36:12+00:00",
+    "thinking": {
+      "max": 5
+    },
+    "directory": "runs/linear-ladder-6/openai-gpt-6-1-sol"
+  },
+  {
+    "run_id": "20261019T080018Z-openai-gpt-6-luna-f94d343b",
+    "model_key": "openai-gpt-6-luna",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T08:03:48+00:00",
+    "thinking": {
+      "max": 6
+    },
+    "directory": "runs/linear-ladder-6/openai-gpt-6-luna"
+  },
+  {
+    "run_id": "20261019T080018Z-openai-gpt-6-sol-f94d343b",
+    "model_key": "openai-gpt-6-sol",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T08:10:59+00:00",
+    "thinking": {
+      "max": 6
+    },
+    "directory": "runs/linear-ladder-6/openai-gpt-6-sol"
+  }
+]

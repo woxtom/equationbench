@@ -1,0 +1,740 @@
+{
+  "benchmark": {
+    "name": "EquationBench",
+    "version": "1.0.0",
+    "dataset_version": "v1",
+    "dataset_name": "linear-ladder-10",
+    "dataset_sha256": "1d7a9e9a08fe865c36decfe4c26fbcdcac29c41531440ddeead70deb69c2012e",
+    "n_tasks": 10,
+    "n_tasks_available": 10,
+    "n_tasks_common": 10,
+    "track_filter": [
+      "linear"
+    ],
+    "subset_note": "2 tasks each at 16/18/20/22/24 variables · max reasoning · direct keys",
+    "preview": false,
+    "n_models": 5,
+    "n_standard": 5,
+    "n_open": 0,
+    "generated_at": "2026-10-19T11:23:52+00:00",
+    "bootstrap_replicates": 2000,
+    "metric": "Difficulty-weighted exact pass@1",
+    "metric_short": "EQB Score",
+    "families": [
+      {
+        "key": "linear",
+        "label": "Linear Systems",
+        "n": 10,
+        "mean_accuracy": 0.34,
+        "best_model": "GPT-6.1 Sol",
+        "best_model_key": "openai-gpt-6-1-sol",
+        "best_accuracy": 0.9,
+        "description": "Solve a dense integer linear system with a unique exact integer solution."
+      }
+    ],
+    "levels": [
+      {
+        "level": 5,
+        "label": "L5",
+        "difficulty": 5.0,
+        "size": 16,
+        "n": 2,
+        "mean_accuracy": 0.6
+      },
+      {
+        "level": 8,
+        "label": "L5.5",
+        "difficulty": 5.5,
+        "size": 18,
+        "n": 2,
+        "mean_accuracy": 0.4
+      },
+      {
+        "level": 6,
+        "label": "L6",
+        "difficulty": 6.0,
+        "size": 20,
+        "n": 2,
+        "mean_accuracy": 0.3
+      },
+      {
+        "level": 9,
+        "label": "L6.5",
+        "difficulty": 6.5,
+        "size": 22,
+        "n": 2,
+        "mean_accuracy": 0.3
+      },
+      {
+        "level": 7,
+        "label": "L7",
+        "difficulty": 7.0,
+        "size": 24,
+        "n": 2,
+        "mean_accuracy": 0.1
+      }
+    ],
+    "task_stats": {
+      "prompt_chars": {
+        "min": 2621,
+        "median": 3863,
+        "max": 5448
+      },
+      "answer_digits": {
+        "min": 16,
+        "median": 20,
+        "max": 24
+      }
+    },
+    "divisions": [
+      "standard"
+    ],
+    "min_coverage": 0.95,
+    "include_preview": false,
+    "generator_version": "1.0.0",
+    "prompt_version": "linear-ladder-1",
+    "warnings": [],
+    "pairwise": [
+      {
+        "a_only": 4,
+        "b_only": 2,
+        "discordant": 6,
+        "p_value": 0.6875,
+        "model_a": "deepseek-v4-1-flash",
+        "model_b": "openai-gpt-5-6-sol"
+      },
+      {
+        "a_only": 0,
+        "b_only": 5,
+        "discordant": 5,
+        "p_value": 0.0625,
+        "model_a": "deepseek-v4-1-flash",
+        "model_b": "openai-gpt-6-1-sol"
+      },
+      {
+        "a_only": 4,
+        "b_only": 0,
+        "discordant": 4,
+        "p_value": 0.125,
+        "model_a": "deepseek-v4-1-flash",
+        "model_b": "openai-gpt-6-luna"
+      },
+      {
+        "a_only": 4,
+        "b_only": 2,
+        "discordant": 6,
+        "p_value": 0.6875,
+        "model_a": "deepseek-v4-1-flash",
+        "model_b": "openai-gpt-6-sol"
+      },
+      {
+        "a_only": 0,
+        "b_only": 7,
+        "discordant": 7,
+        "p_value": 0.015625,
+        "model_a": "openai-gpt-5-6-sol",
+        "model_b": "openai-gpt-6-1-sol"
+      },
+      {
+        "a_only": 2,
+        "b_only": 0,
+        "discordant": 2,
+        "p_value": 0.5,
+        "model_a": "openai-gpt-5-6-sol",
+        "model_b": "openai-gpt-6-luna"
+      },
+      {
+        "a_only": 0,
+        "b_only": 0,
+        "discordant": 0,
+        "p_value": 1.0,
+        "model_a": "openai-gpt-5-6-sol",
+        "model_b": "openai-gpt-6-sol"
+      },
+      {
+        "a_only": 9,
+        "b_only": 0,
+        "discordant": 9,
+        "p_value": 0.00390625,
+        "model_a": "openai-gpt-6-1-sol",
+        "model_b": "openai-gpt-6-luna"
+      },
+      {
+        "a_only": 7,
+        "b_only": 0,
+        "discordant": 7,
+        "p_value": 0.015625,
+        "model_a": "openai-gpt-6-1-sol",
+        "model_b": "openai-gpt-6-sol"
+      },
+      {
+        "a_only": 0,
+        "b_only": 2,
+        "discordant": 2,
+        "p_value": 0.5,
+        "model_a": "openai-gpt-6-luna",
+        "model_b": "openai-gpt-6-sol"
+      }
+    ],
+    "task_difficulty": [
+      {
+        "task_id": "88d31dc336a62b5b",
+        "family": "linear",
+        "level": 5,
+        "accuracy": 0.6
+      },
+      {
+        "task_id": "1044d8a2c5dd674f",
+        "family": "linear",
+        "level": 5,
+        "accuracy": 0.6
+      },
+      {
+        "task_id": "420dd7db5cfd642b",
+        "family": "linear",
+        "level": 8,
+        "accuracy": 0.4
+      },
+      {
+        "task_id": "851aa39cc1d5fab1",
+        "family": "linear",
+        "level": 8,
+        "accuracy": 0.4
+      },
+      {
+        "task_id": "3069cd5b4e0d1790",
+        "family": "linear",
+        "level": 6,
+        "accuracy": 0.4
+      },
+      {
+        "task_id": "eafc74db9ee680bb",
+        "family": "linear",
+        "level": 6,
+        "accuracy": 0.2
+      },
+      {
+        "task_id": "0c22795d485f1d02",
+        "family": "linear",
+        "level": 9,
+        "accuracy": 0.2
+      },
+      {
+        "task_id": "1c9f22aaf20cb977",
+        "family": "linear",
+        "level": 9,
+        "accuracy": 0.4
+      },
+      {
+        "task_id": "7d40f9d5b95c19fc",
+        "family": "linear",
+        "level": 7,
+        "accuracy": 0.2
+      },
+      {
+        "task_id": "e1e09bf540ed13c6",
+        "family": "linear",
+        "level": 7,
+        "accuracy": 0.0
+      }
+    ]
+  },
+  "models": [
+    {
+      "key": "openai-gpt-6-1-sol",
+      "slug": "openai-gpt-6-1-sol",
+      "name": "GPT-6.1 Sol",
+      "lab": "OpenAI",
+      "provider": "openai",
+      "model_id": "gpt-6.1-sol",
+      "division": "standard",
+      "color": "#0ea5e9",
+      "notes": "OpenAI via pi OAuth.",
+      "rank": 1,
+      "rank_division": 1,
+      "rank_mean": 1.00025,
+      "rank_ci": [
+        1.0,
+        1.0
+      ],
+      "win_probability": 0.9995,
+      "score": 88.33333333333333,
+      "score_ci": [
+        67.1875,
+        100.0
+      ],
+      "accuracy": 0.9,
+      "accuracy_ci": [
+        0.7,
+        1.0
+      ],
+      "correct": 9,
+      "n": 10,
+      "n_dataset": 10,
+      "coverage": 1.0,
+      "coverage_scored": 1.0,
+      "full_coverage": true,
+      "preview": false,
+      "status": "complete",
+      "by_family": {
+        "linear": {
+          "n": 10,
+          "correct": 9,
+          "accuracy": 0.9,
+          "score": 88.33333333333333
+        }
+      },
+      "by_level": {
+        "5": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "6": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "7": {
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        },
+        "8": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "9": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        }
+      },
+      "status_counts": {
+        "correct": 9,
+        "timeout": 1
+      },
+      "timeouts": 1,
+      "provider_errors": 0,
+      "refusals": 0,
+      "unparseable": 0,
+      "cost_usd": 2.8146044000000003,
+      "cost_per_100": 28.146044000000003,
+      "cost_known": true,
+      "input_tokens": 16825,
+      "output_tokens": 278066,
+      "reasoning_tokens": 277457,
+      "total_tokens": 297835,
+      "median_latency_ms": 790436,
+      "p95_latency_ms": 1724476,
+      "thinking_requested": "max",
+      "thinking_actual": [
+        "max"
+      ],
+      "run_id": "20261019T102118Z-openai-gpt-6-1-sol-5b360591",
+      "run_dir": "runs/linear-ladder-10/openai-gpt-6-1-sol",
+      "finished_at": "2026-10-19T10:59:38+00:00",
+      "verified": true,
+      "identity_source": "provider-reported",
+      "url": "models/openai-gpt-6-1-sol.html"
+    },
+    {
+      "key": "deepseek-v4-1-flash",
+      "slug": "deepseek-v4-1-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "lab": "DeepSeek",
+      "provider": "deepseek",
+      "model_id": "deepseek-flash",
+      "division": "standard",
+      "color": "#93c5fd",
+      "notes": "Direct DeepSeek API.",
+      "rank": 2,
+      "rank_division": 2,
+      "rank_mean": 2.4295,
+      "rank_ci": [
+        2.0,
+        4.0
+      ],
+      "win_probability": 0.0,
+      "score": 39.166666666666664,
+      "score_ci": [
+        10.0,
+        69.00477216748749
+      ],
+      "accuracy": 0.4,
+      "accuracy_ci": [
+        0.1,
+        0.7
+      ],
+      "correct": 4,
+      "n": 10,
+      "n_dataset": 10,
+      "coverage": 1.0,
+      "coverage_scored": 1.0,
+      "full_coverage": true,
+      "preview": false,
+      "status": "complete",
+      "by_family": {
+        "linear": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "score": 39.166666666666664
+        }
+      },
+      "by_level": {
+        "5": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "6": {
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        },
+        "7": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "8": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "9": {
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        }
+      },
+      "status_counts": {
+        "wrong": 6,
+        "correct": 4
+      },
+      "timeouts": 0,
+      "provider_errors": 0,
+      "refusals": 0,
+      "unparseable": 0,
+      "cost_usd": 2.1696017999999997,
+      "cost_per_100": 21.696018,
+      "cost_known": true,
+      "input_tokens": 23094,
+      "output_tokens": 1802228,
+      "reasoning_tokens": 1755032,
+      "total_tokens": 1825322,
+      "median_latency_ms": 674209,
+      "p95_latency_ms": 868945,
+      "thinking_requested": "max",
+      "thinking_actual": [
+        "max"
+      ],
+      "run_id": "20261019T102118Z-deepseek-v4-1-flash-5b360591",
+      "run_dir": "runs/linear-ladder-10/deepseek-v4-1-flash",
+      "finished_at": "2026-10-19T10:40:20+00:00",
+      "verified": true,
+      "identity_source": "provider-reported",
+      "url": "models/deepseek-v4-1-flash.html"
+    },
+    {
+      "key": "openai-gpt-5-6-sol",
+      "slug": "openai-gpt-5-6-sol",
+      "name": "GPT-5.6 Sol",
+      "lab": "OpenAI",
+      "provider": "openai",
+      "model_id": "gpt-5.6-sol",
+      "division": "standard",
+      "color": "#22d3ee",
+      "notes": "OpenAI via pi OAuth.",
+      "rank": 3,
+      "rank_division": 3,
+      "rank_mean": 3.456,
+      "rank_ci": [
+        2.5,
+        4.0
+      ],
+      "win_probability": 0.0,
+      "score": 16.666666666666664,
+      "score_ci": [
+        0.0,
+        55.55555555555556
+      ],
+      "accuracy": 0.2,
+      "accuracy_ci": [
+        0.0,
+        0.6
+      ],
+      "correct": 2,
+      "n": 10,
+      "n_dataset": 10,
+      "coverage": 1.0,
+      "coverage_scored": 1.0,
+      "full_coverage": true,
+      "preview": false,
+      "status": "complete",
+      "by_family": {
+        "linear": {
+          "n": 10,
+          "correct": 2,
+          "accuracy": 0.2,
+          "score": 16.666666666666664
+        }
+      },
+      "by_level": {
+        "5": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "6": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "7": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "8": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "9": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "status_counts": {
+        "correct": 2,
+        "timeout": 8
+      },
+      "timeouts": 8,
+      "provider_errors": 0,
+      "refusals": 0,
+      "unparseable": 0,
+      "cost_usd": 1.190868,
+      "cost_per_100": 11.90868,
+      "cost_known": true,
+      "input_tokens": 3067,
+      "output_tokens": 58930,
+      "reasoning_tokens": 58847,
+      "total_tokens": 61997,
+      "median_latency_ms": 1800011,
+      "p95_latency_ms": 1800018,
+      "thinking_requested": "max",
+      "thinking_actual": [
+        "max"
+      ],
+      "run_id": "20261019T102118Z-openai-gpt-5-6-sol-5b360591",
+      "run_dir": "runs/linear-ladder-10/openai-gpt-5-6-sol",
+      "finished_at": "2026-10-19T11:23:40+00:00",
+      "verified": true,
+      "identity_source": "provider-reported",
+      "url": "models/openai-gpt-5-6-sol.html"
+    },
+    {
+      "key": "openai-gpt-6-sol",
+      "slug": "openai-gpt-6-sol",
+      "name": "GPT-6 Sol",
+      "lab": "OpenAI",
+      "provider": "openai",
+      "model_id": "gpt-6-sol",
+      "division": "standard",
+      "color": "#10a37f",
+      "notes": "OpenAI via pi OAuth.",
+      "rank": 4,
+      "rank_division": 4,
+      "rank_mean": 3.456,
+      "rank_ci": [
+        2.5,
+        4.0
+      ],
+      "win_probability": 0.0,
+      "score": 16.666666666666664,
+      "score_ci": [
+        0.0,
+        55.55555555555556
+      ],
+      "accuracy": 0.2,
+      "accuracy_ci": [
+        0.0,
+        0.6
+      ],
+      "correct": 2,
+      "n": 10,
+      "n_dataset": 10,
+      "coverage": 1.0,
+      "coverage_scored": 1.0,
+      "full_coverage": true,
+      "preview": false,
+      "status": "complete",
+      "by_family": {
+        "linear": {
+          "n": 10,
+          "correct": 2,
+          "accuracy": 0.2,
+          "score": 16.666666666666664
+        }
+      },
+      "by_level": {
+        "5": {
+          "n": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "6": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "7": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "8": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "9": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "status_counts": {
+        "correct": 2,
+        "unparseable": 7,
+        "wrong": 1
+      },
+      "timeouts": 0,
+      "provider_errors": 0,
+      "refusals": 0,
+      "unparseable": 7,
+      "cost_usd": 1.4078888,
+      "cost_per_100": 14.078888000000001,
+      "cost_known": true,
+      "input_tokens": 21248,
+      "output_tokens": 136506,
+      "reasoning_tokens": 135966,
+      "total_tokens": 159418,
+      "median_latency_ms": 314593,
+      "p95_latency_ms": 1253962,
+      "thinking_requested": "max",
+      "thinking_actual": [
+        "max"
+      ],
+      "run_id": "20261019T102118Z-openai-gpt-6-sol-5b360591",
+      "run_dir": "runs/linear-ladder-10/openai-gpt-6-sol",
+      "finished_at": "2026-10-19T10:52:55+00:00",
+      "verified": true,
+      "identity_source": "provider-reported",
+      "url": "models/openai-gpt-6-sol.html"
+    },
+    {
+      "key": "openai-gpt-6-luna",
+      "slug": "openai-gpt-6-luna",
+      "name": "GPT-6 Luna",
+      "lab": "OpenAI",
+      "provider": "openai",
+      "model_id": "gpt-6-luna",
+      "division": "standard",
+      "color": "#34d399",
+      "notes": "OpenAI via pi OAuth.",
+      "rank": 5,
+      "rank_division": 5,
+      "rank_mean": 4.65825,
+      "rank_ci": [
+        4.0,
+        5.0
+      ],
+      "win_probability": 0.0,
+      "score": 0.0,
+      "score_ci": [
+        0.0,
+        0.0
+      ],
+      "accuracy": 0.0,
+      "accuracy_ci": [
+        0.0,
+        0.0
+      ],
+      "correct": 0,
+      "n": 10,
+      "n_dataset": 10,
+      "coverage": 1.0,
+      "coverage_scored": 1.0,
+      "full_coverage": true,
+      "preview": false,
+      "status": "complete",
+      "by_family": {
+        "linear": {
+          "n": 10,
+          "correct": 0,
+          "accuracy": 0.0,
+          "score": 0.0
+        }
+      },
+      "by_level": {
+        "5": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "6": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "7": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "8": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "9": {
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "status_counts": {
+        "wrong": 7,
+        "unparseable": 3
+      },
+      "timeouts": 0,
+      "provider_errors": 0,
+      "refusals": 0,
+      "unparseable": 3,
+      "cost_usd": 0.0421399,
+      "cost_per_100": 0.42139899999999997,
+      "cost_known": true,
+      "input_tokens": 22909,
+      "output_tokens": 79698,
+      "reasoning_tokens": 79205,
+      "total_tokens": 102607,
+      "median_latency_ms": 125442,
+      "p95_latency_ms": 287617,
+      "thinking_requested": "max",
+      "thinking_actual": [
+        "max"
+      ],
+      "run_id": "20261019T102118Z-openai-gpt-6-luna-5b360591",
+      "run_dir": "runs/linear-ladder-10/openai-gpt-6-luna",
+      "finished_at": "2026-10-19T10:25:59+00:00",
+      "verified": true,
+      "identity_source": "provider-reported",
+      "url": "models/openai-gpt-6-luna.html"
+    }
+  ]
+}

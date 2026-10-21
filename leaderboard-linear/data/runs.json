@@ -1,0 +1,35 @@
+[
+  {
+    "run_id": "20261019T032638Z-deepseek-v4-1-flash-d641e91d",
+    "model_key": "deepseek-v4-1-flash",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T03:48:25+00:00",
+    "thinking": {
+      "max": 10
+    },
+    "directory": "runs/linear-direct/deepseek-v4-1-flash"
+  },
+  {
+    "run_id": "20261019T032638Z-openai-gpt-6-1-sol-d641e91d",
+    "model_key": "openai-gpt-6-1-sol",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T03:36:28+00:00",
+    "thinking": {
+      "max": 10
+    },
+    "directory": "runs/linear-direct/openai-gpt-6-1-sol"
+  },
+  {
+    "run_id": "20261019T032638Z-openai-gpt-6-sol-d641e91d",
+    "model_key": "openai-gpt-6-sol",
+    "status": "complete",
+    "coverage": 1.0,
+    "finished_at": "2026-10-19T03:39:19+00:00",
+    "thinking": {
+      "max": 10
+    },
+    "directory": "runs/linear-direct/openai-gpt-6-sol"
+  }
+]

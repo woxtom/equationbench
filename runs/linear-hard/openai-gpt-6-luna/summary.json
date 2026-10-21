@@ -1,0 +1,230 @@
+{
+  "aborted_reason": null,
+  "actual_thinking_levels": {
+    "max": 2
+  },
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 2,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 2.0,
+    "notes": "linear-hard L6/L7 sweep; 24x24 and 30x30; direct DeepSeek/OpenAI keys",
+    "retries": 1,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "max",
+    "timeout": 1800.0
+  },
+  "dataset": {
+    "dataset_sha256": "4183f74e9e673a9af139984f62130f992dbf576f0f20192bfd8cddf310fe65c9",
+    "manifest": {
+      "benchmark": "EquationBench",
+      "benchmark_version": "1.0.0",
+      "counts": {
+        "by_family": {
+          "linear": 2
+        },
+        "by_level": {
+          "6": 1,
+          "7": 1
+        },
+        "total": 2
+      },
+      "created_at": "2026-10-19T04:49:24+00:00",
+      "dataset_sha256": "4183f74e9e673a9af139984f62130f992dbf576f0f20192bfd8cddf310fe65c9",
+      "dataset_version": "v1",
+      "description": "Hard linear-systems-only test set: L6 (24x24) and L7 (30x30).",
+      "families": {
+        "linear": {
+          "description": "Solve a dense integer linear system with a unique exact integer solution.",
+          "label": "Linear Systems",
+          "levels": 2,
+          "per_cell": 1
+        }
+      },
+      "families_included": [
+        "linear"
+      ],
+      "generator_version": "1.0.0",
+      "levels_included": [
+        6,
+        7
+      ],
+      "master_seed": 731992,
+      "name": "linear-hard-test",
+      "per_cell": 1,
+      "prompt_version": "1.0",
+      "sealed": false,
+      "task_hashes": {
+        "4cb0be5c70f28913": "35f5da37a290f7a14619b74fbd84b65764f73906b6ea8afb7052e97cae438743",
+        "58387d08562d7d38": "4c0e5824b3b9e27bf09815bde8898bda20f3c0411a52475e1da3a765b53768c1"
+      }
+    },
+    "name": "linear-hard-test",
+    "path": "datasets/equationbench-v1-test-linear-hard",
+    "selected_tasks": [
+      "4cb0be5c70f28913",
+      "58387d08562d7d38"
+    ]
+  },
+  "dataset_version": "v1",
+  "environment": {
+    "argv": [
+      ".venv/bin/eqb",
+      "run",
+      "--model",
+      "openai-gpt-6-luna",
+      "--dataset",
+      "datasets/equationbench-v1-test-linear-hard",
+      "--out",
+      "runs/linear-hard/openai-gpt-6-luna",
+      "--concurrency",
+      "2",
+      "--timeout",
+      "1800",
+      "--thinking",
+      "max",
+      "--retries",
+      "1",
+      "--max-cost",
+      "2",
+      "--notes",
+      "linear-hard L6/L7 sweep; 24x24 and 30x30; direct DeepSeek/OpenAI keys"
+    ],
+    "git_commit": null,
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-19T04:51:31+00:00",
+  "generator_version": "1.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#34d399",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "openai-gpt-6-luna",
+    "lab": "OpenAI",
+    "max_output_tokens": null,
+    "model": "gpt-6-luna",
+    "name": "GPT-6 Luna",
+    "notes": "OpenAI via pi OAuth.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "openai",
+    "provider_kind": "pi",
+    "thinking": "max"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 2,
+  "n_selected": 2,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261019T044934Z-openai-gpt-6-luna-4d28ddbc",
+  "score": {
+    "accuracy": 0.0,
+    "accuracy_ci": [
+      0.0,
+      0.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 2,
+        "score": 0.0
+      }
+    },
+    "by_level": {
+      "6": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 1
+      },
+      "7": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 1
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 0,
+    "cost_known": true,
+    "cost_per_100": 0.35068,
+    "input_tokens": 7901,
+    "median_latency_ms": 114762,
+    "missing": 0,
+    "n": 2,
+    "output_tokens": 12447,
+    "p95_latency_ms": 116204,
+    "reasoning_tokens": 12267,
+    "score": 0.0,
+    "score_ci": [
+      0.0,
+      0.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "wrong": 2
+    },
+    "total_cost_usd": 0.0070136,
+    "total_tokens": 20348,
+    "weighted_accuracy": 0.0
+  },
+  "started_at": "2026-10-19T04:49:34+00:00",
+  "status": "complete",
+  "summary": {
+    "accuracy": 0.0,
+    "accuracy_ci": [
+      0.0,
+      0.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 2,
+        "score": 0.0
+      }
+    },
+    "by_level": {
+      "6": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 1
+      },
+      "7": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 1
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 0,
+    "cost_known": true,
+    "cost_per_100": 0.35068,
+    "input_tokens": 7901,
+    "median_latency_ms": 114762,
+    "missing": 0,
+    "n": 2,
+    "output_tokens": 12447,
+    "p95_latency_ms": 116204,
+    "reasoning_tokens": 12267,
+    "score": 0.0,
+    "score_ci": [
+      0.0,
+      0.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "wrong": 2
+    },
+    "total_cost_usd": 0.0070136,
+    "total_tokens": 20348,
+    "weighted_accuracy": 0.0
+  },
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}

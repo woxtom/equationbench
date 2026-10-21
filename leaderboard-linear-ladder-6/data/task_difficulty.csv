@@ -1,0 +1,7 @@
+task_id,family,level,empirical_accuracy,prompt_chars,answer_digits,answer_type
+88d31dc336a62b5b,linear,5,0.6000,2621,16,integer_list
+1044d8a2c5dd674f,linear,5,0.6000,2645,16,integer_list
+3069cd5b4e0d1790,linear,6,0.4000,3893,20,integer_list
+eafc74db9ee680bb,linear,6,0.2000,3863,20,integer_list
+7d40f9d5b95c19fc,linear,7,0.2000,5448,24,integer_list
+e1e09bf540ed13c6,linear,7,0.0000,5417,24,integer_list

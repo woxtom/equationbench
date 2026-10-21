@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <meta name="description" content="EquationBench documentation: {{ page_title }}.">
+  <link rel="stylesheet" href="{{ root }}assets/style.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="{{ root }}index.html"><span class="brand-mark">∑</span><span class="brand-text">Equation<span>Bench</span></span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="{{ root }}index.html#ranking">Leaderboard</a>
+      <a href="{{ root }}index.html#tracks">Tracks</a>
+      <a href="{{ root }}docs/methodology.html">Methodology</a>
+      <a class="nav-cta" href="{{ root }}index.html#run-it">Run it</a>
+    </nav>
+  </header>
+  <main class="docs-main">
+    <a class="back-link" href="{{ root }}index.html">← Back to leaderboard</a>
+    <article class="docs-article">
+      <div class="kicker">Documentation</div>
+      <h1>{{ page_title }}</h1>
+      <div class="docs-body">
+        {{ content | safe }}
+      </div>
+    </article>
+    <aside class="docs-aside">
+      <div class="panel">
+        <h3>At a glance</h3>
+        <p><strong>{{ benchmark.n_tasks }}</strong> tasks · <strong>{{ benchmark.families|length }}</strong> tracks · <strong>5</strong> levels</p>
+        <p class="fineprint">Dataset {{ benchmark.dataset_version }} · generator {{ benchmark.generator_version }} · prompt {{ benchmark.prompt_version }}</p>
+        <a class="text-link" href="{{ root }}data/leaderboard.json">Download results JSON →</a>
+      </div>
+    </aside>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-brand"><span class="brand-mark small">∑</span> EquationBench</div>
+    <div class="footer-meta"><a href="{{ root }}index.html#ranking">Leaderboard</a><a href="{{ root }}docs/submission.html">Submit</a><a href="{{ root }}data/leaderboard.json">Data</a></div>
+    <div class="footer-note">Exact answers. No judges. No excuses.</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+rank,model,lab,provider,division,score,ci_low,ci_high,accuracy,correct,n,cost_usd,cost_per_100,median_latency_ms,timeouts,provider_errors,coverage,thinking_actual,run_id
+1,DeepSeek V4.1 Flash,DeepSeek,deepseek,standard,51.43,34.65,70.64,0.6571,23,35,0.437646,1.250418,16207,1,0,0.5000,off,20261017T153040Z-deepseek-v4-1-flash-cfe6c9db
+2,LongCat 2.5 Preview,LongCat,opencode-go,open,23.81,12.71,38.71,0.4286,15,35,0.000000,0.000000,240005,20,0,0.5000,off,20261017T163834Z-longcat-2-5-preview-free-cfe6c9db
+3,GLM-5.3 Flash,Z.ai,opencode-go,standard,23.81,12.39,38.90,0.4000,14,35,0.035487,0.101391,63582,12,0,0.5000,low,20261017T154051Z-zai-glm-5-3-flash-cfe6c9db
+4,DeepSeek V4 Pro,DeepSeek,deepseek,standard,22.86,11.97,36.74,0.4000,14,35,0.223524,0.638641,9934,0,0,0.5000,off,20261017T152641Z-deepseek-v4-pro-cfe6c9db
+5,GPT-5.6 Luna,OpenAI,opencode-go,standard,22.86,12.10,37.63,0.4000,14,35,0.057708,0.164879,14168,0,0,0.5000,low,20261017T160508Z-openai-gpt-5-6-luna-cfe6c9db
+6,MiMo v2.6 Flash,Xiaomi,opencode-go,standard,21.90,11.32,36.67,0.4000,14,35,0.021371,0.061059,240005,19,0,0.5000,off,20261017T161322Z-xiaomi-mimo-v2-6-flash-cfe6c9db
+7,Claude Haiku 5.5,Anthropic,opencode-go,standard,18.10,8.93,30.68,0.3429,12,35,0.016376,0.046787,4316,0,0,0.5000,off,20261017T160638Z-anthropic-claude-haiku-5-5-cfe6c9db
+8,MiniMax M3,MiniMax,opencode-go,standard,11.43,4.91,21.51,0.2571,9,35,0.083672,0.239063,9018,0,0,0.5000,off,20261017T160739Z-minimax-m3-cfe6c9db

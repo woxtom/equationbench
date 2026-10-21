@@ -1,0 +1,275 @@
+{
+  "aborted_reason": null,
+  "actual_thinking_levels": {
+    "max": 10
+  },
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 2,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 2.0,
+    "notes": "linear-only 10-task sweep; direct DeepSeek/OpenAI keys; max reasoning",
+    "retries": 2,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "max",
+    "timeout": null
+  },
+  "dataset": {
+    "dataset_sha256": "e8351fe3eebd0e23c86845d84c8c9b4ab2899aa6778029af3f9558f682c765e1",
+    "manifest": {
+      "benchmark": "EquationBench",
+      "benchmark_version": "1.0.0",
+      "counts": {
+        "by_family": {
+          "linear": 10
+        },
+        "by_level": {
+          "1": 2,
+          "2": 2,
+          "3": 2,
+          "4": 2,
+          "5": 2
+        },
+        "total": 10
+      },
+      "created_at": "2026-10-19T02:08:13+00:00",
+      "dataset_sha256": "e8351fe3eebd0e23c86845d84c8c9b4ab2899aa6778029af3f9558f682c765e1",
+      "dataset_version": "v1",
+      "description": "Public linear-systems-only test set: 2 tasks per level.",
+      "families": {
+        "linear": {
+          "description": "Solve a dense integer linear system with a unique exact integer solution.",
+          "label": "Linear Systems",
+          "levels": 5,
+          "per_cell": 2
+        }
+      },
+      "families_included": [
+        "linear"
+      ],
+      "generator_version": "1.0.0",
+      "master_seed": 731992,
+      "name": "linear-test",
+      "per_cell": 2,
+      "prompt_version": "1.0",
+      "sealed": false,
+      "task_hashes": {
+        "42b1b3f7f87de251": "fffb414428454586f571abcd217606747055fdec6992ce5df22c14e649ce1157",
+        "4fac20d29191e3a2": "36ccd77e86be9bf371e5d1118d71735dccb92e3102bf40381febc6b0ef71bcdc",
+        "5ea0e14c2d64af52": "d46bd42d83ea1b9640295b65d65e2ee2feb708af5bc1755f867aa846ee88f33e",
+        "7e1d5aed4b26834e": "69aec1c6684a123a3eda941e719faf62a3b0a90d3c5f176aa03c942a7464b1de",
+        "aed802a3c0a19460": "0b177ee57c487a025ff1b45bdfd671d0c6baab5ee1b9c29d325797156477ad42",
+        "c5f4598586596232": "289f55fb12899e622355f68d6b0532bdef0189e665f25ed2ee133b2307d669db",
+        "cd25df1322507d3b": "b45c849552917dcea1ddf0059f57e4f4b4947b6fc4a67d4789a855ce673ba811",
+        "e22bb7e027fed409": "ec23c2772ec667e0bd9410bbae7ffe50df6b099f2c31b1858fb0154ab75276f9",
+        "f121945f85828e61": "37a00a8c1e10b07901b2c412796e5374d995752ed60a8246f48effc8cf84e296",
+        "f93328c37927c419": "989549dada77d63c1d94f402eadb72f8077f233e5659701572bb350ca97548ca"
+      }
+    },
+    "name": "linear-test",
+    "path": "datasets/equationbench-v1-test-linear",
+    "selected_tasks": [
+      "4fac20d29191e3a2",
+      "e22bb7e027fed409",
+      "7e1d5aed4b26834e",
+      "c5f4598586596232",
+      "aed802a3c0a19460",
+      "cd25df1322507d3b",
+      "f121945f85828e61",
+      "f93328c37927c419",
+      "5ea0e14c2d64af52",
+      "42b1b3f7f87de251"
+    ]
+  },
+  "dataset_version": "v1",
+  "environment": {
+    "argv": [
+      ".venv/bin/eqb",
+      "run",
+      "--model",
+      "openai-gpt-6-1-sol",
+      "--dataset",
+      "datasets/equationbench-v1-test-linear",
+      "--out",
+      "runs/linear-direct/openai-gpt-6-1-sol",
+      "--concurrency",
+      "2",
+      "--timeout",
+      "0",
+      "--thinking",
+      "max",
+      "--retries",
+      "2",
+      "--max-cost",
+      "2",
+      "--notes",
+      "linear-only 10-task sweep; direct DeepSeek/OpenAI keys; max reasoning"
+    ],
+    "git_commit": null,
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-19T03:36:28+00:00",
+  "generator_version": "1.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#0ea5e9",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "openai-gpt-6-1-sol",
+    "lab": "OpenAI",
+    "max_output_tokens": null,
+    "model": "gpt-6.1-sol",
+    "name": "GPT-6.1 Sol",
+    "notes": "OpenAI via pi OAuth.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "openai",
+    "provider_kind": "pi",
+    "thinking": "max"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 10,
+  "n_selected": 10,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261019T032638Z-openai-gpt-6-1-sol-d641e91d",
+  "score": {
+    "accuracy": 1.0,
+    "accuracy_ci": [
+      1.0,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "n": 10,
+        "score": 100.0
+      }
+    },
+    "by_level": {
+      "1": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "2": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "3": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "4": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "5": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 10,
+    "cost_known": true,
+    "cost_per_100": 5.626640000000001,
+    "input_tokens": 5837,
+    "median_latency_ms": 41377,
+    "missing": 0,
+    "n": 10,
+    "output_tokens": 55099,
+    "p95_latency_ms": 380736,
+    "reasoning_tokens": 54793,
+    "score": 100.0,
+    "score_ci": [
+      100.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 10
+    },
+    "total_cost_usd": 0.562664,
+    "total_tokens": 60936,
+    "weighted_accuracy": 1.0
+  },
+  "started_at": "2026-10-19T03:26:38+00:00",
+  "status": "complete",
+  "summary": {
+    "accuracy": 1.0,
+    "accuracy_ci": [
+      1.0,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "n": 10,
+        "score": 100.0
+      }
+    },
+    "by_level": {
+      "1": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "2": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "3": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "4": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      },
+      "5": {
+        "accuracy": 1.0,
+        "correct": 2,
+        "n": 2
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 10,
+    "cost_known": true,
+    "cost_per_100": 5.626640000000001,
+    "input_tokens": 5837,
+    "median_latency_ms": 41377,
+    "missing": 0,
+    "n": 10,
+    "output_tokens": 55099,
+    "p95_latency_ms": 380736,
+    "reasoning_tokens": 54793,
+    "score": 100.0,
+    "score_ci": [
+      100.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 10
+    },
+    "total_cost_usd": 0.562664,
+    "total_tokens": 60936,
+    "weighted_accuracy": 1.0
+  },
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}

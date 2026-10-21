@@ -1,0 +1,11 @@
+task_id,family,level,empirical_accuracy,prompt_chars,answer_digits,answer_type
+4fac20d29191e3a2,linear,1,1.0000,573,3,integer_list
+e22bb7e027fed409,linear,1,1.0000,569,3,integer_list
+7e1d5aed4b26834e,linear,2,1.0000,611,4,integer_list
+c5f4598586596232,linear,2,1.0000,629,4,integer_list
+aed802a3c0a19460,linear,3,1.0000,757,6,integer_list
+cd25df1322507d3b,linear,3,1.0000,768,6,integer_list
+f121945f85828e61,linear,4,1.0000,1119,9,integer_list
+f93328c37927c419,linear,4,1.0000,1109,9,integer_list
+5ea0e14c2d64af52,linear,5,1.0000,2122,14,integer_list
+42b1b3f7f87de251,linear,5,1.0000,2126,14,integer_list

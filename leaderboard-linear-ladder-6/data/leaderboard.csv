@@ -1,0 +1,6 @@
+rank,model,lab,provider,division,score,ci_low,ci_high,accuracy,correct,n,cost_usd,cost_per_100,median_latency_ms,timeouts,provider_errors,coverage,thinking_actual,run_id
+1,GPT-6.1 Sol,OpenAI,openai,standard,80.56,50.00,100.00,0.8333,5,6,1.414358,23.572640,1125917,1,0,1.0000,max,20261019T080018Z-openai-gpt-6-1-sol-f94d343b
+2,GPT-5.6 Sol,OpenAI,openai,standard,27.78,0.00,100.00,0.3333,2,6,1.190868,19.847800,1800012,4,0,1.0000,max,20261019T080018Z-openai-gpt-5-6-sol-f94d343b
+3,GPT-6 Sol,OpenAI,openai,standard,27.78,0.00,100.00,0.3333,2,6,0.743100,12.385000,194162,0,0,1.0000,max,20261019T080018Z-openai-gpt-6-sol-f94d343b
+4,DeepSeek V4.1 Flash,DeepSeek,deepseek,standard,16.67,0.00,50.00,0.1667,1,6,1.382530,23.042160,712490,0,0,1.0000,max,20261019T080018Z-deepseek-v4-1-flash-f94d343b
+5,GPT-6 Luna,OpenAI,openai,standard,0.00,0.00,0.00,0.0000,0,6,0.028045,0.467412,123767,0,0,1.0000,max,20261019T080018Z-openai-gpt-6-luna-f94d343b

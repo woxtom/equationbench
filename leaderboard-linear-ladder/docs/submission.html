@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Submitting a Model · EquationBench Linear Ladder (10 tasks)</title>
+  <meta name="description" content="EquationBench documentation: Submitting a Model.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="../index.html"><span class="brand-mark">∑</span><span class="brand-text">Equation<span>Bench</span></span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="../index.html#ranking">Leaderboard</a>
+      <a href="../index.html#tracks">Tracks</a>
+      <a href="../docs/methodology.html">Methodology</a>
+      <a class="nav-cta" href="../index.html#run-it">Run it</a>
+    </nav>
+  </header>
+  <main class="docs-main">
+    <a class="back-link" href="../index.html">← Back to leaderboard</a>
+    <article class="docs-article">
+      <div class="kicker">Documentation</div>
+      <h1>Submitting a Model</h1>
+      <div class="docs-body">
+        <h1 id="submitting-a-model">Submitting a Model</h1>
+<p>EquationBench accepts two kinds of results:</p>
+<ol>
+<li><strong>Official runs</strong> — produced by the maintainers with this harness on the fixed public test set, with full task coverage. These are ranked by default.</li>
+<li><strong>Self-reported runs</strong> — produced by another lab or individual and submitted with complete artifacts. They are reviewed and marked as self-reported until reproduced. A top self-reported entry can be re-run against the sealed holdout before being marked verified.</li>
+</ol>
+<p>The initial public leaderboard contains official runs only. The submission workflow below is the path for adding a model without waiting for the maintainers.</p>
+<h2 id="1-install-the-harness">1. Install the harness</h2>
+<pre><code class="language-bash">git clone &lt;this-repo&gt; equationbench
+cd equationbench
+uv venv --python 3.12
+uv pip install -e &quot;.[dev]&quot;
+eqb verify-dataset --path datasets/equationbench-v1-test
+</code></pre>
+<p>You should see <code>OK 70 tasks</code> and the dataset hash printed by the command. If the hash does not match the leaderboard's dataset commitment, stop: you are on a different benchmark version.</p>
+<h2 id="2-add-a-model-entry">2. Add a model entry</h2>
+<p>Edit <code>config/models.toml</code> and add a <code>[[models]]</code> block:</p>
+<pre><code class="language-toml">[[models]]
+key = &quot;my-lab-my-model&quot;
+name = &quot;My Model&quot;
+lab = &quot;My Lab&quot;
+provider = &quot;opencode-go&quot;        # any pi provider
+model = &quot;my-model-id&quot;
+thinking = &quot;off&quot;
+division = &quot;standard&quot;
+color = &quot;#5eead4&quot;
+notes = &quot;Short provider/routing disclosure.&quot;
+</code></pre>
+<p>For a self-hosted or external OpenAI-compatible server:</p>
+<pre><code class="language-toml">[[models]]
+key = &quot;my-lab-local&quot;
+name = &quot;My Model (local)&quot;
+lab = &quot;My Lab&quot;
+provider = &quot;local&quot;
+provider_kind = &quot;openai-compatible&quot;
+base_url = &quot;https://my-endpoint.example/v1&quot;
+api_key_env = &quot;MY_API_KEY&quot;
+model = &quot;my-model-id&quot;
+thinking = &quot;off&quot;
+division = &quot;self-hosted&quot;
+color = &quot;#5eead4&quot;
+</code></pre>
+<p><code>provider_kind = "pi"</code> uses the <code>pi</code> CLI and its authenticated provider catalog. <code>provider_kind = "openai-compatible"</code> calls <code>/chat/completions</code> directly and is intended for vLLM, Ollama, LM Studio, OpenRouter, and similar servers.</p>
+<h2 id="3-run-the-fixed-test-set">3. Run the fixed test set</h2>
+<pre><code class="language-bash">export MY_API_KEY=...          # if using a direct endpoint
+eqb run \
+  --model my-lab-my-model \
+  --dataset datasets/equationbench-v1-test \
+  --concurrency 4 \
+  --timeout 0 \
+  --thinking max \
+  --retries 2 \
+  --out runs/my-lab-my-model
+</code></pre>
+<p>Do not modify the prompt, the task set, the answer contract, or the parser. Do not give the model tools, retrieval, a Python interpreter, or a scratchpad with execution. A legitimate run is closed-book and single-turn.</p>
+<p>The run directory will contain:</p>
+<pre><code>runs/my-lab-my-model/
+  run.json            # model, dataset hash, selected ids, config, environment
+  predictions.jsonl   # one row per task: raw response, parsed answer, usage, cost
+  summary.json        # score, CIs, per-track/level breakdown, run metadata
+</code></pre>
+<h2 id="4-validate-the-run">4. Validate the run</h2>
+<pre><code class="language-bash">eqb score --run runs/my-lab-my-model
+</code></pre>
+<p>Check the printed summary and then verify the run metadata manually:</p>
+<ul>
+<li><code>run.json.dataset.dataset_sha256</code> equals the published test hash;</li>
+<li><code>run.json.dataset.selected_tasks</code> has exactly 70 ids;</li>
+<li><code>run.json.status</code> is <code>complete</code>;</li>
+<li><code>summary.json.score.completion_rate</code> is <code>1.0</code>;</li>
+<li><code>summary.json.score.n</code> is 70.</li>
+</ul>
+<p>A partial run, a mismatched dataset hash, a missing prediction, or an aborted run will be excluded from the official ranking.</p>
+<h2 id="5-rebuild-the-leaderboard-locally">5. Rebuild the leaderboard locally</h2>
+<pre><code class="language-bash">eqb leaderboard build \
+  --runs runs \
+  --dataset datasets/equationbench-v1-test
+
+python -m http.server 8000 --directory leaderboard
+</code></pre>
+<p>Your model should appear in the table with its score, interval, per-track profile, cost, and latency. Open the model page and inspect the sample answers. If the parser rejected a correct answer, open an issue with the task id and raw response; do not silently edit predictions.</p>
+<h2 id="6-submit-the-artifacts">6. Submit the artifacts</h2>
+<p>Preferred: open a pull request that adds:</p>
+<ul>
+<li>the new <code>[[models]]</code> entry;</li>
+<li>the run directory under <code>runs/&lt;run-id&gt;/</code> (including <code>run.json</code>, <code>predictions.jsonl</code>, and <code>summary.json</code>);</li>
+<li>a short note in the PR describing provider, routing, thinking level, and any unusual configuration.</li>
+</ul>
+<p>If you cannot open a PR, use the submission endpoint:</p>
+<pre><code class="language-bash"># Server-side review queue (requires the admin token when configured)
+eqb serve --db eqb.sqlite --port 8000
+
+curl -X POST http://localhost:8000/api/submissions \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-EQB-Token: $EQB_ADMIN_TOKEN&quot; \
+  -d @submission.json
+</code></pre>
+<p>The server validates the dataset hash, task ids, prediction coverage, and recomputes the score from predictions. It never trusts a submitted score.</p>
+<p>A submission is <strong>self-reported</strong> until a maintainer reproduces it. Reproduction may use a fresh provider account, the sealed holdout, or both. The leaderboard shows the verification status.</p>
+<h2 id="7-rules-and-disclosure">7. Rules and disclosure</h2>
+<p>A valid entry must:</p>
+<ul>
+<li>use the exact public test set and the exact prompt wrapper;</li>
+<li>run with tools, code execution, retrieval, and external resources disabled;</li>
+<li>produce one final answer per task;</li>
+<li>report the actual model id, provider, and reasoning level;</li>
+<li>include all predictions, including failures, timeouts, refusals, and unparseable answers;</li>
+<li>disclose any provider routing, quantization, system-prompt customization, or sampling settings that differ from the default;</li>
+<li>not train on the public test answers during the run;</li>
+<li>not use the sealed holdout without maintainer coordination.</li>
+</ul>
+<p>Do not:</p>
+<ul>
+<li>remove failed tasks or rerun only the failures and merge the results;</li>
+<li>edit <code>predictions.jsonl</code> to replace an answer;</li>
+<li>use a model-specific prompt that leaks task-specific hints;</li>
+<li>submit a score without artifacts;</li>
+<li>claim a sealed result without a signed run receipt.</li>
+</ul>
+<p>Repeated attempts at the same task are allowed in a research log, but the leaderboard row must correspond to a single deterministic configuration (one attempt per task unless retries are only for transport errors). The harness retries only transient provider failures, not wrong answers.</p>
+<h2 id="8-verification-tiers">8. Verification tiers</h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Meaning</th>
+<th>Shown as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Official</td>
+<td>Maintainer-run, full public set, artifacts committed</td>
+<td><code>verified</code></td>
+</tr>
+<tr>
+<td>Self-reported</td>
+<td>Submitted with complete artifacts; not yet reproduced</td>
+<td><code>self-reported</code></td>
+</tr>
+<tr>
+<td>Sealed-verified</td>
+<td>Top entry reproduced on the encrypted holdout</td>
+<td><code>sealed</code></td>
+</tr>
+<tr>
+<td>Preview</td>
+<td>Partial set or non-standard configuration</td>
+<td><code>preview</code></td>
+</tr>
+</tbody>
+</table>
+<p>The initial release ranks official runs. Self-reported and sealed tiers are part of the submission roadmap; the data format already carries the fields needed for them.</p>
+<h2 id="9-improving-the-benchmark">9. Improving the benchmark</h2>
+<p>Contributions are welcome for:</p>
+<ul>
+<li>new task families with exact ground truth and a clear difficulty ladder;</li>
+<li>generators that remain deterministic and bounded in runtime;</li>
+<li>parser cases that are semantically unambiguous;</li>
+<li>statistical improvements that preserve transparency;</li>
+<li>documentation, examples, and reproducibility checks.</li>
+</ul>
+<p>Open an issue before adding a new track. A new track changes the dataset hash and therefore requires a version bump.</p>
+      </div>
+    </article>
+    <aside class="docs-aside">
+      <div class="panel">
+        <h3>At a glance</h3>
+        <p><strong>10</strong> tasks · <strong>1</strong> tracks · <strong>5</strong> levels</p>
+        <p class="fineprint">Dataset v1 · generator 1.0.0 · prompt linear-ladder-1</p>
+        <a class="text-link" href="../data/leaderboard.json">Download results JSON →</a>
+      </div>
+    </aside>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-brand"><span class="brand-mark small">∑</span> EquationBench</div>
+    <div class="footer-meta"><a href="../index.html#ranking">Leaderboard</a><a href="../docs/submission.html">Submit</a><a href="../data/leaderboard.json">Data</a></div>
+    <div class="footer-note">Exact answers. No judges. No excuses.</div>
+  </footer>
+</body>
+</html>

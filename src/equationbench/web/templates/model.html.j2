@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <meta name="description" content="EquationBench results for {{ model.name }}: {{ '%.1f'|format(model.score) }} EQB Score with full track and level breakdown.">
+  <link rel="stylesheet" href="{{ root }}assets/style.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="{{ root }}index.html"><span class="brand-mark">∑</span><span class="brand-text">Equation<span>Bench</span></span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="{{ root }}index.html#ranking">Leaderboard</a>
+      <a href="{{ root }}index.html#tracks">Tracks</a>
+      <a href="{{ root }}docs/methodology.html">Methodology</a>
+      <a class="nav-cta" href="{{ root }}index.html#run-it">Run it</a>
+    </nav>
+  </header>
+
+  <main class="model-main">
+    <a class="back-link" href="{{ root }}index.html#ranking">← All models</a>
+    <section class="model-hero">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> {{ model.lab }} · {{ model.division }} division{% if model.preview %} · preview{% elif benchmark.track_filter %} · {{ benchmark.track_filter|join(', ') }} subset{% else %} · full set{% endif %}</div>
+        <h1>{{ model.name }}</h1>
+        <p class="model-sub">{{ model.provider }} / {{ model.model_id }} · provider-reported ID · run {{ model.run_id }}</p>
+      </div>
+      <div class="model-score-card">
+        <div class="score-label">EQB Score</div>
+        <div class="score-big">{{ '%.1f'|format(model.score) }}</div>
+        <div class="score-ci">95% CI {{ '%.1f'|format(model.score_ci[0]) }}–{{ '%.1f'|format(model.score_ci[1]) }}</div>
+        <div class="rank-pill">Rank #{{ model.rank_division }} <span>in {{ model.division }}</span></div>
+      </div>
+    </section>
+
+    <section class="metric-strip">
+      <div><span class="metric-label">Accuracy</span><strong>{{ '%.1f'|format(model.accuracy * 100) }}%</strong><small>{{ model.correct }} / {{ model.n }} tasks</small></div>
+      <div><span class="metric-label">Cost</span><strong>{% if model.cost_usd is none %}n/a{% elif model.cost_usd == 0 %}free{% else %}${{ '%.3f'|format(model.cost_usd) }}{% endif %}</strong><small>{% if model.cost_per_100 is not none %}${{ '%.3f'|format(model.cost_per_100) }} / 100{% else %}provider cost unavailable{% endif %}</small></div>
+      <div><span class="metric-label">Latency</span><strong>{% if model.median_latency_ms %}{{ '%.1f'|format(model.median_latency_ms / 1000) }}s{% else %}n/a{% endif %}</strong><small>median · p95 {% if model.p95_latency_ms %}{{ '%.1f'|format(model.p95_latency_ms / 1000) }}s{% else %}n/a{% endif %}</small></div>
+      <div><span class="metric-label">Reasoning</span><strong>{{ model.thinking_actual|join(', ') or 'n/a' }}</strong><small>requested: {{ model.thinking_requested or 'default' }}</small></div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="kicker">Track breakdown</div>
+        <h2>Where the score comes from</h2>
+        <div id="family-table" class="family-table"></div>
+      </div>
+      <div class="panel">
+        <div class="kicker">Difficulty profile</div>
+        <h2>Accuracy by level</h2>
+        <p class="section-sub">Exact pass@1 at each tested difficulty level. Hover a bar for the task count and, for linear systems, the matrix size.</p>
+        <div id="level-bars" class="level-bars"></div>
+        <div class="chart-note">Bars show exact pass@1 at each difficulty level. Hover for task counts.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head compact">
+        <div>
+          <div class="kicker">Sample answers</div>
+          <h2>What model answers look like</h2>
+          <p class="section-sub">One correct and one incorrect sample per track, preferring the hardest available task. Prompts and responses are shown verbatim, truncated for display.</p>
+        </div>
+        <span class="pill">{{ model.samples|length }} samples</span>
+      </div>
+      <div id="samples" class="samples"></div>
+    </section>
+
+    <section class="panel run-meta">
+      <div class="kicker">Run receipt</div>
+      <h2>Audit this result</h2>
+      <div class="meta-grid">
+        <div><span>Run ID</span><code>{{ model.run_id }}</code></div>
+        <div><span>Finished</span><code>{{ model.finished_at or 'n/a' }}</code></div>
+        <div><span>Dataset hash</span><code>{{ benchmark.dataset_sha256[:24] }}…</code></div>
+        <div><span>Coverage</span><code>{{ model.n }} / {{ model.n_dataset }} tasks ({{ '%.0f'|format(model.coverage * 100) }}%)</code></div>
+        <div><span>Tokens</span><code>{{ model.total_tokens|num }} total · {{ model.reasoning_tokens|num }} reasoning</code></div>
+        <div><span>Result</span><code>{% if benchmark.track_filter %}{{ benchmark.n_tasks }}-task {{ benchmark.track_filter|join(', ') }} subset{% elif model.verified %}full 70-task set{% else %}preview / partial{% endif %}</code></div>
+      </div>
+      <div class="status-mix">
+        <span>Status mix</span>
+        {% for key, value in model.status_counts.items() %}<code>{{ key }} {{ value }}</code>{% endfor %}
+      </div>
+      {% if model.notes %}<p class="fineprint">{{ model.notes }}</p>{% endif %}
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand"><span class="brand-mark small">∑</span> EquationBench</div>
+    <div class="footer-meta"><a href="{{ root }}index.html#ranking">Leaderboard</a><a href="{{ root }}docs/methodology.html">Methodology</a><a href="{{ root }}data/leaderboard.json">Data</a></div>
+    <div class="footer-note">Exact answers. No judges. No excuses.</div>
+  </footer>
+
+  <script>window.EQB_MODEL = {{ model_json | safe }}; window.EQB_BENCHMARK = {{ benchmark_json | safe }};</script>
+  <script src="{{ root }}assets/model.js"></script>
+</body>
+</html>

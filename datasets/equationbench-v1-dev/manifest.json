@@ -1,0 +1,114 @@
+{
+  "benchmark": "EquationBench",
+  "benchmark_version": "1.0.0",
+  "counts": {
+    "by_family": {
+      "arith": 5,
+      "calculus": 5,
+      "linear": 5,
+      "matrix": 5,
+      "modular": 5,
+      "poly": 5,
+      "recurrence": 5
+    },
+    "by_level": {
+      "1": 7,
+      "2": 7,
+      "3": 7,
+      "4": 7,
+      "5": 7
+    },
+    "total": 35
+  },
+  "created_at": "2026-10-17T14:41:15+00:00",
+  "dataset_sha256": "9c987856c29930148f686aa98e350c875d2ac96ddab01782cf6db40b7f90e1e8",
+  "dataset_version": "v1",
+  "description": "Public development set: one task per family/level cell.",
+  "families": {
+    "arith": {
+      "description": "Deep, fully parenthesized integer expressions with addition, subtraction, multiplication, exponentiation, and factorials.",
+      "label": "Arithmetic",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "calculus": {
+      "description": "Differentiate a large factored polynomial at a point, or integrate it over an interval exactly.",
+      "label": "Calculus",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "linear": {
+      "description": "Solve a dense integer linear system with a unique exact integer solution.",
+      "label": "Linear Systems",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "matrix": {
+      "description": "Compute an exact determinant, sometimes of a matrix polynomial such as A^2 - 2A + 3I.",
+      "label": "Matrix Algebra",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "modular": {
+      "description": "Evaluate mixed expressions containing right-associative power towers modulo a large prime.",
+      "label": "Modular Arithmetic",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "poly": {
+      "description": "Expand a product of many linear factors and extract one exact coefficient.",
+      "label": "Polynomial Algebra",
+      "levels": 5,
+      "per_cell": 1
+    },
+    "recurrence": {
+      "description": "Evaluate a high-order linear recurrence at an enormous index modulo a prime.",
+      "label": "Recurrences",
+      "levels": 5,
+      "per_cell": 1
+    }
+  },
+  "generator_version": "1.0.0",
+  "master_seed": 20261017,
+  "name": "dev",
+  "per_cell": 1,
+  "prompt_version": "1.0",
+  "sealed": false,
+  "task_hashes": {
+    "081e5fa66f63783c": "dbc63687a265c53efa241954353d0e66d17ab9bc9d2c720ebd23e2f721c3a6db",
+    "12da21cd8f218cb9": "3ccf61e863bebe157d81629c4a59f0635815f9407fad691053a32571d7f9723f",
+    "1ee0e7f8d7d550c6": "ff155c14957bb6be8b84f2e297812890faa1ae5d446dbf735352a9ba642b3c81",
+    "1fa17ec9335cb118": "f21bcd9f3781688976bd9b051e0cc12316d5fe7978bc074c22842849657ffd8d",
+    "23b12568f674eaa9": "e1a87d39d47caa97265ff7cd30a3c710459d83f620e3ccddb49bbf1de5aaea9d",
+    "24ada5b5ccef6207": "15eb178ca8d4d85a423864ed779a2aa0e56f232ebd47e067e09d56da9c29f108",
+    "2c0d634ee69e4d84": "46668871ea4b93e863157b54843fdfd3e518926f273f4c68ea134384991e1703",
+    "2c713903c30f246b": "76f2c02d778a9b49e23845af9bf26b1f6b40c3890c7d7f8967cef6a612f114f0",
+    "368f263e9a15d7a3": "f3cbe3754cbbeb723d41acaa9efb9c25646ae68c9858687c1870ed8593f1d449",
+    "4ae665a6f9cec4b8": "ea73f3d33b343126a41ef556d2df76e686911e5d3a044ebebda67e063fc99bbc",
+    "4d9ed80c9d8e6374": "497ba3b577a254cee85e192b638388cf803bf9ae36455a0f67a5a319f831ef99",
+    "57dc0af231648667": "4526ccc67848636ad760f95d963a4e7a6238d035a2359cc74fe5624fad69a151",
+    "5ca4245ba534a762": "b5fe5d5842c8a27f49ca8e9467edb51e6d651820243e3c5efbb40faa9930bfbe",
+    "5df3a62f0fd4559d": "329e5ea522f68f792d1c38b25e002a4a6c2d49482aced6bd392e01b8904c1e4b",
+    "663041a6c237b827": "69d040c1d08e952296f195d3bd0d41938703fc373944c3a511291c72beffcb55",
+    "737d0bb699cac6b9": "47d25ea0b8c3ce3c12c92a08eea266ad9aaf59621440b9e02b550af34239bd51",
+    "7390090191911ed0": "edd1fb165f1d01912dfc3f4845015b0975d1a8f97120a35e2070e0caa23cb8c6",
+    "7eaffd1777d1532f": "a088277b92c246189c34db0b5053a55a275d26f1ef99409bc0a30296a884e8f2",
+    "7fe911d3910549a6": "1cb3c5b85e1463a7ec96d4ebd1608afa7ba09313baa3f6ff562d3ae41d50edf6",
+    "8bb974e9e4e5d07f": "e9df42e42439e49eafe8ffbad2ae70f18bfa4d9a9e7bc3129bcb840149b9ea3b",
+    "a4f38db80395d029": "a8bee0d766c727b96368614b7799a65f469ad93449b5897a41f484b32c1a3ec2",
+    "ba79e06c28d66bc2": "5765779f57b7a4ba74a8df90adeaa0ecac76536e84c644292991eba4ada381cd",
+    "be5f826d3eee2d3c": "f3d3aaa6567f12d12d4fa90fc00abd8015588d28e8a3e7219386e3c7ed55aee2",
+    "c56899a7cecb346a": "498be5714a9f4c34d27e1573df9856174b928140180f7a4dd94fff013974c4a1",
+    "c64f12ddb1a5dbc4": "fd84be40bed9f03c931c3c692b0f92bafc2944a57447678f57bb7577573a4911",
+    "ccdaa0b8ae4849b8": "7b27be4780ff0e80de09bd580436befd7b2ade7216df79b907dc823f3775018c",
+    "cefac340970b5a9e": "2428290e15939b02f29db631ba7f455189474c99ed63507b941e18ed2574a73a",
+    "db989d84b68aa61a": "a9f1725e764509ce76a79ee81e1c39c13ba99561f21ce3c6b6e2e79ab8b99595",
+    "e24106c062de2367": "5be74b53f57aba7866af2d910eec06c39472ce2914a79c6abd4faf0257460fcd",
+    "ea1ab50f64c53443": "b18199e06e7a66eb70717760dec09822aee972bc1cb14eb19e9b8626a4653ddb",
+    "ef23135795ac62b6": "60a3da7e4a43820feda737d11c00a51a2b2ce9cf1b07b77ccd0b65caf9e4dc22",
+    "f144e7e510a8fcea": "227f9cbdc9e2c7241607e8f7cc13c88abfdc49ae73a65f4741274d94ec890429",
+    "f1654b1bb38caf6f": "a5a80aada727810229ca91773492a7f7d88db9d394c4a69966a07ce4d8de7ce8",
+    "f739c31edff6910a": "d17e3ae0d928e99857ed2e234870ac0a6d7e529ca4311b7328753d307df98d71",
+    "f9a8b87cea694955": "7a37b2f224ba73e1408a5094e004459e9857b4a2a3be27f85e0a42bb9b2ddc1e"
+  }
+}

@@ -1,0 +1,261 @@
+{
+  "aborted_reason": null,
+  "actual_thinking_levels": {
+    "max": 3
+  },
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 2,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 2.0,
+    "notes": "linear ladder 16x16/20x20/24x24; max reasoning; direct keys",
+    "retries": 0,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "max",
+    "timeout": 1800.0
+  },
+  "dataset": {
+    "dataset_sha256": "db67cd9c1b3a91ac9cad1c235efc005afd63afc543d98dc8b2ceee0c347f99f5",
+    "manifest": {
+      "benchmark": "EquationBench",
+      "benchmark_version": "1.0.0",
+      "counts": {
+        "by_family": {
+          "linear": 3
+        },
+        "by_level": {
+          "5": 1,
+          "6": 1,
+          "7": 1
+        },
+        "total": 3
+      },
+      "created_at": "2026-10-19T05:28:18+00:00",
+      "dataset_sha256": "db67cd9c1b3a91ac9cad1c235efc005afd63afc543d98dc8b2ceee0c347f99f5",
+      "dataset_version": "v1",
+      "description": "Linear size ladder: L5 16x16, L6 20x20, L7 24x24.",
+      "families": {
+        "linear": {
+          "description": "Solve a dense integer linear system with a unique exact integer solution.",
+          "label": "Linear Systems",
+          "levels": 3,
+          "per_cell": 1
+        }
+      },
+      "families_included": [
+        "linear"
+      ],
+      "generator_version": "1.0.0",
+      "levels_included": [
+        5,
+        6,
+        7
+      ],
+      "linear_overrides": [
+        [
+          5,
+          16,
+          32
+        ],
+        [
+          6,
+          20,
+          40
+        ],
+        [
+          7,
+          24,
+          50
+        ]
+      ],
+      "master_seed": 731992,
+      "name": "linear-ladder-test",
+      "per_cell": 1,
+      "prompt_version": "linear-ladder-1",
+      "sealed": false,
+      "task_hashes": {
+        "3069cd5b4e0d1790": "37ec0ccfec63c89359d72ce169610d46fb4294b7f26dc54fad30524f1b751071",
+        "7d40f9d5b95c19fc": "c30c98b5f08d44e7bd0187c2d3ece92a250330ffe737bc14fb0d8153f6b46868",
+        "88d31dc336a62b5b": "baa47e0c9d331bfb9628d92187e9b3f4c52ccf0b21c7767eae9e4f9f443f1334"
+      }
+    },
+    "name": "linear-ladder-test",
+    "path": "datasets/equationbench-v1-test-linear-ladder",
+    "selected_tasks": [
+      "88d31dc336a62b5b",
+      "3069cd5b4e0d1790",
+      "7d40f9d5b95c19fc"
+    ]
+  },
+  "dataset_version": "v1",
+  "environment": {
+    "argv": [
+      ".venv/bin/eqb",
+      "run",
+      "--model",
+      "openai-gpt-6-1-sol",
+      "--dataset",
+      "datasets/equationbench-v1-test-linear-ladder",
+      "--out",
+      "runs/linear-ladder/openai-gpt-6-1-sol",
+      "--concurrency",
+      "2",
+      "--timeout",
+      "1800",
+      "--thinking",
+      "max",
+      "--retries",
+      "0",
+      "--max-cost",
+      "2",
+      "--notes",
+      "linear ladder 16x16/20x20/24x24; max reasoning; direct keys"
+    ],
+    "git_commit": null,
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-19T06:02:20+00:00",
+  "generator_version": "1.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#0ea5e9",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "openai-gpt-6-1-sol",
+    "lab": "OpenAI",
+    "max_output_tokens": null,
+    "model": "gpt-6.1-sol",
+    "name": "GPT-6.1 Sol",
+    "notes": "OpenAI via pi OAuth.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "openai",
+    "provider_kind": "pi",
+    "thinking": "max"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 3,
+  "n_selected": 3,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261019T052840Z-openai-gpt-6-1-sol-bfa387ab",
+  "score": {
+    "accuracy": 1.0,
+    "accuracy_ci": [
+      1.0,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 1.0,
+        "correct": 3,
+        "n": 3,
+        "score": 100.0
+      }
+    },
+    "by_level": {
+      "5": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      },
+      "6": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      },
+      "7": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 3,
+    "cost_known": true,
+    "cost_per_100": 31.281013333333334,
+    "input_tokens": 3998,
+    "median_latency_ms": 753131,
+    "missing": 0,
+    "n": 3,
+    "output_tokens": 93014,
+    "p95_latency_ms": 1544255,
+    "reasoning_tokens": 92807,
+    "score": 100.0,
+    "score_ci": [
+      100.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 3
+    },
+    "total_cost_usd": 0.9384304000000001,
+    "total_tokens": 99956,
+    "weighted_accuracy": 1.0
+  },
+  "started_at": "2026-10-19T05:28:40+00:00",
+  "status": "complete",
+  "summary": {
+    "accuracy": 1.0,
+    "accuracy_ci": [
+      1.0,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 1.0,
+        "correct": 3,
+        "n": 3,
+        "score": 100.0
+      }
+    },
+    "by_level": {
+      "5": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      },
+      "6": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      },
+      "7": {
+        "accuracy": 1.0,
+        "correct": 1,
+        "n": 1
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 3,
+    "cost_known": true,
+    "cost_per_100": 31.281013333333334,
+    "input_tokens": 3998,
+    "median_latency_ms": 753131,
+    "missing": 0,
+    "n": 3,
+    "output_tokens": 93014,
+    "p95_latency_ms": 1544255,
+    "reasoning_tokens": 92807,
+    "score": 100.0,
+    "score_ci": [
+      100.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 3
+    },
+    "total_cost_usd": 0.9384304000000001,
+    "total_tokens": 99956,
+    "weighted_accuracy": 1.0
+  },
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}
