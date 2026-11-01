@@ -17,3 +17,4 @@ runs/**/raw/
 .env
 
 site/
+runs/logs/*.log
