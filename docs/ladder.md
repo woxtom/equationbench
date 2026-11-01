@@ -11,12 +11,12 @@ The implementation lives in `src/equationbench/ladder.py` and
 
 Every task is a dense integer linear system
 
-\[
+$$
 A x = b, \qquad A \in [-30,30]^{n \times n}, \quad x \in [-9,9]^n
-\]
+$$
 
-with a unique solution. The generator picks \(A\), rejects singular matrices,
-picks a known integer solution \(x\), computes \(b = Ax\), and asks for the
+with a unique solution. The generator picks $A$, rejects singular matrices,
+picks a known integer solution $x$, computes $b = Ax$, and asks for the
 solution vector. Ground truth is exact; there is no tolerance and no judge.
 
 The answer is a JSON integer list:
@@ -29,9 +29,9 @@ The answer is a JSON integer list:
 
 The level is a geometric function of the system size:
 
-\[
+$$
 n_L = \operatorname{round}\left(3 \cdot 2^{(L-1)/3}\right)
-\]
+$$
 
 | L | n | L | n | L | n | L | n |
 |---:|---:|---:|---:|---:|---:|---:|---:|
@@ -42,7 +42,7 @@ n_L = \operatorname{round}\left(3 \cdot 2^{(L-1)/3}\right)
 | 5 | 8 | 10 | 24 | 15 | 76 | 20 | 242 |
 
 Three levels double the system size. Equal level steps are equal steps in
-\(\log n\), which is the natural difficulty scale for dense elimination.
+$\log n$, which is the natural difficulty scale for dense elimination.
 
 The coefficient and solution bounds are fixed. **Size is the only difficulty
 axis.** If the frontier turns out to be too easy or too hard, adjust the bound
@@ -50,7 +50,7 @@ once in a pilot and freeze it for the season; do not scale it per level.
 
 ## 3. Task bank
 
-For each level \(L\) and index \(j = 1,\dots,10\), a deterministic seed is derived
+For each level $L$ and index $j = 1,\dots,10$, a deterministic seed is derived
 from
 
 ```
@@ -79,31 +79,31 @@ task = build_ladder_task(level=10, index=0)
 
 ## 4. Frontier score
 
-For a model, at each tested level \(L\):
+For a model, at each tested level $L$:
 
-- \(k_L\) valid tasks, \(c_L\) correct,
-- \(p_L = c_L / k_L\),
-- apply non-increasing isotonic regression to get \(\hat p_L\).
+- $k_L$ valid tasks, $c_L$ correct,
+- $p_L = c_L / k_L$,
+- apply non-increasing isotonic regression to get $\hat p_L$.
 
-Find adjacent levels \(k, k+1\) with
+Find adjacent levels $k, k+1$ with
 
-\[
+$$
 \hat p_k \ge 0.5 > \hat p_{k+1}.
-\]
+$$
 
-Interpolate in \(\log n\):
+Interpolate in $\log n$:
 
-\[
+$$
 \log n^* = \log n_k +
 \frac{\hat p_k - 0.5}{\hat p_k - \hat p_{k+1}}
 \left(\log n_{k+1} - \log n_k\right)
-\]
+$$
 
 Then
 
-\[
+$$
 \text{EQB-L} = L^* = 1 + 3\log_2(n^*/3).
-\]
+$$
 
 `EQB-L` is the continuous level at which the model has a 50% chance of exact
 success. It has no upper bound.
@@ -116,12 +116,12 @@ success. It has no upper bound.
 - **Incremental:** old rows do not need rerunning when a new level is added.
 - **Censoring is explicit:** all-pass is reported as `≥ Lmax`, not a fake finite
   number.
-- **Physical unit:** \(n^*\) is the system size; \(L^*\) is a log-scale label.
+- **Physical unit:** $n^*$ is the system size; $L^*$ is a log-scale label.
 
 ### Confidence intervals
 
 Bootstrap tasks within each level, rerun isotonic regression, recompute
-\(\log n^*\), and take the 2.5–97.5 percentiles. Use paired bootstrap across
+$\log n^*$, and take the 2.5–97.5 percentiles. Use paired bootstrap across
 models so all models see the same resampled tasks. With 5 tasks per level, the
 interval is wide; run 5 extra tasks at each of the two bracket levels before
 stopping.

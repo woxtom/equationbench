@@ -23,9 +23,9 @@ score records the history of that test set, not what the model can do.
 
 So the difficulty axis is not *topic*, it is *size*:
 
-\[
+$$
 n_L = \operatorname{round}\left(3 \cdot 2^{(L-1)/3}\right)
-\]
+$$
 
 | L | n | L | n | L | n | L | n |
 |---:|---:|---:|---:|---:|---:|---:|---:|
@@ -53,13 +53,13 @@ credit. Off by one is wrong.
 Run 5 tasks per level. Smooth the success curve with non-increasing isotonic
 regression, find the levels that bracket 50%, and interpolate:
 
-\[
+$$
 \log n^* = \log n_k + \frac{p_k - 0.5}{p_k - p_{k+1}}(\log n_{k+1} - \log n_k)
-\]
+$$
 
-\[
+$$
 \text{EQB-L} = L^* = 1 + 3\log_2(n^*/3)
-\]
+$$
 
 `EQB-L` is the level where the model has a 50% chance of an exact solve. It is
 unbounded. Adding higher levels does **not** change an existing score; it only

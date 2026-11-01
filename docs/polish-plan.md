@@ -45,12 +45,12 @@ runs, and build a new frontier site from scratch.
 
 ## 1. The ladder: `L1` to `L∞`
 
-Every level is a system size \(n\). The ladder is geometric, so each level is a
+Every level is a system size $n$. The ladder is geometric, so each level is a
 constant multiplicative step in size:
 
-\[
+$$
 n_L = \operatorname{round}\!\left(3 \cdot 2^{(L-1)/3}\right), \qquad L=1,2,3,\dots
-\]
+$$
 
 | L | n | L | n | L | n | L | n |
 |---:|---:|---:|---:|---:|---:|---:|---:|
@@ -60,16 +60,16 @@ n_L = \operatorname{round}\!\left(3 \cdot 2^{(L-1)/3}\right), \qquad L=1,2,3,\do
 | 4 | 6 | 9 | 19 | 14 | 60 | 19 | 192 |
 | 5 | 8 | 10 | 24 | 15 | 76 | 20 | 242 |
 
-Each three levels doubles \(n\), so each level is roughly a 26% size increase and a
-~2× increase in elimination work. Equal \(L\) steps are equal steps in \(\log n\),
+Each three levels doubles $n$, so each level is roughly a 26% size increase and a
+~2× increase in elimination work. Equal $L$ steps are equal steps in $\log n$,
 which is the natural difficulty scale for a dense linear system.
 
-**Fixed parameters:** dense integer coefficients in \([-30,30]\), solution entries in
-\([-9,9]\), unique solution. Do not scale the coefficient bound; \(n\) is the only
+**Fixed parameters:** dense integer coefficients in $[-30,30]$, solution entries in
+$[-9,9]$, unique solution. Do not scale the coefficient bound; $n$ is the only
 difficulty axis. This keeps the score interpretable and the generator auditable.
 
-**Practical range:** \(L20\) is a 242×242 system. Estimated prompt size grows as
-\(O(n^2)\):
+**Practical range:** $L20$ is a 242×242 system. Estimated prompt size grows as
+$O(n^2)$:
 
 | n | prompt chars (approx) | prompt tokens (approx) |
 |---:|---:|---:|
@@ -87,40 +87,40 @@ for long-context models or later seasons.
 
 **Why geometric, not `L=n`:** integer sizes 3,4,5,… waste runs on tiny steps and then
 jump by huge relative amounts. A geometric ladder gives uniform resolution in
-\(\log n\), which is what the frontier estimate needs.
+$\log n$, which is what the frontier estimate needs.
 
 ---
 
 ## 2. The score: 50% frontier, no ceiling
 
-For a model \(m\), at each tested level \(L\):
+For a model $m$, at each tested level $L$:
 
-- \(k_L\) valid tasks attempted,
-- \(c_L\) correct,
-- \(p_L = c_L/k_L\).
+- $k_L$ valid tasks attempted,
+- $c_L$ correct,
+- $p_L = c_L/k_L$.
 
-Apply **isotonic regression** (non-increasing in \(L\)) to suppress noise and
-non-monotonic lucky solves. Find adjacent levels \(k,k+1\) with
+Apply **isotonic regression** (non-increasing in $L$) to suppress noise and
+non-monotonic lucky solves. Find adjacent levels $k,k+1$ with
 
-\[
+$$
 \hat p_k \ge 0.5 > \hat p_{k+1}.
-\]
+$$
 
-Interpolate in \(\log n\):
+Interpolate in $\log n$:
 
-\[
+$$
 \log n^* = \log n_k +
 \frac{\hat p_k - 0.5}{\hat p_k - \hat p_{k+1}}
 \left(\log n_{k+1} - \log n_k\right)
-\]
+$$
 
 Then:
 
-\[
+$$
 \boxed{\text{EQB-L} = L^* = 1 + 3\log_2(n^*/3)}
 \qquad
 \boxed{\text{Frontier size} = n^*}
-\]
+$$
 
 `EQB-L` is the continuous level at which the model has a 50% chance of producing the
 exact solution. It is unbounded: a model that moves from 24×24 to 48×48 moves from
@@ -144,7 +144,7 @@ roughly `L10` to `L13`.
 
 ### Confidence intervals
 
-Bootstrap the tasks within each level, rerun isotonic regression, recompute \(\log n^*\).
+Bootstrap the tasks within each level, rerun isotonic regression, recompute $\log n^*$.
 Report the 2.5–97.5 percentiles for `EQB-L` and `n*`. Use paired bootstrap across models
 so all models are evaluated on the same resampled tasks.
 
@@ -259,7 +259,7 @@ The leaderboard should answer three practical questions:
 ### Views
 
 - **Pareto frontier:** `EQB-L` vs. cost to frontier. Highlight non-dominated models.
-- **Best under budget:** for $1, $5, $20, $100, show the highest frontier.
+- **Best under budget:** for budgets of 1, 5, 20, or 100 USD, show the highest frontier.
 - **Cheapest within Δ:** for target frontiers L8/L10/L12, show the cheapest model that
   reaches them.
 - **Frontier curve:** success probability vs. `L`, with the `L*` marker. This is the hero
