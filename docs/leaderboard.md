@@ -1,6 +1,6 @@
 # EquationBench Linear Leaderboard
 
-Generated: `2026-11-01T03:06:17+00:00`
+Generated: `2026-11-01T16:13:29+00:00`
 
 Season seed `731992` · ladder v1 · scoring v2. One table, all runs.
 
@@ -20,9 +20,9 @@ Web view: <https://woxtom.github.io/equationbench/>
 | 8 | [GPT-6.1 Terra](runs/provisional/2026-10/high/openai-gpt-6-1-terra) | high | Provisional | 3.00 | 4.50 (3.83–5.17) | 10/20 | 67% (L3–L5) | 100% | 31k | $0.11 |  |
 | 9 | [GPT-6 Luna](runs/provisional/2026-10/high/openai-gpt-6-luna) | high | Provisional | 2.25 | 3.75 (3.25–4.38) | 6/20 | 60% (L3–L4) | 100% | 86k | $0.04 |  |
 | 10 | [GLM-5.3 Flash](runs/provisional/2026-10/high/zai-glm-5-3-flash) | high | Provisional | 2.17 | 3.62 (3.50–4.17) | 6/20 | 60% (L3–L4) | 100% | 599k | $0.30 |  |
-| — | [Claude Haiku 5.5](runs/provisional/2026-10/high/anthropic-claude-haiku-5-5) | high | Unranked | — | ≥8.0 | 16/20 | — | 80% | 1.56M | $0.77* | 4 response(s) hit the output token cap |
+| — | [Claude Haiku 5.5 (OpenRouter)](runs/provisional/2026-10/openrouter/anthropic-claude-haiku-5-5-high) | high | Unranked | — | ≥8.0 | 11/30 | — | 40% | 1.74M | unknown | 5 response(s) hit the output token cap |
 | — | [GPT-5.6 Luna](runs/provisional/2026-10/openai-gpt-5-6-luna) | max | Unranked | — | ≥8.0 | 36/55 | — | 65% | 2.15M | unknown | 7 response(s) hit the output token cap |
-| — | [Gemini 4 Argon](runs/provisional/2026-10/gemini/google-gemini-4-argon-high) | high | Unranked | — | ≥9.0 | 7/15 | 78% (L8–L9) | 60% | 533k | $5.16* | cost excludes 3 call(s) with no cost record |
+| — | [Gemini 4 Argon](runs/provisional/2026-10/gemini/google-gemini-4-argon-high) | high | Unranked | — | ≥9.0 | 7/15 | — | 60% | 533k | $5.16* | cost excludes 3 call(s) with no cost record |
 | — | [MiMo v2.6 Flash](runs/provisional/2026-10/high/xiaomi-mimo-v2-6-flash) | high | Unranked | — | ≥5.0 | 13/20 | — | 65% | 573k | unknown | 2 provider timeout(s) |
 
 ## How to read the table

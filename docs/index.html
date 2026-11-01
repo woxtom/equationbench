@@ -142,7 +142,7 @@ function scoreCell(r) {
 }
 
 function bandCell(r) {
-  if (r.band_rate == null || !r.band_levels || !r.band_levels.length) return "—";
+  if (!r.rankable || r.band_rate == null || !r.band_levels || !r.band_levels.length) return "—";
   const a = r.band_levels[0];
   const b = r.band_levels[r.band_levels.length - 1];
   return `${pct(r.band_rate)} <span class="ci">L${a}–L${b}</span>`;

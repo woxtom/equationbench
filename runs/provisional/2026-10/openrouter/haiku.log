@@ -1,0 +1,21 @@
+EquationBench frontier run · L6–L11 · 6 levels × 5 core tasks = 30 tasks
+  levels: L6=10×10, L7=12×12, L8=15×15, L9=19×19, L10=24×24, L11=30×30
+  • Claude Haiku 5.5 (OpenRouter) (openrouter/anthropic/claude-haiku-5.5, 
+thinking=high)
+  [1/30] correct 196s
+  [2/30] correct 198s
+  [3/30] correct 222s
+  [4/30] correct 300s
+  [5/30] correct 195s
+  [6/30] correct 179s
+  [7/30] correct 408s
+  [8/30] correct 434s
+  [9/30] correct 926s
+  [10/30] correct 889s
+  [11/30] correct 796s
+  [12/30] unparseable 427s
+  [13/30] provider_error 888s
+  [14/30] provider_error 870s
+  [15/30] provider_error 906s
+  [16/30] provider_error 825s
+  [17/30] provider_error 843s

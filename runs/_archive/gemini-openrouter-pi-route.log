@@ -1,0 +1,23 @@
+EquationBench frontier run · L8–L11 · 4 levels × 5 core tasks = 20 tasks
+  levels: L8=15×15, L9=19×19, L10=24×24, L11=30×30
+  • Gemini 4 Argon (OpenRouter) (openrouter/google/gemini-4-argon, 
+thinking=high)
+  [1/20] correct 391s
+  [2/20] correct 526s
+  [3/20] correct 535s
+  [4/20] correct 1029s
+  [5/20] unparseable 634s
+  [6/20] unparseable 1076s
+  [7/20] correct 563s
+  [8/20] provider_error 2s
+  [9/20] provider_error 2s
+  [10/20] provider_error 2s
+  [11/20] provider_error 2s
+  [12/20] provider_error 2s
+  [13/20] provider_error 2s
+  [14/20] provider_error 2s
+  [15/20] provider_error 2s
+  [16/20] provider_error 2s
+  [17/20] provider_error 2s
+  [18/20] correct 498s
+  [19/20] provider_error 2s
