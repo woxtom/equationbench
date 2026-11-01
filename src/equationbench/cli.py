@@ -558,6 +558,18 @@ def run_frontier_command(
     config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
     levels: str = typer.Option("1-8", "--levels", help="Levels to run, e.g. 1-8 or 4,5,8-10."),
     tasks_per_level: int = typer.Option(5, "--tasks-per-level", min=1, max=10),
+    precision_levels: str = typer.Option(
+        "",
+        "--precision-levels",
+        help="Levels that get extra precision tasks, e.g. 10-11.",
+    ),
+    precision_tasks: int = typer.Option(
+        0,
+        "--precision-tasks",
+        min=0,
+        max=5,
+        help="Extra tasks per precision level (indices 6-10).",
+    ),
     out: Optional[Path] = typer.Option(None, "--out", "-o", help="Run directory (single model only)."),
     concurrency: int = typer.Option(2, "--concurrency", "-j", min=1, max=16),
     timeout: float = typer.Option(900.0, "--timeout", help="Per-task seconds; 0 means no limit."),
@@ -580,6 +592,25 @@ def run_frontier_command(
     if selected_levels[-1] > MAX_PUBLIC_LEVEL:
         console.print(f"[red]levels must be at most L{MAX_PUBLIC_LEVEL}.[/red]")
         raise typer.Exit(2)
+    try:
+        selected_precision_levels = (
+            _parse_levels(precision_levels) if precision_levels.strip() else []
+        )
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(2) from exc
+    if selected_precision_levels and precision_tasks < 1:
+        console.print("[red]--precision-tasks must be positive with --precision-levels.[/red]")
+        raise typer.Exit(2)
+    missing_precision = sorted(set(selected_precision_levels) - set(selected_levels))
+    if missing_precision:
+        console.print(
+            f"[red]Precision levels are not in --levels: {missing_precision}[/red]"
+        )
+        raise typer.Exit(2)
+    if tasks_per_level + precision_tasks > 10:
+        console.print("[red]Core plus precision tasks must not exceed 10.[/red]")
+        raise typer.Exit(2)
 
     models = _resolve_models(
         config,
@@ -593,12 +624,21 @@ def run_frontier_command(
         raise typer.Exit(2)
 
     seed = _parse_seed(season_seed) if season_seed is not None else DEFAULT_SEASON_SEED
-    total_tasks = len(selected_levels) * tasks_per_level
+    total_tasks = sum(
+        tasks_per_level + (precision_tasks if level in selected_precision_levels else 0)
+        for level in selected_levels
+    )
     console.print(
         f"[bold]{BENCHMARK_NAME} frontier run[/bold] · "
         f"L{selected_levels[0]}–L{selected_levels[-1]} · "
-        f"{len(selected_levels)} levels × {tasks_per_level} tasks = {total_tasks} tasks"
+        f"{len(selected_levels)} levels × {tasks_per_level} core tasks"
+        f" = {total_tasks} tasks"
     )
+    if selected_precision_levels:
+        console.print(
+            f"  precision: +{precision_tasks} tasks at "
+            f"L{', L'.join(str(level) for level in selected_precision_levels)}"
+        )
     console.print(f"  levels: {', '.join(f'L{level}={size_for_level(level)}×{size_for_level(level)}' for level in selected_levels)}")
     for item in models:
         console.print(
@@ -622,6 +662,8 @@ def run_frontier_command(
             selected_levels,
             out_dir=out if len(models) == 1 else None,
             tasks_per_level=tasks_per_level,
+            precision_levels=selected_precision_levels,
+            precision_tasks=precision_tasks,
             concurrency=concurrency,
             timeout=timeout,
             retries=retries,

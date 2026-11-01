@@ -28,11 +28,17 @@ def build_ladder_bundle(
     levels: Sequence[int],
     *,
     tasks_per_level: int = 5,
+    precision_levels: Sequence[int] | None = None,
+    precision_tasks: int = 0,
     season_seed: int | str = DEFAULT_SEASON_SEED,
     coeff_bound: int | None = None,
     x_bound: int | None = None,
 ) -> DatasetBundle:
-    """Build a deterministic fixed ladder task set."""
+    """Build a deterministic fixed ladder task set.
+
+    ``precision_levels`` receive ``precision_tasks`` extra tasks after the
+    core bank.  This is the protocol's bracket-level precision step.
+    """
     selected_levels = sorted(set(int(level) for level in levels))
     if not selected_levels:
         raise ValueError("at least one level is required")
@@ -40,13 +46,26 @@ def build_ladder_bundle(
         raise ValueError(f"levels must be in 1..{MAX_PUBLIC_LEVEL}")
     if tasks_per_level < 1:
         raise ValueError("tasks_per_level must be positive")
+    if precision_tasks < 0:
+        raise ValueError("precision_tasks must be non-negative")
+    precision_set = {int(level) for level in (precision_levels or [])}
+    if precision_set and precision_tasks < 1:
+        raise ValueError("precision_tasks must be positive when precision_levels are set")
+    missing = precision_set - set(selected_levels)
+    if missing:
+        raise ValueError(f"precision levels are not in the selected levels: {sorted(missing)}")
+    if tasks_per_level + precision_tasks > 10:
+        raise ValueError("core plus precision tasks must not exceed the 10-task bank")
 
     tasks: list[Task] = []
+    level_task_counts: dict[int, int] = {}
     for level in selected_levels:
+        count = tasks_per_level + (precision_tasks if level in precision_set else 0)
+        level_task_counts[level] = count
         tasks.extend(
             build_level_tasks(
                 level,
-                tasks_per_level,
+                count,
                 season_seed=season_seed,
                 coeff_bound=coeff_bound or 30,
                 x_bound=x_bound or 9,
@@ -57,12 +76,22 @@ def build_ladder_bundle(
     level_set = set(selected_levels)
     manifest["levels"] = [row for row in manifest["levels"] if row["level"] in level_set]
     manifest["name"] = f"ladder-L{selected_levels[0]}-L{selected_levels[-1]}"
+    precision_note = (
+        f"; +{precision_tasks} precision tasks at L{','.join(str(level) for level in sorted(precision_set))}"
+        if precision_set
+        else ""
+    )
     manifest["description"] = (
-        f"Fixed paired ladder set: {tasks_per_level} tasks per level, "
-        f"L{selected_levels[0]} to L{selected_levels[-1]}."
+        f"Fixed paired ladder set: {tasks_per_level} core tasks per level, "
+        f"L{selected_levels[0]} to L{selected_levels[-1]}{precision_note}."
     )
     manifest["levels_included"] = selected_levels
     manifest["tasks_per_level"] = tasks_per_level
+    manifest["precision_tasks"] = precision_tasks
+    manifest["precision_levels"] = sorted(precision_set)
+    manifest["level_task_counts"] = {
+        str(level): count for level, count in level_task_counts.items()
+    }
     manifest["dataset_sha256"] = dataset_hash(tasks)
     manifest["counts"] = {
         "total": len(tasks),
@@ -122,6 +151,8 @@ def run_frontier(
     *,
     out_dir: Path | None = None,
     tasks_per_level: int = 5,
+    precision_levels: Sequence[int] | None = None,
+    precision_tasks: int = 0,
     concurrency: int = 2,
     timeout: float | None = 900.0,
     retries: int = 2,
@@ -137,6 +168,8 @@ def run_frontier(
     bundle = build_ladder_bundle(
         levels,
         tasks_per_level=tasks_per_level,
+        precision_levels=precision_levels,
+        precision_tasks=precision_tasks,
         season_seed=season_seed,
     )
     result = run_benchmark(
@@ -169,6 +202,9 @@ def run_frontier(
         "model": model.to_dict(),
         "levels_tested": list(levels),
         "tasks_per_level": tasks_per_level,
+        "precision_levels": sorted({int(level) for level in (precision_levels or [])}),
+        "precision_tasks": precision_tasks,
+        "level_task_counts": bundle.manifest.get("level_task_counts"),
         "status": result.status,
         "completion": valid / len(bundle.tasks) if bundle.tasks else 0.0,
         "dataset_sha256": bundle.manifest["dataset_sha256"],
