@@ -8,22 +8,22 @@ Web view: <https://woxtom.github.io/equationbench/>
 
 `EQB-C = EQB-L × Band` is the ranked composite. It rewards a high frontier and reliability near that frontier. `EQB-L` is the 50% frontier. `Band` is the exact-solve rate over the tested levels in `[EQB-L - 2, EQB-L + 1]`: the window around the frontier. That window is fixed in width, so testing extra easy or hard levels does not move it. `Solved` is exact answers divided by all tasks. `Cover` is valid tasks divided by all tasks. Provider errors are excluded from the rate, but they lower the coverage.
 
-| # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Cost | Note |
-|---:|---|---|---|---:|---:|---:|---:|---:|---:|---|
-| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 7.00 | 10.50 (10.50–10.50) | 15/20 | 67% (L9–L11) | 100% | $16.79 | CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance |
-| 2 | [GPT-6.1 Sol](runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5) | high | Provisional | 6.89 | 10.33 (9.67–10.50) | 28/35 | 67% (L9–L11) | 91% | $3.87* | 3 provider timeout(s) |
-| 3 | [GPT-6.1 Terra](runs/official/2026-10/openai-gpt-6-1-terra) | max | Official | 5.42 | 10.17 (9.71–10.44) | 56/70 | 53% (L9–L11) | 100% | $5.73 |  |
-| 4 | [DeepSeek V4.1 Flash](runs/provisional/2026-10/high/deepseek-v4-1-flash) | high | Provisional | 4.75 | 9.50 (8.62–10.00) | 25/45 | 50% (L8–L10) | 100% | $4.18 |  |
-| 5 | [DeepSeek V4.1 Flash](runs/official/2026-10/deepseek-v4-1-flash) | max | Official | 4.57 | 10.00 (8.83–10.33) | 51/70 | 46% (L8–L11) | 100% | $7.62 |  |
-| 6 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-medium) | medium | Provisional | 3.82 | 7.17 (6.62–7.50) | 13/35 | 53% (L6–L8) | 100% | $3.93 |  |
-| 7 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-low) | low | Provisional | 3.29 | 6.17 (5.62–6.50) | 8/35 | 53% (L5–L7) | 100% | $2.62 |  |
-| 8 | [GPT-6.1 Terra](runs/provisional/2026-10/high/openai-gpt-6-1-terra) | high | Provisional | 3.00 | 4.50 (3.83–5.17) | 10/20 | 67% (L3–L5) | 100% | $0.11 |  |
-| 9 | [GPT-6 Luna](runs/provisional/2026-10/high/openai-gpt-6-luna) | high | Provisional | 2.25 | 3.75 (3.25–4.38) | 6/20 | 60% (L3–L4) | 100% | $0.04 |  |
-| 10 | [GLM-5.3 Flash](runs/provisional/2026-10/high/zai-glm-5-3-flash) | high | Provisional | 2.17 | 3.62 (3.50–4.17) | 6/20 | 60% (L3–L4) | 100% | $0.30 |  |
-| — | [Claude Haiku 5.5](runs/provisional/2026-10/high/anthropic-claude-haiku-5-5) | high | Unranked | — | ≥8.0 | 16/20 | — | 80% | $0.77* | 4 response(s) hit the output token cap |
-| — | [GPT-5.6 Luna](runs/provisional/2026-10/openai-gpt-5-6-luna) | max | Unranked | — | ≥8.0 | 36/55 | — | 65% | unknown | 7 response(s) hit the output token cap |
-| — | [Gemini 4 Argon](runs/provisional/2026-10/gemini/google-gemini-4-argon-high) | high | Unranked | — | ≥9.0 | 7/15 | 78% (L8–L9) | 60% | $5.16* | cost excludes 3 call(s) with no cost record |
-| — | [MiMo v2.6 Flash](runs/provisional/2026-10/high/xiaomi-mimo-v2-6-flash) | high | Unranked | — | ≥5.0 | 13/20 | — | 65% | unknown | 2 provider timeout(s) |
+| # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Tokens | Cost | Note |
+|---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 7.00 | 10.50 (10.50–10.50) | 15/20 | 67% (L9–L11) | 100% | 382k | $16.79 | CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance |
+| 2 | [GPT-6.1 Sol](runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5) | high | Provisional | 6.89 | 10.33 (9.67–10.50) | 28/35 | 67% (L9–L11) | 91% | 434k | $3.87* | 3 provider timeout(s) |
+| 3 | [GPT-6.1 Terra](runs/official/2026-10/openai-gpt-6-1-terra) | max | Official | 5.42 | 10.17 (9.71–10.44) | 56/70 | 53% (L9–L11) | 100% | 1.25M | $5.73 |  |
+| 4 | [DeepSeek V4.1 Flash](runs/provisional/2026-10/high/deepseek-v4-1-flash) | high | Provisional | 4.75 | 9.50 (8.62–10.00) | 25/45 | 50% (L8–L10) | 100% | 3.56M | $4.18 |  |
+| 5 | [DeepSeek V4.1 Flash](runs/official/2026-10/deepseek-v4-1-flash) | max | Official | 4.57 | 10.00 (8.83–10.33) | 51/70 | 46% (L8–L11) | 100% | 6.45M | $7.62 |  |
+| 6 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-medium) | medium | Provisional | 3.82 | 7.17 (6.62–7.50) | 13/35 | 53% (L6–L8) | 100% | 133k | $3.93 |  |
+| 7 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-low) | low | Provisional | 3.29 | 6.17 (5.62–6.50) | 8/35 | 53% (L5–L7) | 100% | 107k | $2.62 |  |
+| 8 | [GPT-6.1 Terra](runs/provisional/2026-10/high/openai-gpt-6-1-terra) | high | Provisional | 3.00 | 4.50 (3.83–5.17) | 10/20 | 67% (L3–L5) | 100% | 31k | $0.11 |  |
+| 9 | [GPT-6 Luna](runs/provisional/2026-10/high/openai-gpt-6-luna) | high | Provisional | 2.25 | 3.75 (3.25–4.38) | 6/20 | 60% (L3–L4) | 100% | 86k | $0.04 |  |
+| 10 | [GLM-5.3 Flash](runs/provisional/2026-10/high/zai-glm-5-3-flash) | high | Provisional | 2.17 | 3.62 (3.50–4.17) | 6/20 | 60% (L3–L4) | 100% | 599k | $0.30 |  |
+| — | [Claude Haiku 5.5](runs/provisional/2026-10/high/anthropic-claude-haiku-5-5) | high | Unranked | — | ≥8.0 | 16/20 | — | 80% | 1.56M | $0.77* | 4 response(s) hit the output token cap |
+| — | [GPT-5.6 Luna](runs/provisional/2026-10/openai-gpt-5-6-luna) | max | Unranked | — | ≥8.0 | 36/55 | — | 65% | 2.15M | unknown | 7 response(s) hit the output token cap |
+| — | [Gemini 4 Argon](runs/provisional/2026-10/gemini/google-gemini-4-argon-high) | high | Unranked | — | ≥9.0 | 7/15 | 78% (L8–L9) | 60% | 533k | $5.16* | cost excludes 3 call(s) with no cost record |
+| — | [MiMo v2.6 Flash](runs/provisional/2026-10/high/xiaomi-mimo-v2-6-flash) | high | Unranked | — | ≥5.0 | 13/20 | — | 65% | 573k | unknown | 2 provider timeout(s) |
 
 ## How to read the table
 

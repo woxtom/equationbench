@@ -455,10 +455,21 @@ def format_cost(row: dict[str, Any]) -> str:
     return f"${row['cost_usd']:.2f}{suffix}"
 
 
+def compact_tokens(value: Any) -> str:
+    if value is None:
+        return "—"
+    n = int(value)
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.2f}M"
+    if n >= 1_000:
+        return f"{round(n / 1_000)}k"
+    return str(n)
+
+
 def markdown_table(rows: list[dict[str, Any]]) -> list[str]:
     lines = [
-        "| # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Cost | Note |",
-        "|---:|---|---|---|---:|---:|---:|---:|---:|---:|---|",
+        "| # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Tokens | Cost | Note |",
+        "|---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in rows:
         name = row.get("model", {}).get("name") or row.get("run_dir")
@@ -489,7 +500,7 @@ def markdown_table(rows: list[dict[str, Any]]) -> list[str]:
         )
         lines.append(
             "| {rank} | {name} | {effort} | {status} | {composite} | {score} | "
-            "{correct}/{n} | {rate} | {cover} | {cost} | {note} |".format(
+            "{correct}/{n} | {rate} | {cover} | {tokens} | {cost} | {note} |".format(
                 rank=row.get("rank") or "—",
                 name=linked,
                 effort=row.get("effort") or "—",
@@ -500,6 +511,7 @@ def markdown_table(rows: list[dict[str, Any]]) -> list[str]:
                 n=row.get("n_tasks", 0),
                 rate=band_label,
                 cover=f"{cover * 100:.0f}%" if cover is not None else "—",
+                tokens=compact_tokens(row.get("total_tokens")),
                 cost=format_cost(row),
                 note=note.replace("|", "/"),
             )

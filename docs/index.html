@@ -100,6 +100,7 @@
     <li><b>EQB-L</b> is the 50% frontier, in continuous ladder levels. Level <i>L</i> is a system of size round(3·2<sup>(L−1)/3</sup>). Level 10 is 24×24, level 11 is 30×30.</li>
     <li><b>EQB-C</b> is the rank key: EQB-L × Band. Band is the exact-solve rate over the levels in [EQB-L − 2, EQB-L + 1].</li>
     <li><b>Solved</b> counts exact answers over all tasks. <b>Cover</b> counts valid answers over all tasks. Timeouts and provider errors lower cover, not the solve rate.</li>
+    <li><b>Tokens</b> is the whole run, input plus output. Hover for the split. Rows that cover more levels use more tokens.</li>
     <li>Bounds such as <b>≥ 8.0</b> are not measurements. Those rows are unranked. <b>†</b> marks a level with fewer than 3 valid tasks.</li>
     <li>Official rows use a direct provider at max effort. Everything else is provisional.</li>
   </ul>
@@ -133,6 +134,19 @@ function bandCell(r) {
   const a = r.band_levels[0];
   const b = r.band_levels[r.band_levels.length - 1];
   return `${pct(r.band_rate)} <span class="ci">L${a}–L${b}</span>`;
+}
+
+function compactTokens(n) {
+  if (n == null) return "—";
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return Math.round(n / 1e3) + "k";
+  return String(n);
+}
+
+function tokenCell(r) {
+  const total = r.total_tokens || 0;
+  const tip = `input ${compactTokens(r.input_tokens)} · output ${compactTokens(r.output_tokens)} · reasoning ${compactTokens(r.reasoning_tokens)}`;
+  return `<span title="${esc(tip)}">${compactTokens(total)}</span>`;
 }
 
 function costCell(r) {
@@ -288,6 +302,7 @@ function render(data) {
           <th class="num">Solved</th>
           <th class="num">Band</th>
           <th class="num">Cover</th>
+          <th class="num">Tokens</th>
           <th class="num">Cost</th>
           <th>Note</th>
         </tr>
@@ -306,6 +321,7 @@ function render(data) {
       <td class="num">${r.correct}/${r.n_tasks}</td>
       <td class="num">${bandCell(r)}</td>
       <td class="num">${pct(r.coverage)}</td>
+      <td class="num">${tokenCell(r)}</td>
       <td class="num">${costCell(r)}</td>
       <td class="note">${esc(r.short_note || "")}</td>
     </tr>`).join("");
