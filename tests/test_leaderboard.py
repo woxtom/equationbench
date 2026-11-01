@@ -61,7 +61,10 @@ def test_web_page_and_pages_workflow_exist() -> None:
     assert "data/leaderboard.json" in html
     assert "data/leaderboard.csv" in html
     assert "Score against cost" in html
-    assert "function renderChart" in html
+    assert "Score against tokens" in html
+    assert 'id="chart-cost"' in html
+    assert 'id="chart-tokens"' in html
+    assert "function scatter" in html
     yml = workflow.read_text(encoding="utf-8")
     assert "upload-pages-artifact" in yml
     assert "deploy-pages" in yml

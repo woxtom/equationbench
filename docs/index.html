@@ -89,9 +89,21 @@
     Up and to the left is better. Cost is what the run spent to reach its frontier.
     A filled dot is a model that no other model beats on both axes at once.
   </p>
-  <div id="chart" class="chart"></div>
-  <p class="legend" id="legend" hidden>
+  <div id="chart-cost" class="chart"></div>
+  <p class="legend" id="legend-cost" hidden>
     <i class="front"></i>cost frontier
+    <i></i>dominated
+  </p>
+
+  <h2>Score against tokens</h2>
+  <p class="lede" style="font-size:15px">
+    The same score against total tokens. Tokens ignore price, so this view shows
+    how much work a model does, not what the work costs. Hover a dot for the
+    input, output, and reasoning split.
+  </p>
+  <div id="chart-tokens" class="chart"></div>
+  <p class="legend" id="legend-tokens" hidden>
+    <i class="front"></i>token frontier
     <i></i>dominated
   </p>
 
@@ -166,16 +178,18 @@ function effortTag(effort) {
   return { max: "max", high: "high", medium: "med", low: "low" }[effort] || effort || "";
 }
 
-function renderChart(rows) {
+function scatter(hostId, legendId, rows, cfg) {
   const pts = rows.filter(
-    (r) => r.rankable && r.composite != null && r.cost_known && r.cost_usd > 0
+    (r) => r.rankable && r.composite != null && isFinite(cfg.value(r)) && cfg.value(r) > 0
   );
-  const host = document.getElementById("chart");
+  const host = document.getElementById(hostId);
+  const legend = document.getElementById(legendId);
   if (!pts.length) {
     host.remove();
+    legend.remove();
     return;
   }
-  document.getElementById("legend").hidden = false;
+  legend.hidden = false;
 
   const counts = {};
   pts.forEach((r) => {
@@ -188,28 +202,26 @@ function renderChart(rows) {
       !pts.some(
         (q) =>
           q !== p &&
+          cfg.value(q) <= cfg.value(p) + 1e-9 &&
           q.composite >= p.composite - 1e-9 &&
-          q.cost_usd <= p.cost_usd + 1e-9 &&
-          (q.composite > p.composite + 1e-9 || q.cost_usd < p.cost_usd - 1e-9)
+          (cfg.value(q) < cfg.value(p) - 1e-9 || q.composite > p.composite + 1e-9)
       )
   );
   const isFront = new Set(frontier.map((p) => p.run_dir));
 
-  const W = 900, H = 320;
+  const W = 900, H = 300;
   const m = { l: 56, r: 20, t: 18, b: 44 };
-  const xmin = 0.03, xmax = 22;
+  const xmin = cfg.min, xmax = cfg.max;
   const ymax = Math.ceil(Math.max(...pts.map((p) => p.composite))) + 0.6;
-  const X = (c) =>
-    m.l +
-    ((Math.log10(c) - Math.log10(xmin)) / (Math.log10(xmax) - Math.log10(xmin))) *
-      (W - m.l - m.r);
+  const lo = Math.log10(xmin), hi = Math.log10(xmax);
+  const X = (v) => m.l + ((Math.log10(v) - lo) / (hi - lo)) * (W - m.l - m.r);
   const Y = (s) => m.t + (1 - s / ymax) * (H - m.t - m.b);
 
   const LINE = 'stroke="var(--line)" stroke-width="1"';
   const MUTED = 'fill="var(--muted)" font-size="11"';
   const grid = [];
-  for (const [c, label] of [[0.1, "$0.10"], [0.5, "$0.50"], [1, "$1"], [5, "$5"], [10, "$10"]]) {
-    const x = X(c);
+  for (const [v, label] of cfg.ticks) {
+    const x = X(v);
     grid.push(`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}" ${LINE} opacity="0.45"/>`);
     grid.push(`<text x="${x}" y="${H - m.b + 18}" text-anchor="middle" ${MUTED}>${label}</text>`);
   }
@@ -220,14 +232,14 @@ function renderChart(rows) {
   }
 
   const boxes = pts.map((p) => {
-    const x = X(p.cost_usd);
+    const x = X(cfg.value(p));
     const y = Y(p.composite);
     return [x - 6, y - 6, x + 6, y + 6];
   });
   const marks = [];
   const sorted = [...pts].sort((a, b) => b.composite - a.composite);
   for (const p of sorted) {
-    const x = X(p.cost_usd);
+    const x = X(cfg.value(p));
     const y = Y(p.composite);
     const name = shortName(p.model?.name);
     const label = counts[p.model?.key] > 1 ? `${name} (${effortTag(p.effort)})` : name;
@@ -259,31 +271,71 @@ function renderChart(rows) {
       }
     }
     const pick = chosen || fallback;
-    const tx = pick.tx;
-    const ty = pick.ty;
-    const left = pick.side === "left";
     boxes.push(pick.b);
+
     const front = isFront.has(p.run_dir);
     const fill = front ? 'fill="var(--accent)"' : 'fill="var(--bg)"';
-    const tip = `${label}: EQB-C ${p.composite.toFixed(2)}, EQB-L ${fmt(p.score)}, cost $${fmt(p.cost_usd)}`;
     marks.push(
-      `<circle cx="${x}" cy="${y}" r="4.5" ${fill} stroke="var(--accent)" stroke-width="1.6"><title>${esc(tip)}</title></circle>`
+      `<circle cx="${x}" cy="${y}" r="4.5" ${fill} stroke="var(--accent)" stroke-width="1.6"><title>${esc(cfg.tip(p))}</title></circle>`
     );
     marks.push(
-      `<text x="${tx}" y="${ty}" text-anchor="${left ? "end" : "start"}" fill="var(--fg)" font-size="11.5">${esc(text)}</text>`
+      `<text x="${pick.tx}" y="${pick.ty}" text-anchor="${pick.side === "left" ? "end" : "start"}" fill="var(--fg)" font-size="11.5">${esc(text)}</text>`
     );
   }
 
   host.innerHTML = `
-    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="EQB-C against cost per run">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.aria)}">
       ${grid.join("")}
       <line x1="${m.l}" y1="${H - m.b}" x2="${W - m.r}" y2="${H - m.b}" stroke="var(--line)"/>
       <line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${H - m.b}" stroke="var(--line)"/>
-      <text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle" ${MUTED}>cost of the run (USD, log scale)</text>
+      <text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle" ${MUTED}>${esc(cfg.axis)}</text>
       <text transform="translate(15 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" ${MUTED}>EQB-C</text>
       ${marks.join("")}
     </svg>`;
 }
+
+const CHARTS = [
+  {
+    host: "chart-cost",
+    legend: "legend-cost",
+    aria: "EQB-C against run cost",
+    axis: "cost of the run (USD, log scale)",
+    min: 0.03,
+    max: 22,
+    ticks: [
+      [0.1, "$0.10"],
+      [0.5, "$0.50"],
+      [1, "$1"],
+      [5, "$5"],
+      [10, "$10"],
+    ],
+    value: (r) => r.cost_usd,
+    tip: (p) =>
+      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB-C ${p.composite.toFixed(2)}, ` +
+      `EQB-L ${fmt(p.score)}, cost $${fmt(p.cost_usd)}`,
+  },
+  {
+    host: "chart-tokens",
+    legend: "legend-tokens",
+    aria: "EQB-C against run token count",
+    axis: "tokens in the run (log scale)",
+    min: 20000,
+    max: 12000000,
+    ticks: [
+      [50000, "50k"],
+      [100000, "100k"],
+      [500000, "500k"],
+      [1000000, "1M"],
+      [5000000, "5M"],
+    ],
+    value: (r) => r.total_tokens,
+    tip: (p) =>
+      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB-C ${p.composite.toFixed(2)}, ` +
+      `${compactTokens(p.total_tokens)} tokens ` +
+      `(in ${compactTokens(p.input_tokens)}, out ${compactTokens(p.output_tokens)}, ` +
+      `reasoning ${compactTokens(p.reasoning_tokens)})`,
+  },
+];
 
 function render(data) {
   const rows = data.rows || [];
@@ -329,7 +381,7 @@ function render(data) {
   document.getElementById("board").outerHTML =
     `<div class="wrap">${head}${body}</tbody></table></div>`;
 
-  renderChart(rows);
+  CHARTS.forEach((c) => scatter(c.host, c.legend, rows, c));
 }
 
 fetch("data/leaderboard.json", { cache: "no-cache" })
