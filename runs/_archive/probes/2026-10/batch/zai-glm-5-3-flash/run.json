@@ -1,0 +1,144 @@
+{
+  "aborted_reason": "Superseded by the 2026-10-30 high-effort bracket runs; not used in the leaderboard.",
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 4,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 1.5,
+    "notes": "batch stability probe: go route, L6-7, 2/level, thinking=high",
+    "retries": 1,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "high",
+    "timeout": 600.0
+  },
+  "dataset": {
+    "dataset_sha256": "a92384cb3d23c70007271769c0490a75644d98cf4d4158420433325fe58fdfc8",
+    "manifest": {
+      "base_size": 3,
+      "coefficient_bound": 30,
+      "counts": {
+        "by_level": {
+          "6": 2,
+          "7": 2
+        },
+        "total": 4
+      },
+      "dataset_sha256": "a92384cb3d23c70007271769c0490a75644d98cf4d4158420433325fe58fdfc8",
+      "description": "Fixed paired ladder set: 2 tasks per level, L6 to L7.",
+      "formula": "round(3 * 2 ** ((level - 1) / 3))",
+      "generator_version": "2.0.0+ladder1",
+      "ladder_version": "1",
+      "levels": [
+        {
+          "approx_prompt_chars": 1550,
+          "approx_prompt_tokens": 388,
+          "level": 6,
+          "precision_tasks": 5,
+          "size": 10,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
+          "approx_prompt_chars": 1964,
+          "approx_prompt_tokens": 491,
+          "level": 7,
+          "precision_tasks": 5,
+          "size": 12,
+          "tasks_per_level": 5,
+          "zone": "core"
+        }
+      ],
+      "levels_included": [
+        6,
+        7
+      ],
+      "max_public_level": 7,
+      "name": "ladder-L6-L7",
+      "official_cap_level": 17,
+      "precision_tasks": 5,
+      "prompt_version": "1.0",
+      "season_seed": 731992,
+      "solution_bound": 9,
+      "task_hashes": {
+        "0420ea9c2ffe3113": "2eeb3df26addb86208b2b3a60cc27e00e8982b97f410c4fee9ef7d970ea02eeb",
+        "143eef2fda2a95ac": "b05c4f1a73715a61535b3ca49ff40dd83c5239ab13e9a0575db0ffd7d6c4985b",
+        "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
+        "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd"
+      },
+      "tasks_per_level": 2
+    },
+    "name": "ladder-L6-L7",
+    "path": "ladder",
+    "selected_tasks": [
+      "143eef2fda2a95ac",
+      "ad0fc46fd5b7e852",
+      "0420ea9c2ffe3113",
+      "933a8ef20c6f53f5"
+    ]
+  },
+  "dataset_version": "v2",
+  "environment": {
+    "argv": [
+      ".venv/bin/eqb",
+      "run-frontier",
+      "--model",
+      "zai-glm-5-3-flash",
+      "--levels",
+      "6-7",
+      "--tasks-per-level",
+      "2",
+      "--out",
+      "runs/probes/2026-10/batch/zai-glm-5-3-flash",
+      "--thinking",
+      "high",
+      "--concurrency",
+      "4",
+      "--timeout",
+      "600",
+      "--retries",
+      "1",
+      "--max-cost",
+      "1.5",
+      "--bootstrap",
+      "100",
+      "--notes",
+      "batch stability probe: go route, L6-7, 2/level, thinking=high"
+    ],
+    "git_commit": "81309f8b9a5ba22c15dc482e8b05c869545160a8",
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-30T11:26:47+00:00",
+  "generator_version": "2.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#fbbf24",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "zai-glm-5-3-flash",
+    "lab": "Z.ai",
+    "max_output_tokens": null,
+    "model": "glm-5.3-flash",
+    "name": "GLM-5.3 Flash",
+    "notes": "Cheap Z.ai model routed through opencode-go.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "opencode-go",
+    "provider_kind": "pi",
+    "thinking": "high"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 0,
+  "n_selected": 4,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261022T031721Z-zai-glm-5-3-flash-12b55d02",
+  "started_at": "2026-10-22T03:17:21+00:00",
+  "status": "aborted",
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}

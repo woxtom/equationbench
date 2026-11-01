@@ -1,0 +1,127 @@
+{
+  "aborted_reason": "Superseded by the 2026-10-30 high-effort bracket runs; not used in the leaderboard.",
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 1,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 1.0,
+    "notes": "Direct OpenAI route probe: L10, 1 task.",
+    "retries": 1,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "max",
+    "timeout": 1500.0
+  },
+  "dataset": {
+    "dataset_sha256": "41f67c74feed8c1a8889a09858d6c4e2dfda20bd8b7e63d88ca41217b8dcb362",
+    "manifest": {
+      "base_size": 3,
+      "coefficient_bound": 30,
+      "counts": {
+        "by_level": {
+          "10": 1
+        },
+        "total": 1
+      },
+      "dataset_sha256": "41f67c74feed8c1a8889a09858d6c4e2dfda20bd8b7e63d88ca41217b8dcb362",
+      "description": "Fixed paired ladder set: 1 tasks per level, L10 to L10.",
+      "formula": "round(3 * 2 ** ((level - 1) / 3))",
+      "generator_version": "2.0.0+ladder1",
+      "ladder_version": "1",
+      "levels": [
+        {
+          "approx_prompt_chars": 5876,
+          "approx_prompt_tokens": 1469,
+          "level": 10,
+          "precision_tasks": 5,
+          "size": 24,
+          "tasks_per_level": 5,
+          "zone": "core"
+        }
+      ],
+      "levels_included": [
+        10
+      ],
+      "max_public_level": 10,
+      "name": "ladder-L10-L10",
+      "official_cap_level": 17,
+      "precision_tasks": 5,
+      "prompt_version": "1.0",
+      "season_seed": 731992,
+      "solution_bound": 9,
+      "task_hashes": {
+        "70dce59126112537": "dfa2808150550b5bedf1f3004c6287aa1633628c90a5b0ab1b77debfa37ee455"
+      },
+      "tasks_per_level": 1
+    },
+    "name": "ladder-L10-L10",
+    "path": "ladder",
+    "selected_tasks": [
+      "70dce59126112537"
+    ]
+  },
+  "dataset_version": "v2",
+  "environment": {
+    "argv": [
+      "/home/wot/project/equationbench/.venv/bin/eqb",
+      "run-frontier",
+      "--model",
+      "openai-gpt-5-6-luna-direct",
+      "--levels",
+      "10",
+      "--tasks-per-level",
+      "1",
+      "--out",
+      "runs/probes/2026-10/openai-gpt-5-6-luna-direct-l10",
+      "--thinking",
+      "max",
+      "--concurrency",
+      "1",
+      "--timeout",
+      "1500",
+      "--retries",
+      "1",
+      "--max-cost",
+      "1",
+      "--bootstrap",
+      "50",
+      "--notes",
+      "Direct OpenAI route probe: L10, 1 task."
+    ],
+    "git_commit": "81309f8b9a5ba22c15dc482e8b05c869545160a8",
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-30T11:26:47+00:00",
+  "generator_version": "2.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#6ee7b7",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "openai-gpt-5-6-luna-direct",
+    "lab": "OpenAI",
+    "max_output_tokens": null,
+    "model": "gpt-5.6-luna",
+    "name": "GPT-5.6 Luna (direct)",
+    "notes": "Direct OpenAI OAuth/API; replaces the unstable opencode-go route for official rows.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "openai",
+    "provider_kind": "pi",
+    "thinking": "max"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 0,
+  "n_selected": 1,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261022T030538Z-openai-gpt-5-6-luna-direct-cffcb1bd",
+  "started_at": "2026-10-22T03:05:38+00:00",
+  "status": "aborted",
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}

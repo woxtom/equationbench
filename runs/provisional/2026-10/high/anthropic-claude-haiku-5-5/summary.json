@@ -1,0 +1,369 @@
+{
+  "aborted_reason": null,
+  "actual_thinking_levels": {
+    "high": 20
+  },
+  "benchmark": "EquationBench",
+  "config": {
+    "concurrency": 3,
+    "families": null,
+    "levels": null,
+    "limit": null,
+    "max_cost": 4.0,
+    "notes": "High-effort provisional bracket: L5-L8, 5 core tasks/level.",
+    "retries": 2,
+    "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+    "thinking_requested": "high",
+    "timeout": 1200.0
+  },
+  "dataset": {
+    "dataset_sha256": "0fc8023aeabe1c6c16cfbe9a9fc3f80b7535f8c605419df426e8521002fea0a8",
+    "manifest": {
+      "base_size": 3,
+      "coefficient_bound": 30,
+      "counts": {
+        "by_level": {
+          "5": 5,
+          "6": 5,
+          "7": 5,
+          "8": 5
+        },
+        "total": 20
+      },
+      "dataset_sha256": "0fc8023aeabe1c6c16cfbe9a9fc3f80b7535f8c605419df426e8521002fea0a8",
+      "description": "Fixed paired ladder set: 5 tasks per level, L5 to L8.",
+      "formula": "round(3 * 2 ** ((level - 1) / 3))",
+      "generator_version": "2.0.0+ladder1",
+      "ladder_version": "1",
+      "levels": [
+        {
+          "approx_prompt_chars": 1204,
+          "approx_prompt_tokens": 301,
+          "level": 5,
+          "precision_tasks": 5,
+          "size": 8,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
+          "approx_prompt_chars": 1550,
+          "approx_prompt_tokens": 388,
+          "level": 6,
+          "precision_tasks": 5,
+          "size": 10,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
+          "approx_prompt_chars": 1964,
+          "approx_prompt_tokens": 491,
+          "level": 7,
+          "precision_tasks": 5,
+          "size": 12,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
+          "approx_prompt_chars": 2712,
+          "approx_prompt_tokens": 678,
+          "level": 8,
+          "precision_tasks": 5,
+          "size": 15,
+          "tasks_per_level": 5,
+          "zone": "core"
+        }
+      ],
+      "levels_included": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_public_level": 8,
+      "name": "ladder-L5-L8",
+      "official_cap_level": 17,
+      "precision_tasks": 5,
+      "prompt_version": "1.0",
+      "season_seed": 731992,
+      "solution_bound": 9,
+      "task_hashes": {
+        "0420ea9c2ffe3113": "2eeb3df26addb86208b2b3a60cc27e00e8982b97f410c4fee9ef7d970ea02eeb",
+        "12fba6b7962e75bb": "0c727997e0d451450697c8b6a7b8e71a5ada11b042bc7d7d26eaf25f777f256b",
+        "135f77ced662c2b2": "d462da9c1f146f7f66cf1354ee609571a5cc24288b4373ba9c0508600cac6a81",
+        "143eef2fda2a95ac": "b05c4f1a73715a61535b3ca49ff40dd83c5239ab13e9a0575db0ffd7d6c4985b",
+        "39d9e53c1cdb8c4a": "3c998fee2d9d84194b53e6cd438930cf3470a88f4b3efd7b7fa87d16c17f163a",
+        "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
+        "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
+        "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
+        "534ceeb3b6388b5c": "abc97b53d926412be1e9e3a4d56656e3f415da7f1b7d898f31f1ff908852e3ea",
+        "56735e17159a017e": "9d72dbf28aabd942548867dc5ba974109e9651b431c6b92be6d3d0ee0d3c0f03",
+        "5d14ba9969ef40bc": "b092a0955440759f22b1f771ad83b5d584f7f0ec1028161f3e854faf933220af",
+        "60907954247589e8": "7884d9589e91f4276e333aeae392a6c8fb1fa9b71615a3665f8cd1a12e236bb2",
+        "628a0ce52dc4cf2d": "76415b366da8782a7cc4bd2132e4379c9272fd9f8af1e922a16fe1d604fc5d49",
+        "706fbe12cee39b05": "7e4debdd5857e6cefd1f5b05d574ceb41156124955174ce8a0dbc814c688b3fc",
+        "76df98ef142a0f75": "af957348a5ff9f6a60eaa1db66020f47d8bf7a1a657af6c05570a8cfb31708c9",
+        "7f7033cb8ea831b2": "3fddc89d4366319c5866b921e5ba2f99e8ff6d374e9fd0b38f8ae47c244b38e4",
+        "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
+        "9dcd83b02f2ca113": "66749315303dc9a30d7a4f644be63adad5b0743f7d874f9bb71290ad53cf0b56",
+        "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
+        "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc"
+      },
+      "tasks_per_level": 5
+    },
+    "name": "ladder-L5-L8",
+    "path": "ladder",
+    "selected_tasks": [
+      "4d9f8aff87e282da",
+      "12fba6b7962e75bb",
+      "628a0ce52dc4cf2d",
+      "706fbe12cee39b05",
+      "3ecec0de44b4ea74",
+      "143eef2fda2a95ac",
+      "ad0fc46fd5b7e852",
+      "5d14ba9969ef40bc",
+      "7f7033cb8ea831b2",
+      "44df8ff62e117134",
+      "0420ea9c2ffe3113",
+      "933a8ef20c6f53f5",
+      "9dcd83b02f2ca113",
+      "534ceeb3b6388b5c",
+      "60907954247589e8",
+      "c18e2954377b5798",
+      "56735e17159a017e",
+      "39d9e53c1cdb8c4a",
+      "135f77ced662c2b2",
+      "76df98ef142a0f75"
+    ]
+  },
+  "dataset_version": "v2",
+  "environment": {
+    "argv": [
+      ".venv/bin/eqb",
+      "run-frontier",
+      "--model",
+      "anthropic-claude-haiku-5-5",
+      "--levels",
+      "5-8",
+      "--tasks-per-level",
+      "5",
+      "--out",
+      "runs/provisional/2026-10/high/anthropic-claude-haiku-5-5",
+      "--thinking",
+      "high",
+      "--concurrency",
+      "3",
+      "--timeout",
+      "1200",
+      "--retries",
+      "2",
+      "--max-cost",
+      "4",
+      "--bootstrap",
+      "1000",
+      "--notes",
+      "High-effort provisional bracket: L5-L8, 5 core tasks/level."
+    ],
+    "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+    "host": "wot",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+    "python": "3.14.7"
+  },
+  "finished_at": "2026-10-30T10:57:42+00:00",
+  "frontier": {
+    "bootstrap_replicates": 1000,
+    "bound": 8.0,
+    "bound_size": 15.119052598738481,
+    "censored": "upper",
+    "ci": null,
+    "levels": [
+      {
+        "correct": 5,
+        "level": 5,
+        "p": 1.0,
+        "size": 8,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 6,
+        "p": 1.0,
+        "size": 10,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 7,
+        "p": 1.0,
+        "size": 12,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 1,
+        "level": 8,
+        "p": 1.0,
+        "size": 15,
+        "smoothed": 1.0,
+        "valid": 1
+      }
+    ],
+    "method": "isotonic-log-interpolation",
+    "score": null,
+    "scoring_version": "2.0",
+    "size": null,
+    "size_ci": null
+  },
+  "generator_version": "2.0.0",
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#d97757",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "anthropic-claude-haiku-5-5",
+    "lab": "Anthropic",
+    "max_output_tokens": null,
+    "model": "claude-haiku-5-5",
+    "name": "Claude Haiku 5.5",
+    "notes": "Anthropic model routed through opencode-go.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "opencode-go",
+    "provider_kind": "pi",
+    "thinking": "high"
+  },
+  "n_existing_at_start": 0,
+  "n_predictions": 20,
+  "n_selected": 20,
+  "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+  "prompt_version": "1.0",
+  "run_id": "20261030T085303Z-anthropic-claude-haiku-5-5-70e146e2",
+  "score": {
+    "accuracy": 0.8,
+    "accuracy_ci": [
+      0.4,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 0.8,
+        "correct": 16,
+        "n": 20,
+        "score": 75.38461538461539
+      }
+    },
+    "by_level": {
+      "5": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "6": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "7": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "8": {
+        "accuracy": 0.2,
+        "correct": 1,
+        "n": 5
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 16,
+    "cost_known": true,
+    "cost_per_100": 3.8603149999999995,
+    "input_tokens": 80,
+    "median_latency_ms": 271361,
+    "missing": 0,
+    "n": 20,
+    "output_tokens": 1537684,
+    "p95_latency_ms": 934083,
+    "reasoning_tokens": 1529902,
+    "score": 75.38461538461539,
+    "score_ci": [
+      36.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 16,
+      "provider_error": 4
+    },
+    "total_cost_usd": 0.7720629999999999,
+    "total_tokens": 1563468,
+    "weighted_accuracy": 0.7538461538461538
+  },
+  "started_at": "2026-10-30T08:53:03+00:00",
+  "status": "incomplete",
+  "summary": {
+    "accuracy": 0.8,
+    "accuracy_ci": [
+      0.4,
+      1.0
+    ],
+    "by_family": {
+      "linear": {
+        "accuracy": 0.8,
+        "correct": 16,
+        "n": 20,
+        "score": 75.38461538461539
+      }
+    },
+    "by_level": {
+      "5": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "6": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "7": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
+      "8": {
+        "accuracy": 0.2,
+        "correct": 1,
+        "n": 5
+      }
+    },
+    "completion_rate": 1.0,
+    "correct": 16,
+    "cost_known": true,
+    "cost_per_100": 3.8603149999999995,
+    "input_tokens": 80,
+    "median_latency_ms": 271361,
+    "missing": 0,
+    "n": 20,
+    "output_tokens": 1537684,
+    "p95_latency_ms": 934083,
+    "reasoning_tokens": 1529902,
+    "score": 75.38461538461539,
+    "score_ci": [
+      36.0,
+      100.0
+    ],
+    "scoring_version": "1.0",
+    "status_counts": {
+      "correct": 16,
+      "provider_error": 4
+    },
+    "total_cost_usd": 0.7720629999999999,
+    "total_tokens": 1563468,
+    "weighted_accuracy": 0.7538461538461538
+  },
+  "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+}

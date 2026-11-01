@@ -1,0 +1,670 @@
+{
+  "completion": 1.0,
+  "dataset_sha256": "8c939d93cc0bf2d3e68d74b0299692775facb2e485708e8e50734cac8850a482",
+  "frontier": {
+    "bootstrap_replicates": 2000,
+    "bound": null,
+    "bound_size": null,
+    "censored": null,
+    "ci": [
+      9.714285714285714,
+      10.444444444444445
+    ],
+    "levels": [
+      {
+        "correct": 5,
+        "level": 1,
+        "p": 1.0,
+        "size": 3,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 2,
+        "p": 1.0,
+        "size": 4,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 3,
+        "p": 1.0,
+        "size": 5,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 4,
+        "p": 1.0,
+        "size": 6,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 5,
+        "p": 1.0,
+        "size": 8,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 6,
+        "p": 1.0,
+        "size": 10,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 7,
+        "p": 1.0,
+        "size": 12,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 8,
+        "p": 1.0,
+        "size": 15,
+        "smoothed": 1.0,
+        "valid": 5
+      },
+      {
+        "correct": 10,
+        "level": 9,
+        "p": 1.0,
+        "size": 19,
+        "smoothed": 1.0,
+        "valid": 10
+      },
+      {
+        "correct": 6,
+        "level": 10,
+        "p": 0.6,
+        "size": 24,
+        "smoothed": 0.6,
+        "valid": 10
+      },
+      {
+        "correct": 0,
+        "level": 11,
+        "p": 0.0,
+        "size": 30,
+        "smoothed": 0.0,
+        "valid": 10
+      }
+    ],
+    "method": "isotonic-log-interpolation",
+    "score": 10.166666666666666,
+    "scoring_version": "2.0",
+    "size": 24.94222142476424,
+    "size_ci": [
+      22.46682581888652,
+      26.59550726052047
+    ]
+  },
+  "ladder_version": "1",
+  "level_task_counts": {
+    "1": 5,
+    "10": 10,
+    "11": 10,
+    "2": 5,
+    "3": 5,
+    "4": 5,
+    "5": 5,
+    "6": 5,
+    "7": 5,
+    "8": 5,
+    "9": 10
+  },
+  "levels_tested": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "model": {
+    "api_key_env": null,
+    "base_url": null,
+    "color": "#10b981",
+    "division": "standard",
+    "enabled": true,
+    "extra": {},
+    "key": "openai-gpt-6-1-terra",
+    "lab": "OpenAI",
+    "max_output_tokens": null,
+    "model": "gpt-6.1-terra",
+    "name": "GPT-6.1 Terra",
+    "notes": "Direct OpenAI OAuth/API; high-effort provisional row.",
+    "price_input": null,
+    "price_output": null,
+    "provider": "openai",
+    "provider_kind": "pi",
+    "thinking": "max"
+  },
+  "precision_levels": [
+    9,
+    10,
+    11
+  ],
+  "precision_tasks": 5,
+  "run": {
+    "aborted_reason": null,
+    "metadata": {
+      "aborted_reason": null,
+      "actual_thinking_levels": {
+        "max": 70
+      },
+      "benchmark": "EquationBench",
+      "config": {
+        "concurrency": 5,
+        "families": null,
+        "levels": null,
+        "limit": null,
+        "max_cost": 9.0,
+        "notes": "Official 2026-10 precision extension: 5 extra tasks at L9-L11; core and L10-L11 precision reused.",
+        "retries": 0,
+        "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
+        "thinking_requested": "max",
+        "timeout": 3600.0
+      },
+      "dataset": {
+        "dataset_sha256": "8c939d93cc0bf2d3e68d74b0299692775facb2e485708e8e50734cac8850a482",
+        "manifest": {
+          "base_size": 3,
+          "coefficient_bound": 30,
+          "counts": {
+            "by_level": {
+              "1": 5,
+              "10": 10,
+              "11": 10,
+              "2": 5,
+              "3": 5,
+              "4": 5,
+              "5": 5,
+              "6": 5,
+              "7": 5,
+              "8": 5,
+              "9": 10
+            },
+            "total": 70
+          },
+          "dataset_sha256": "8c939d93cc0bf2d3e68d74b0299692775facb2e485708e8e50734cac8850a482",
+          "description": "Fixed paired ladder set: 5 core tasks per level, L1 to L11; +5 precision tasks at L9,10,11.",
+          "formula": "round(3 * 2 ** ((level - 1) / 3))",
+          "generator_version": "2.0.0+ladder1",
+          "ladder_version": "1",
+          "level_task_counts": {
+            "1": 5,
+            "10": 10,
+            "11": 10,
+            "2": 5,
+            "3": 5,
+            "4": 5,
+            "5": 5,
+            "6": 5,
+            "7": 5,
+            "8": 5,
+            "9": 10
+          },
+          "levels": [
+            {
+              "approx_prompt_chars": 636,
+              "approx_prompt_tokens": 159,
+              "level": 1,
+              "precision_tasks": 5,
+              "size": 3,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 716,
+              "approx_prompt_tokens": 179,
+              "level": 2,
+              "precision_tasks": 5,
+              "size": 4,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 812,
+              "approx_prompt_tokens": 203,
+              "level": 3,
+              "precision_tasks": 5,
+              "size": 5,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 926,
+              "approx_prompt_tokens": 232,
+              "level": 4,
+              "precision_tasks": 5,
+              "size": 6,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 1204,
+              "approx_prompt_tokens": 301,
+              "level": 5,
+              "precision_tasks": 5,
+              "size": 8,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 1550,
+              "approx_prompt_tokens": 388,
+              "level": 6,
+              "precision_tasks": 5,
+              "size": 10,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 1964,
+              "approx_prompt_tokens": 491,
+              "level": 7,
+              "precision_tasks": 5,
+              "size": 12,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 2712,
+              "approx_prompt_tokens": 678,
+              "level": 8,
+              "precision_tasks": 5,
+              "size": 15,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 3948,
+              "approx_prompt_tokens": 987,
+              "level": 9,
+              "precision_tasks": 5,
+              "size": 19,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 5876,
+              "approx_prompt_tokens": 1469,
+              "level": 10,
+              "precision_tasks": 5,
+              "size": 24,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 8750,
+              "approx_prompt_tokens": 2188,
+              "level": 11,
+              "precision_tasks": 5,
+              "size": 30,
+              "tasks_per_level": 5,
+              "zone": "core"
+            }
+          ],
+          "levels_included": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "max_public_level": 11,
+          "name": "ladder-L1-L11",
+          "official_cap_level": 17,
+          "precision_levels": [
+            9,
+            10,
+            11
+          ],
+          "precision_tasks": 5,
+          "prompt_version": "1.0",
+          "season_seed": 731992,
+          "solution_bound": 9,
+          "task_hashes": {
+            "024ad231d8fdb1c2": "31e223a499f969691a1bd0a1e6086ad38ee3def35859a8fd2976e7e76e9bcb5f",
+            "0420ea9c2ffe3113": "2eeb3df26addb86208b2b3a60cc27e00e8982b97f410c4fee9ef7d970ea02eeb",
+            "0c28b010b8a0d677": "b791d0b30e03c16c6fcc33ba35229606c8468f12d3f261e5fffa1913f036e57a",
+            "0ee324363338389f": "d6485d1aa10f76d431a1f82427ffc79e1fbf59a434c25a3bebcc13f028c6dac6",
+            "12fba6b7962e75bb": "0c727997e0d451450697c8b6a7b8e71a5ada11b042bc7d7d26eaf25f777f256b",
+            "135f77ced662c2b2": "d462da9c1f146f7f66cf1354ee609571a5cc24288b4373ba9c0508600cac6a81",
+            "143eef2fda2a95ac": "b05c4f1a73715a61535b3ca49ff40dd83c5239ab13e9a0575db0ffd7d6c4985b",
+            "1cd5941d522f3750": "18483fb0811c082aca86935cf309a56fa19d7e52a5a6dafc0540200a234ce51e",
+            "1fe90d443d6f6100": "1fa15b7344ce84d575066f7e235c6ff681f2c7be127dd2c25aca35dba5674d34",
+            "24855b6130e916ef": "80863a8a579f2683fab0a33f5a957bf306c4a21255f6910d0f0b7e73decacca2",
+            "254e0dababd45192": "40bef08e92761f68db56f9ef6b45dcbf018148e9cf869ecebf3bb96bb7bf05e8",
+            "27a0653f23943fb0": "e7311eaec8314a169be6176782bac7e6dc8f0dcb4eff9113e7416898c58ae269",
+            "2a7bcaef7bf381e5": "da6f487da3feed00963a15f0756e890e5d4729e4918e64e3017d98ebb5590c1f",
+            "2b1c2970d86ac3d8": "31348d64250cfe07992046aa76a182346730f1c15562924534c93ddc41beed6a",
+            "39419e7d696f5801": "c4083ea9be2aaca8b011252626b342b2334176458ec583ab5093bfba5eb1e56b",
+            "39d9e53c1cdb8c4a": "3c998fee2d9d84194b53e6cd438930cf3470a88f4b3efd7b7fa87d16c17f163a",
+            "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
+            "40c8252cf6870843": "7066df360b2b2370af268bcbcf7eee1b1d8b42d9476985be1e6914a3ccab6ede",
+            "43f24f4d338a25b9": "6658c25ad7190122c632f2e7ad3b313b5bef97bace72a11302edb69c3b3b7139",
+            "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
+            "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
+            "4f3e8494bf99ff2b": "20ce0e200fa219078987712053fca5d6a7815f135bc9845e63923715b28324d9",
+            "534ceeb3b6388b5c": "abc97b53d926412be1e9e3a4d56656e3f415da7f1b7d898f31f1ff908852e3ea",
+            "56735e17159a017e": "9d72dbf28aabd942548867dc5ba974109e9651b431c6b92be6d3d0ee0d3c0f03",
+            "58f4a0a7f79c4123": "831f5e9f019ecb3789743c9cb192b6f2c8e664a1338be54c32b7156a542373cf",
+            "598eaad1809924bd": "20db31c0a6b3ccc0d8acf4ed26db66097ad64daa0987708c0f4dc9ca61b61bd2",
+            "5a68d74b6837d632": "6bccc541772cf0dc90ddf5087b9447c9d12a40b368245f1cba530fc423b42be1",
+            "5adfd7221c86d7d2": "e3dd847b3a02ff1744199afacbf9f6923586c5fe06fdf60a3e7fc3d5d5cb4d02",
+            "5c58348b2cec1667": "8ccbe2a0f0587c4b1e0a7bc4ae64ba31cb306d2184ca4c52fce852c4af1c3ec3",
+            "5d14ba9969ef40bc": "b092a0955440759f22b1f771ad83b5d584f7f0ec1028161f3e854faf933220af",
+            "5fbfea8b74a83c01": "b25dccf5f168a9d60a7085739d84d6389b2ff9019c8c21091903c06a5eac6c9e",
+            "602161af3a9b46fc": "64d9384ebdd4792c56c88fab769b82fe758d84807eb8c248544f3a69a51590d5",
+            "60907954247589e8": "7884d9589e91f4276e333aeae392a6c8fb1fa9b71615a3665f8cd1a12e236bb2",
+            "628a0ce52dc4cf2d": "76415b366da8782a7cc4bd2132e4379c9272fd9f8af1e922a16fe1d604fc5d49",
+            "649b15603a4dba0f": "d4f7fbc7cd2f130435792781dd3e56d62714d879c223d3fad4319aa1da19d3b4",
+            "64e3d1f5feef3f02": "816f89f308758f2197f657eeb3c7beac3be6845dd1fe9dcfeaf2fa01919689a7",
+            "679873ee8bc2553e": "9c270a9c7dd2bb802a04accb15af455cb0f77cd210addf5768ceb51867e85552",
+            "6f5aca0fd921202e": "dfd7dd78750590d285f165220ee886bbd8385f5e74d6732387d00594c0db63d2",
+            "706fbe12cee39b05": "7e4debdd5857e6cefd1f5b05d574ceb41156124955174ce8a0dbc814c688b3fc",
+            "70dce59126112537": "dfa2808150550b5bedf1f3004c6287aa1633628c90a5b0ab1b77debfa37ee455",
+            "76df98ef142a0f75": "af957348a5ff9f6a60eaa1db66020f47d8bf7a1a657af6c05570a8cfb31708c9",
+            "78c4fa0e7706d486": "959ffc795333f9aa8ae48d80a7f8ecc31fe205d5eca43c6eee6b1f5ced07afa9",
+            "7aa6f40bb4eeafce": "8fa7cbd7dd047c6ff2934d7901c65715250bf4f4bfc79920a196add2c09d6d86",
+            "7bc7b4b0741ae944": "379afe838f80af4af7cc4f374c0e4b3830ec9c92edaba8804fc6c49f69142fd2",
+            "7f7033cb8ea831b2": "3fddc89d4366319c5866b921e5ba2f99e8ff6d374e9fd0b38f8ae47c244b38e4",
+            "84097a0617a87701": "0db721fc3519ddf78793460f9392c8b55ff1c062bab3cb9579f891dad2e8e60b",
+            "84bd57d574c1620b": "bf974f5ff03733fb5a7ae7772d44868127774c92a93aea7edbf9efe5997a2d3c",
+            "8f979bb2870bc64b": "4aaae40dd5edc039a0c3e4fdcea391aabb9a125b8595fcf300e5cc66b1412015",
+            "8fca1310c4a8d5f5": "463ae60d43eff8a6228f70627c1d1a89cf9208702e631f26cff44ece099cb3f4",
+            "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
+            "99cb336642fd185f": "67f89f17c16101d5c23ba1c63360b7f6d14efb278eadf28100661795f0bc32a9",
+            "9b447896ffa28383": "93bf815dfe9edca0fed3ea00d7099124a7eb31f5d1322a935955f26dd046d4f0",
+            "9dcd83b02f2ca113": "66749315303dc9a30d7a4f644be63adad5b0743f7d874f9bb71290ad53cf0b56",
+            "a18913d547d5ddd4": "3d9b407dbd34a3d312a6448c2ce66b07eca2dcbc0ad776ae989fbd1515545fc6",
+            "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
+            "af63a40e2cdfa253": "7211879d2173743c267f37e59d4278480b94c392883ef8301f8620eb6c66985c",
+            "b331470aece46ee7": "5580f87ce9e7d2546838069e8212ce22ff57dc4edc38a17928a625eec80dc06f",
+            "b8999b6f928ac90f": "adafe63a471d8a2843dde1d7b78f4ecaffe19a28823c5f08d9ea298fa5e3f56e",
+            "bc7a9a97096b60be": "a30a95b63635984474751598bc8a469cf5e45faf0d31734ed0bdf7f68339682b",
+            "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc",
+            "d55f9c36bbe0efff": "b17f5147983732a322dc328b4507c717f06117390658d41375e45ae6df32c4e8",
+            "e1ecaf9692e6bd69": "86eb0699dcccdb5b69a6cfc2522e52829818de4799cdf26efbd769c2f65db882",
+            "e7d597a211c90f95": "14671325e2f2bce8607206bf4e48d3046d37273dc9b7f786f33dd6bcec5e0b6e",
+            "e8e418d4d19507fa": "b621943dec495604cfd0c7bca88001b2a24115d03bc54fb453d080bb9c3a42ad",
+            "e991fd15bedee602": "5d5ccf9008649833b90f3502346487057f95fc1e5bcdaa43e89c1893dbb2fa9e",
+            "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e",
+            "ecf17fb30c5e9870": "481c2b0dfd4293a5d8f4883976fb882dcb717e487a9463f11fca45177b54207c",
+            "f522888cc3284cde": "fd4e733d37fe9aad65cfc98d201e7b542e0b00bbab7937c98acdabc7a909bb44",
+            "f6ef5a90f7c156e4": "a1930f0eb27a789fbd0ab69244f00808f16c6bc9dce9f14badcdce02b9c075eb",
+            "f9bbf2d5bdf9df74": "f884901c1c29554817ec8c172f5bfdb16d9b3d3a317b2917b2a71c0fc22abb0b"
+          },
+          "tasks_per_level": 5
+        },
+        "name": "ladder-L1-L11",
+        "path": "ladder",
+        "selected_tasks": [
+          "99cb336642fd185f",
+          "f522888cc3284cde",
+          "254e0dababd45192",
+          "602161af3a9b46fc",
+          "e7d597a211c90f95",
+          "5fbfea8b74a83c01",
+          "2b1c2970d86ac3d8",
+          "5a68d74b6837d632",
+          "43f24f4d338a25b9",
+          "1fe90d443d6f6100",
+          "8fca1310c4a8d5f5",
+          "5c58348b2cec1667",
+          "e1ecaf9692e6bd69",
+          "a18913d547d5ddd4",
+          "84bd57d574c1620b",
+          "f6ef5a90f7c156e4",
+          "24855b6130e916ef",
+          "af63a40e2cdfa253",
+          "b331470aece46ee7",
+          "78c4fa0e7706d486",
+          "4d9f8aff87e282da",
+          "12fba6b7962e75bb",
+          "628a0ce52dc4cf2d",
+          "706fbe12cee39b05",
+          "3ecec0de44b4ea74",
+          "143eef2fda2a95ac",
+          "ad0fc46fd5b7e852",
+          "5d14ba9969ef40bc",
+          "7f7033cb8ea831b2",
+          "44df8ff62e117134",
+          "0420ea9c2ffe3113",
+          "933a8ef20c6f53f5",
+          "9dcd83b02f2ca113",
+          "534ceeb3b6388b5c",
+          "60907954247589e8",
+          "c18e2954377b5798",
+          "56735e17159a017e",
+          "39d9e53c1cdb8c4a",
+          "135f77ced662c2b2",
+          "76df98ef142a0f75",
+          "b8999b6f928ac90f",
+          "e991fd15bedee602",
+          "27a0653f23943fb0",
+          "4f3e8494bf99ff2b",
+          "eb0f22245e95e0e2",
+          "d55f9c36bbe0efff",
+          "64e3d1f5feef3f02",
+          "024ad231d8fdb1c2",
+          "e8e418d4d19507fa",
+          "6f5aca0fd921202e",
+          "70dce59126112537",
+          "7bc7b4b0741ae944",
+          "58f4a0a7f79c4123",
+          "bc7a9a97096b60be",
+          "1cd5941d522f3750",
+          "5adfd7221c86d7d2",
+          "649b15603a4dba0f",
+          "9b447896ffa28383",
+          "40c8252cf6870843",
+          "679873ee8bc2553e",
+          "39419e7d696f5801",
+          "8f979bb2870bc64b",
+          "7aa6f40bb4eeafce",
+          "2a7bcaef7bf381e5",
+          "0ee324363338389f",
+          "0c28b010b8a0d677",
+          "f9bbf2d5bdf9df74",
+          "ecf17fb30c5e9870",
+          "598eaad1809924bd",
+          "84097a0617a87701"
+        ]
+      },
+      "dataset_version": "v2",
+      "environment": {
+        "argv": [
+          ".venv/bin/eqb",
+          "run-frontier",
+          "--model",
+          "openai-gpt-6-1-terra",
+          "--levels",
+          "1-11",
+          "--tasks-per-level",
+          "5",
+          "--precision-levels",
+          "9-11",
+          "--precision-tasks",
+          "5",
+          "--out",
+          "runs/official/2026-10/openai-gpt-6-1-terra",
+          "--thinking",
+          "max",
+          "--concurrency",
+          "5",
+          "--timeout",
+          "3600",
+          "--retries",
+          "0",
+          "--max-cost",
+          "9",
+          "--bootstrap",
+          "2000",
+          "--notes",
+          "Official 2026-10 precision extension: 5 extra tasks at L9-L11; core and L10-L11 precision reused."
+        ],
+        "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+        "host": "wot",
+        "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+        "python": "3.14.7"
+      },
+      "finished_at": "2026-10-31T07:39:21+00:00",
+      "generator_version": "2.0.0",
+      "model": {
+        "api_key_env": null,
+        "base_url": null,
+        "color": "#10b981",
+        "division": "standard",
+        "enabled": true,
+        "extra": {},
+        "key": "openai-gpt-6-1-terra",
+        "lab": "OpenAI",
+        "max_output_tokens": null,
+        "model": "gpt-6.1-terra",
+        "name": "GPT-6.1 Terra",
+        "notes": "Direct OpenAI OAuth/API; high-effort provisional row.",
+        "price_input": null,
+        "price_output": null,
+        "provider": "openai",
+        "provider_kind": "pi",
+        "thinking": "max"
+      },
+      "n_existing_at_start": 65,
+      "n_predictions": 70,
+      "n_selected": 70,
+      "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
+      "prompt_version": "1.0",
+      "run_id": "20261031T072743Z-openai-gpt-6-1-terra-578c096f",
+      "started_at": "2026-10-31T07:27:43+00:00",
+      "status": "complete",
+      "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
+    },
+    "run_dir": "runs/official/2026-10/openai-gpt-6-1-terra",
+    "run_id": "20261031T072743Z-openai-gpt-6-1-terra-578c096f",
+    "status": "complete",
+    "summary": {
+      "accuracy": 0.8,
+      "accuracy_ci": [
+        0.5293014705882353,
+        1.0
+      ],
+      "by_family": {
+        "linear": {
+          "accuracy": 0.8,
+          "correct": 56,
+          "n": 70,
+          "score": 68.75
+        }
+      },
+      "by_level": {
+        "1": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "10": {
+          "accuracy": 0.6,
+          "correct": 6,
+          "n": 10
+        },
+        "11": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "n": 10
+        },
+        "2": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "3": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "4": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "5": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "6": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "7": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "8": {
+          "accuracy": 1.0,
+          "correct": 5,
+          "n": 5
+        },
+        "9": {
+          "accuracy": 1.0,
+          "correct": 10,
+          "n": 10
+        }
+      },
+      "completion_rate": 1.0,
+      "correct": 56,
+      "cost_known": true,
+      "cost_per_100": 8.191272857142858,
+      "input_tokens": 115013,
+      "median_latency_ms": 215658,
+      "missing": 0,
+      "n": 70,
+      "output_tokens": 1123686,
+      "p95_latency_ms": 1798911,
+      "reasoning_tokens": 1116299,
+      "score": 68.75,
+      "score_ci": [
+        34.65346534653465,
+        100.0
+      ],
+      "scoring_version": "1.0",
+      "status_counts": {
+        "correct": 56,
+        "unparseable": 12,
+        "wrong": 2
+      },
+      "total_cost_usd": 5.733891000000001,
+      "total_tokens": 1247659,
+      "weighted_accuracy": 0.6875
+    }
+  },
+  "season_seed": 731992,
+  "status": "complete",
+  "tasks_per_level": 5
+}
