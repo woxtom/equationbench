@@ -123,8 +123,13 @@ class OpenAICompatProvider:
         )
         if reasoning_tokens is not None:
             normalized_usage["reasoning"] = int(reasoning_tokens)
+        # OpenRouter reports the actual charge in usage.cost. Prefer it over a
+        # local price estimate, because routers apply their own markups.
+        reported_cost = usage.get("cost")
         cost = None
-        if self.spec.price_input is not None or self.spec.price_output is not None:
+        if isinstance(reported_cost, (int, float)):
+            cost = float(reported_cost)
+        elif self.spec.price_input is not None or self.spec.price_output is not None:
             cost = (
                 input_tokens / 1_000_000 * (self.spec.price_input or 0)
                 + output_tokens / 1_000_000 * (self.spec.price_output or 0)

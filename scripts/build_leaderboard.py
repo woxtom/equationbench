@@ -490,7 +490,7 @@ def markdown_table(rows: list[dict[str, Any]]) -> list[str]:
         band_rate = row.get("band_rate")
         band_label = (
             f"{band_rate * 100:.0f}% (L{band_levels[0]}–L{band_levels[-1]})"
-            if band_rate is not None and band_levels
+            if row.get("rankable") and band_rate is not None and band_levels
             else "—"
         )
         cover = row.get("coverage")

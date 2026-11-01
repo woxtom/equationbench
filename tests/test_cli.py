@@ -54,9 +54,13 @@ def test_build_and_verify_dataset(tmp_path):
     assert "OK" in result.output
 
 
-def test_enabled_models_default_to_max_reasoning():
+def test_model_registry_uses_declared_thinking_levels():
     from equationbench.providers import load_models
 
+    allowed = {"off", "minimal", "low", "medium", "high", "xhigh", "max"}
     models = load_models("config/models.toml")
     assert models
-    assert all(model.thinking == "max" for model in models if model.enabled)
+    enabled = [model for model in models if model.enabled]
+    assert enabled
+    assert all(model.thinking in allowed for model in enabled)
+    assert any(model.thinking == "max" for model in enabled)
