@@ -1,6 +1,6 @@
 # EquationBench Linear Leaderboard
 
-Generated: `2026-11-01T03:23:16+00:00`
+Generated: `2026-11-01T03:06:17+00:00`
 
 Season seed `731992` · ladder v1 · scoring v2. One table, all runs.
 

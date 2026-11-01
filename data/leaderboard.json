@@ -1,6 +1,6 @@
 {
   "bootstrap_replicates": 2000,
-  "generated_at": "2026-11-01T03:23:16+00:00",
+  "generated_at": "2026-11-01T03:06:17+00:00",
   "generator": "scripts/build_leaderboard.py",
   "generator_version": "2.0.0",
   "ladder_version": "1",
@@ -30,6 +30,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-11-01T02:38:09+00:00",
       "input_tokens": 51217,
       "level_task_counts": {
         "10": 5,
@@ -153,6 +154,7 @@
       "coverage": 0.9142857142857143,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T12:17:59+00:00",
       "input_tokens": 41760,
       "level_task_counts": null,
       "levels": [
@@ -305,6 +307,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "max",
+      "finished_at": "2026-10-31T07:39:21+00:00",
       "input_tokens": 115013,
       "level_task_counts": {
         "1": 5,
@@ -514,6 +517,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-31T07:22:38+00:00",
       "input_tokens": 107321,
       "level_task_counts": {
         "10": 10,
@@ -675,6 +679,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "max",
+      "finished_at": "2026-10-31T07:45:20+00:00",
       "input_tokens": 113587,
       "level_task_counts": {
         "1": 5,
@@ -884,6 +889,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "medium",
+      "finished_at": "2026-10-31T09:09:04+00:00",
       "input_tokens": 67627,
       "level_task_counts": {
         "10": 5,
@@ -1041,6 +1047,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "low",
+      "finished_at": "2026-10-31T09:05:45+00:00",
       "input_tokens": 67642,
       "level_task_counts": {
         "10": 5,
@@ -1198,6 +1205,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T08:57:23+00:00",
       "input_tokens": 10782,
       "level_task_counts": null,
       "levels": [
@@ -1313,6 +1321,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T09:04:54+00:00",
       "input_tokens": 10743,
       "level_task_counts": null,
       "levels": [
@@ -1428,6 +1437,7 @@
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T10:15:34+00:00",
       "input_tokens": 10896,
       "level_task_counts": null,
       "levels": [
@@ -1540,6 +1550,7 @@
       "coverage": 0.8,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T10:57:42+00:00",
       "input_tokens": 80,
       "level_task_counts": null,
       "levels": [
@@ -1654,6 +1665,7 @@
       "coverage": 0.6545454545454545,
       "dataset_hash_ok": true,
       "effort": "max",
+      "finished_at": null,
       "input_tokens": 18789,
       "level_task_counts": null,
       "levels": [
@@ -1841,6 +1853,7 @@
       "coverage": 0.6,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-11-01T03:06:17+00:00",
       "input_tokens": 19289,
       "level_task_counts": {
         "10": 5,
@@ -1951,6 +1964,7 @@
       "coverage": 0.65,
       "dataset_hash_ok": true,
       "effort": "high",
+      "finished_at": "2026-10-30T11:22:48+00:00",
       "input_tokens": 5889,
       "level_task_counts": null,
       "levels": [

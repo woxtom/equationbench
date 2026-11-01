@@ -15,7 +15,6 @@ import math
 import statistics
 import sys
 from collections import defaultdict
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -30,10 +29,6 @@ DIRECT_PROVIDERS = {"deepseek", "openai"}
 RANKED_TIERS = {"official", "provisional"}
 MIN_VALID_PER_LEVEL = 3
 MIN_COMPLETION = 0.90
-
-
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -324,6 +319,7 @@ def load_run(run_dir: Path, bootstrap: int) -> dict[str, Any] | None:
         "rankable": rankable,
         "official": official_ok,
         "status": status,
+        "finished_at": run.get("finished_at"),
         "model": {
             "key": model.get("key"),
             "name": model.get("name"),
@@ -722,6 +718,11 @@ def main() -> int:
         action="store_true",
         help="Also include unranked probe receipts.",
     )
+    parser.add_argument(
+        "--generated-at",
+        default=None,
+        help="Override the build timestamp (default: newest run finish time).",
+    )
     parser.add_argument("--json-out", type=Path, default=Path("data/leaderboard.json"))
     parser.add_argument("--csv-out", type=Path, default=Path("data/leaderboard.csv"))
     parser.add_argument("--md-out", type=Path, default=Path("docs/leaderboard.md"))
@@ -787,8 +788,9 @@ def main() -> int:
         row["rank"] = None
     ordered = ranked + unranked
 
+    stamps = [row.get("finished_at") for row in ordered if row.get("finished_at")]
     payload = {
-        "generated_at": utc_now(),
+        "generated_at": args.generated_at or (max(stamps) if stamps else "unknown"),
         "generator": "scripts/build_leaderboard.py",
         "season_seed": 731992,
         "ladder_version": "1",
