@@ -57,6 +57,12 @@
   li { margin-bottom: 6px; }
   footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
   .error { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); }
+  .chart { margin-top: 8px; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .legend { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--accent); margin: 0 5px 0 14px; vertical-align: -1px; }
+  .legend i:first-child { margin-left: 0; }
+  .legend i.front { background: var(--accent); }
 </style>
 </head>
 <body>
@@ -77,6 +83,17 @@
   <p class="meta" id="meta">Loading leaderboard…</p>
 
   <div id="board" class="error">Loading…</div>
+
+  <h2>Score against cost</h2>
+  <p class="lede" style="font-size:15px">
+    Up and to the left is better. Cost is what the run spent to reach its frontier.
+    A filled dot is a model that no other model beats on both axes at once.
+  </p>
+  <div id="chart" class="chart"></div>
+  <p class="legend" id="legend" hidden>
+    <i class="front"></i>cost frontier
+    <i></i>dominated
+  </p>
 
   <h2>How to read it</h2>
   <ul>
@@ -124,6 +141,136 @@ function costCell(r) {
   return "$" + fmt(r.cost_usd) + star;
 }
 
+function shortName(name) {
+  const n = String(name || "");
+  if (/^DeepSeek/i.test(n)) return "DeepSeek";
+  if (/^GLM/i.test(n)) return "GLM";
+  return n.replace(/^GPT-[\d.]+\s*/, "");
+}
+
+function effortTag(effort) {
+  return { max: "max", high: "high", medium: "med", low: "low" }[effort] || effort || "";
+}
+
+function renderChart(rows) {
+  const pts = rows.filter(
+    (r) => r.rankable && r.composite != null && r.cost_known && r.cost_usd > 0
+  );
+  const host = document.getElementById("chart");
+  if (!pts.length) {
+    host.remove();
+    return;
+  }
+  document.getElementById("legend").hidden = false;
+
+  const counts = {};
+  pts.forEach((r) => {
+    const k = r.model?.key || "";
+    counts[k] = (counts[k] || 0) + 1;
+  });
+
+  const frontier = pts.filter(
+    (p) =>
+      !pts.some(
+        (q) =>
+          q !== p &&
+          q.composite >= p.composite - 1e-9 &&
+          q.cost_usd <= p.cost_usd + 1e-9 &&
+          (q.composite > p.composite + 1e-9 || q.cost_usd < p.cost_usd - 1e-9)
+      )
+  );
+  const isFront = new Set(frontier.map((p) => p.run_dir));
+
+  const W = 900, H = 320;
+  const m = { l: 56, r: 20, t: 18, b: 44 };
+  const xmin = 0.03, xmax = 22;
+  const ymax = Math.ceil(Math.max(...pts.map((p) => p.composite))) + 0.6;
+  const X = (c) =>
+    m.l +
+    ((Math.log10(c) - Math.log10(xmin)) / (Math.log10(xmax) - Math.log10(xmin))) *
+      (W - m.l - m.r);
+  const Y = (s) => m.t + (1 - s / ymax) * (H - m.t - m.b);
+
+  const LINE = 'stroke="var(--line)" stroke-width="1"';
+  const MUTED = 'fill="var(--muted)" font-size="11"';
+  const grid = [];
+  for (const [c, label] of [[0.1, "$0.10"], [0.5, "$0.50"], [1, "$1"], [5, "$5"], [10, "$10"]]) {
+    const x = X(c);
+    grid.push(`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}" ${LINE} opacity="0.45"/>`);
+    grid.push(`<text x="${x}" y="${H - m.b + 18}" text-anchor="middle" ${MUTED}>${label}</text>`);
+  }
+  for (let s = 0; s <= Math.floor(ymax); s++) {
+    const y = Y(s);
+    grid.push(`<line x1="${m.l}" y1="${y}" x2="${W - m.r}" y2="${y}" ${LINE} opacity="0.45"/>`);
+    grid.push(`<text x="${m.l - 10}" y="${y + 4}" text-anchor="end" ${MUTED}>${s}</text>`);
+  }
+
+  const boxes = pts.map((p) => {
+    const x = X(p.cost_usd);
+    const y = Y(p.composite);
+    return [x - 6, y - 6, x + 6, y + 6];
+  });
+  const marks = [];
+  const sorted = [...pts].sort((a, b) => b.composite - a.composite);
+  for (const p of sorted) {
+    const x = X(p.cost_usd);
+    const y = Y(p.composite);
+    const name = shortName(p.model?.name);
+    const label = counts[p.model?.key] > 1 ? `${name} (${effortTag(p.effort)})` : name;
+    const text = `${label} ${p.composite.toFixed(2)}`;
+    const w = text.length * 6.2;
+    const fitsRight = x + 9 + w <= W - m.r;
+    const candidates = [
+      ["right", 0],
+      ["left", 0],
+      ["right", 12],
+      ["left", 12],
+      ["right", 24],
+      ["left", 24],
+      ["right", 36],
+      ["left", 36],
+    ];
+    let chosen = null;
+    let fallback = null;
+    for (const [side, dy] of candidates) {
+      if (side === "right" && !fitsRight) continue;
+      const tx = side === "right" ? x + 9 : x - 9;
+      const ty = y + 4 + dy;
+      const b = [side === "right" ? tx : tx - w, ty - 9, side === "right" ? tx + w : tx, ty + 4];
+      if (!fallback) fallback = { tx, ty, side, b };
+      const clash = boxes.some((q) => !(b[2] < q[0] || b[0] > q[2] || b[3] < q[1] || b[1] > q[3]));
+      if (!clash) {
+        chosen = { tx, ty, side, b };
+        break;
+      }
+    }
+    const pick = chosen || fallback;
+    const tx = pick.tx;
+    const ty = pick.ty;
+    const left = pick.side === "left";
+    boxes.push(pick.b);
+    const front = isFront.has(p.run_dir);
+    const fill = front ? 'fill="var(--accent)"' : 'fill="var(--bg)"';
+    const tip = `${label}: EQB-C ${p.composite.toFixed(2)}, EQB-L ${fmt(p.score)}, cost $${fmt(p.cost_usd)}`;
+    marks.push(
+      `<circle cx="${x}" cy="${y}" r="4.5" ${fill} stroke="var(--accent)" stroke-width="1.6"><title>${esc(tip)}</title></circle>`
+    );
+    marks.push(
+      `<text x="${tx}" y="${ty}" text-anchor="${left ? "end" : "start"}" fill="var(--fg)" font-size="11.5">${esc(text)}</text>`
+    );
+  }
+
+  host.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="EQB-C against cost per run">
+      ${grid.join("")}
+      <line x1="${m.l}" y1="${H - m.b}" x2="${W - m.r}" y2="${H - m.b}" stroke="var(--line)"/>
+      <line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${H - m.b}" stroke="var(--line)"/>
+      <text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle" ${MUTED}>cost of the run (USD, log scale)</text>
+      <text transform="translate(15 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" ${MUTED}>EQB-C</text>
+      ${marks.join("")}
+    </svg>`;
+}
+
 function render(data) {
   const rows = data.rows || [];
   const meta = document.getElementById("meta");
@@ -165,6 +312,8 @@ function render(data) {
 
   document.getElementById("board").outerHTML =
     `<div class="wrap">${head}${body}</tbody></table></div>`;
+
+  renderChart(rows);
 }
 
 fetch("data/leaderboard.json", { cache: "no-cache" })
