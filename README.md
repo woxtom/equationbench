@@ -24,7 +24,7 @@ score records the history of that test set, not what the model can do.
 So the difficulty axis is not *topic*, it is *size*:
 
 $$
-n_L = \operatorname{round}\left(3 \cdot 2^{(L-1)/3}\right)
+n_L = \mathrm{round}\left(3 \cdot 2^{(L-1)/3}\right)
 $$
 
 | L | n | L | n | L | n | L | n |

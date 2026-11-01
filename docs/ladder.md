@@ -30,7 +30,7 @@ The answer is a JSON integer list:
 The level is a geometric function of the system size:
 
 $$
-n_L = \operatorname{round}\left(3 \cdot 2^{(L-1)/3}\right)
+n_L = \mathrm{round}\left(3 \cdot 2^{(L-1)/3}\right)
 $$
 
 | L | n | L | n | L | n | L | n |
