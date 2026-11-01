@@ -50,3 +50,38 @@ def test_score_labels_cover_censoring() -> None:
     assert builder.score_label({"score": None, "censored": "upper", "bound": 11.0}) == "≥11.0"
     assert builder.score_label({"score": None, "censored": "lower", "bound": 3.0}) == "<3.0"
     assert builder.score_label({"score": None, "censored": "ambiguous", "bound": 7.0}) == "~7.0"
+
+
+def test_web_page_and_pages_workflow_exist() -> None:
+    page = ROOT / "docs" / "index.html"
+    workflow = ROOT / ".github" / "workflows" / "pages.yml"
+    assert page.is_file()
+    assert workflow.is_file()
+    html = page.read_text(encoding="utf-8")
+    assert "data/leaderboard.json" in html
+    assert "data/leaderboard.csv" in html
+    yml = workflow.read_text(encoding="utf-8")
+    assert "upload-pages-artifact" in yml
+    assert "deploy-pages" in yml
+
+
+def test_leaderboard_json_has_fields_the_page_uses() -> None:
+    import json
+
+    payload = json.loads((ROOT / "data" / "leaderboard.json").read_text(encoding="utf-8"))
+    assert payload["rows"]
+    for row in payload["rows"]:
+        for key in (
+            "rank",
+            "model",
+            "effort",
+            "rankable",
+            "official",
+            "correct",
+            "n_tasks",
+            "coverage",
+            "cost_known",
+            "band_levels",
+            "band_rate",
+        ):
+            assert key in row, key

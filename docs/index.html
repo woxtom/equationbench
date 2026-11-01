@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EquationBench Linear — Leaderboard</title>
+<meta name="description" content="How large a dense integer linear system can a language model solve exactly? A 50% frontier on an open-ended ladder.">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #59636e;
+    --line: #d1d9e0;
+    --accent: #0969da;
+    --panel: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --line: #30363d;
+      --accent: #4493f8;
+      --panel: #151b23;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: 30px; line-height: 1.25; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 19px; margin: 44px 0 12px; }
+  p { margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 17px; max-width: 68ch; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .links { color: var(--muted); font-size: 14px; margin-top: 18px; }
+  .links span { margin-right: 14px; }
+  .meta { color: var(--muted); font-size: 13px; margin: 6px 0 26px; }
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 900px; }
+  th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { background: var(--panel); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.model { font-weight: 600; }
+  td.model small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .ci { color: var(--muted); font-weight: 400; font-size: 12px; }
+  .badge { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); color: var(--muted); }
+  .badge.official { border-color: var(--accent); color: var(--accent); }
+  .note { color: var(--muted); font-size: 12px; white-space: normal; min-width: 220px; }
+  ul { margin: 0 0 14px; padding-left: 20px; color: var(--muted); }
+  li { margin-bottom: 6px; }
+  footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  .error { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>EquationBench Linear</h1>
+  <p class="lede">
+    How large a dense integer linear system can a language model solve exactly?
+    Every task is a system <b>A·x = b</b> with a unique integer solution. The model
+    gets one prompt, no tools, and must return the exact vector. The score is the
+    system size where a model drops to a 50% success rate.
+  </p>
+  <div class="links">
+    <span><a href="https://github.com/woxtom/equationbench">Source and run receipts</a></span>
+    <span><a href="leaderboard.md">Method and caveats</a></span>
+    <span><a href="data/leaderboard.csv">CSV</a></span>
+    <span><a href="data/leaderboard.json">JSON</a></span>
+  </div>
+  <p class="meta" id="meta">Loading leaderboard…</p>
+
+  <div id="board" class="error">Loading…</div>
+
+  <h2>How to read it</h2>
+  <ul>
+    <li><b>EQB-L</b> is the 50% frontier, in continuous ladder levels. Level <i>L</i> is a system of size round(3·2<sup>(L−1)/3</sup>). Level 10 is 24×24, level 11 is 30×30.</li>
+    <li><b>EQB-C</b> is the rank key: EQB-L × Band. Band is the exact-solve rate over the levels in [EQB-L − 2, EQB-L + 1].</li>
+    <li><b>Solved</b> counts exact answers over all tasks. <b>Cover</b> counts valid answers over all tasks. Timeouts and provider errors lower cover, not the solve rate.</li>
+    <li>Bounds such as <b>≥ 8.0</b> are not measurements. Those rows are unranked. <b>†</b> marks a level with fewer than 3 valid tasks.</li>
+    <li>Official rows use a direct provider at max effort. Everything else is provisional.</li>
+  </ul>
+
+  <footer>
+    Unofficial. Not peer-reviewed. One measurement, not a general math score.
+    Tasks are regenerated from a published seed, so every row can be re-run.
+    <br>
+    Source: <a href="https://github.com/woxtom/equationbench">github.com/woxtom/equationbench</a>
+  </footer>
+</main>
+
+<script>
+const fmt = (v, d = 2) => (v == null ? "—" : Number(v).toFixed(d));
+const pct = (v) => (v == null ? "—" : Math.round(v * 100) + "%");
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function scoreCell(r) {
+  if (r.rankable && r.score != null) {
+    const ci = r.score_ci ? ` <span class="ci">${fmt(r.score_ci[0])}–${fmt(r.score_ci[1])}</span>` : "";
+    return fmt(r.score) + ci;
+  }
+  if (r.censored === "upper" && r.bound != null) return "≥ " + fmt(r.bound, 1);
+  if (r.censored === "lower" && r.bound != null) return "< " + fmt(r.bound, 1);
+  if (r.score != null) return fmt(r.score) + "†";
+  return "—";
+}
+
+function bandCell(r) {
+  if (r.band_rate == null || !r.band_levels || !r.band_levels.length) return "—";
+  const a = r.band_levels[0];
+  const b = r.band_levels[r.band_levels.length - 1];
+  return `${pct(r.band_rate)} <span class="ci">L${a}–L${b}</span>`;
+}
+
+function costCell(r) {
+  if (!r.cost_known || r.cost_usd == null) return "unknown";
+  const star = r.cost_basis === "provider_reported_partial" ? "*" : "";
+  return "$" + fmt(r.cost_usd) + star;
+}
+
+function render(data) {
+  const rows = data.rows || [];
+  const meta = document.getElementById("meta");
+  meta.textContent = `${rows.length} rows · ${data.ranked_count} ranked · built ${data.generated_at.slice(0, 10)} · season seed ${data.season_seed}`;
+
+  const head = `
+    <table>
+      <thead>
+        <tr>
+          <th class="num">#</th>
+          <th>Model</th>
+          <th>Effort</th>
+          <th class="num">EQB-C</th>
+          <th class="num">EQB-L (95% CI)</th>
+          <th class="num">Solved</th>
+          <th class="num">Band</th>
+          <th class="num">Cover</th>
+          <th class="num">Cost</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  const body = rows.map((r) => `
+    <tr>
+      <td class="num">${r.rank ?? "—"}</td>
+      <td class="model">${esc(r.model?.name)}
+        <small>${esc(r.model?.provider)} · ${esc(r.official ? "official" : r.rankable ? "provisional" : "unranked")}</small>
+      </td>
+      <td>${esc(r.effort)}</td>
+      <td class="num">${r.rankable && r.composite != null ? fmt(r.composite) : "—"}</td>
+      <td class="num">${scoreCell(r)}</td>
+      <td class="num">${r.correct}/${r.n_tasks}</td>
+      <td class="num">${bandCell(r)}</td>
+      <td class="num">${pct(r.coverage)}</td>
+      <td class="num">${costCell(r)}</td>
+      <td class="note">${esc(r.short_note || "")}</td>
+    </tr>`).join("");
+
+  document.getElementById("board").outerHTML =
+    `<div class="wrap">${head}${body}</tbody></table></div>`;
+}
+
+fetch("data/leaderboard.json", { cache: "no-cache" })
+  .then((r) => {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  })
+  .then(render)
+  .catch((err) => {
+    document.getElementById("meta").textContent = "";
+    document.getElementById("board").textContent =
+      "Could not load data/leaderboard.json (" + err.message + ").";
+  });
+</script>
+</body>
+</html>

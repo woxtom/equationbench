@@ -4,6 +4,8 @@ Generated: `2026-11-01T03:06:17+00:00`
 
 Season seed `731992` · ladder v1 · scoring v2. One table, all runs.
 
+Web view: <https://woxtom.github.io/equationbench/>
+
 `EQB-C = EQB-L × Band` is the ranked composite. It rewards a high frontier and reliability near that frontier. `EQB-L` is the 50% frontier. `Band` is the exact-solve rate over the tested levels in `[EQB-L - 2, EQB-L + 1]`: the window around the frontier. That window is fixed in width, so testing extra easy or hard levels does not move it. `Solved` is exact answers divided by all tasks. `Cover` is valid tasks divided by all tasks. Provider errors are excluded from the rate, but they lower the coverage.
 
 | # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Cost | Note |

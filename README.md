@@ -12,6 +12,8 @@ ceiling.
 > integer linear system a model can solve exactly, in one prompt, with no tools.
 > Every row links to a run receipt you can regenerate from the published seed.
 >
+> **Site:** <https://woxtom.github.io/equationbench/>
+>
 > **Status:** v2 scoring core works and is tested. Two official max-effort rows
 > and one combined leaderboard are published. The adaptive staircase is not wired
 > yet. Nothing is final without a receipt.

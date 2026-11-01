@@ -516,6 +516,8 @@ def write_markdown(payload: dict[str, Any], path: Path) -> None:
         "",
         "Season seed `731992` · ladder v1 · scoring v2. One table, all runs.",
         "",
+        "Web view: <https://woxtom.github.io/equationbench/>",
+        "",
         "`EQB-C = EQB-L × Band` is the ranked composite. It rewards a high "
         "frontier and reliability near that frontier. `EQB-L` is the 50% "
         "frontier. `Band` is the exact-solve rate over the tested levels in "
