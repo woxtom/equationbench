@@ -11,7 +11,7 @@ from rich.console import Console
 from rich.table import Table
 
 from . import BENCHMARK_NAME, DATASET_VERSION, __version__
-from .frontier_run import bundle_from_receipt, frontier_from_predictions, run_frontier
+from .area import DEFAULT_HORIZON
 from .ladder import (
     DEFAULT_SEASON_SEED,
     MAX_PUBLIC_LEVEL,
@@ -20,12 +20,14 @@ from .ladder import (
     ladder_manifest,
     size_for_level,
 )
+from .ladder_run import area_from_predictions, bundle_from_receipt, run_ladder
 from .leaderboard import (
     CSV_OUT,
     JSON_OUT,
     MD_OUT,
     build_payload,
     render_outputs,
+    score_label,
     stale_outputs,
     write_outputs,
 )
@@ -106,9 +108,7 @@ def _resolve_models(
     if not include_disabled:
         disabled = [m.key for m in selected if not m.enabled]
         if disabled:
-            console.print(
-                f"[yellow]Skipping disabled models:[/yellow] {', '.join(disabled)}"
-            )
+            console.print(f"[yellow]Skipping disabled models:[/yellow] {', '.join(disabled)}")
         selected = [m for m in selected if m.enabled]
     if not selected:
         console.print("[red]No enabled models selected.[/red]")
@@ -144,9 +144,8 @@ def ladder_command(
 ) -> None:
     """Print the open-ended linear-system ladder.
 
-    The score is the continuous level at which a model reaches 50% exact
-    accuracy.  Levels are geometric in system size, so adding a level is a
-    constant step in log difficulty rather than a relabel.
+    EQB integrates exact-solve probability across a shared difficulty grid.
+    Levels are geometric in system size, so area is measured in log difficulty.
     """
     if max_level < 1:
         console.print("[red]--max-level must be at least 1.[/red]")
@@ -178,11 +177,7 @@ def ladder_command(
     table.add_column("precision", justify="right")
     table.add_column("zone")
     for row in manifest["levels"]:
-        tokens = (
-            row["measured_prompt_tokens"]
-            if measure
-            else row["approx_prompt_tokens"]
-        )
+        tokens = row["measured_prompt_tokens"] if measure else row["approx_prompt_tokens"]
         table.add_row(
             str(row["level"]),
             str(row["size"]),
@@ -238,13 +233,18 @@ def list_models_command(
     Console(width=180).print(table)
 
 
-@app.command("run-frontier")
-def run_frontier_command(
+@app.command("run-frontier", hidden=True)
+@app.command("run-ladder")
+def run_ladder_command(
     model: Optional[List[str]] = typer.Option(None, "--model", "-m", help="Model key(s)."),
     all_models: bool = typer.Option(False, "--all", help="Run every enabled model."),
-    division: Optional[str] = typer.Option(None, "--division", help="Only models in this division."),
+    division: Optional[str] = typer.Option(
+        None, "--division", help="Only models in this division."
+    ),
     config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
-    levels: str = typer.Option("1-8", "--levels", help="Levels to run, e.g. 1-8, 4,5,8-10, or 9,9.5,10."),
+    levels: str = typer.Option(
+        "1-11", "--levels", help="Levels to run, e.g. 1-8, 4,5,8-10, or 9,9.5,10."
+    ),
     tasks_per_level: int = typer.Option(5, "--tasks-per-level", min=1, max=10),
     precision_levels: str = typer.Option(
         "",
@@ -258,20 +258,37 @@ def run_frontier_command(
         max=5,
         help="Extra tasks per precision level (indices 6-10).",
     ),
-    out: Optional[Path] = typer.Option(None, "--out", "-o", help="Run directory (single model only)."),
+    out: Optional[Path] = typer.Option(
+        None, "--out", "-o", help="Run directory (single model only)."
+    ),
     concurrency: int = typer.Option(2, "--concurrency", "-j", min=1, max=16),
     timeout: float = typer.Option(900.0, "--timeout", help="Per-task seconds; 0 means no limit."),
     retries: int = typer.Option(2, "--retries", min=0, max=8),
-    thinking: Optional[str] = typer.Option(None, "--thinking", help="Override the model's thinking level."),
-    max_cost: Optional[float] = typer.Option(None, "--max-cost", help="Abort a model after this USD cost."),
-    bootstrap: int = typer.Option(1000, "--bootstrap", min=0, help="Frontier bootstrap replicates."),
-    season_seed: Optional[str] = typer.Option(None, "--season-seed", help="Override the task-bank seed."),
+    thinking: Optional[str] = typer.Option(
+        None, "--thinking", help="Override the model's thinking level."
+    ),
+    max_cost: Optional[float] = typer.Option(
+        None, "--max-cost", help="Abort a model after this USD cost."
+    ),
+    bootstrap: int = typer.Option(
+        1000, "--bootstrap", min=0, help="EQB area bootstrap replicates."
+    ),
+    horizon: int = typer.Option(
+        DEFAULT_HORIZON,
+        "--horizon",
+        min=2,
+        max=MAX_PUBLIC_LEVEL,
+        help="Shared scoring horizon; custom horizons are not comparable to the published board.",
+    ),
+    season_seed: Optional[str] = typer.Option(
+        None, "--season-seed", help="Override the task-bank seed."
+    ),
     force: bool = typer.Option(False, "--force", help="Re-run tasks even if cached."),
     notes: str = typer.Option("", "--notes", help="Free-form run note."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Print the plan without calling models."),
     include_disabled: bool = typer.Option(False, "--include-disabled"),
 ) -> None:
-    """Run a fixed ladder set and score the 50% frontier."""
+    """Run a fixed ladder set and score EQB effective solved levels."""
     try:
         selected_levels = _parse_levels(levels)
     except ValueError as exc:
@@ -286,6 +303,9 @@ def run_frontier_command(
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(2) from exc
+    if not any(float(level).is_integer() and level <= horizon for level in selected_levels):
+        console.print("[red]A scored run needs a whole level within the scoring horizon.[/red]")
+        raise typer.Exit(2)
     try:
         selected_precision_levels = (
             _parse_levels(precision_levels) if precision_levels.strip() else []
@@ -298,9 +318,7 @@ def run_frontier_command(
         raise typer.Exit(2)
     missing_precision = sorted(set(selected_precision_levels) - set(selected_levels))
     if missing_precision:
-        console.print(
-            f"[red]Precision levels are not in --levels: {missing_precision}[/red]"
-        )
+        console.print(f"[red]Precision levels are not in --levels: {missing_precision}[/red]")
         raise typer.Exit(2)
     if tasks_per_level + precision_tasks > 10:
         console.print("[red]Core plus precision tasks must not exceed 10.[/red]")
@@ -323,7 +341,7 @@ def run_frontier_command(
         for level in selected_levels
     )
     console.print(
-        f"[bold]{BENCHMARK_NAME} frontier run[/bold] · "
+        f"[bold]{BENCHMARK_NAME} ladder run[/bold] · "
         f"L{selected_levels[0]}–L{selected_levels[-1]} · "
         f"{len(selected_levels)} levels × {tasks_per_level} core tasks"
         f" = {total_tasks} tasks"
@@ -333,25 +351,27 @@ def run_frontier_command(
             f"  precision: +{precision_tasks} tasks at "
             f"L{', L'.join(str(level) for level in selected_precision_levels)}"
         )
-    console.print(f"  levels: {', '.join(f'L{level}={size_for_level(level)}×{size_for_level(level)}' for level in selected_levels)}")
+    console.print(
+        f"  levels: {', '.join(f'L{level}={size_for_level(level)}×{size_for_level(level)}' for level in selected_levels)}"
+    )
     for item in models:
         console.print(
             f"  • {item.name} [dim]({item.provider}/{item.model}, thinking={thinking or item.thinking})[/dim]"
         )
+    console.print(f"  EQB horizon: L{horizon}; whole levels only")
     if dry_run:
         console.print("[yellow]Dry run: no provider calls made.[/yellow]")
         return
 
     rows = []
     for item in models:
-        # The bundle is rebuilt inside run_frontier; print progress by task.
+        # The bundle is rebuilt inside run_ladder; print progress by task.
         def progress(done: int, total: int, prediction) -> None:
             console.print(
-                f"  [{done}/{total}] {prediction.parse_status} "
-                f"{prediction.latency_ms / 1000:.0f}s"
+                f"  [{done}/{total}] {prediction.parse_status} {prediction.latency_ms / 1000:.0f}s"
             )
 
-        result, score, bundle = run_frontier(
+        result, score, bundle = run_ladder(
             item,
             selected_levels,
             out_dir=out if len(models) == 1 else None,
@@ -367,42 +387,27 @@ def run_frontier_command(
             notes=notes,
             season_seed=seed,
             bootstrap_replicates=bootstrap,
+            horizon=horizon,
             on_progress=progress,
         )
         valid = sum(1 for prediction in result.predictions if not prediction.is_infra)
         rows.append((item, result, score, valid / len(bundle.tasks) if bundle.tasks else 0.0))
-        console.print(f"[green]Wrote {result.run_dir / 'frontier.json'}[/green]")
+        console.print(f"[green]Wrote {result.run_dir / 'eqb.json'}[/green]")
 
-    table = Table(title="Frontier summary")
+    table = Table(title="EQB summary")
     table.add_column("Model")
-    table.add_column("EQB-L", justify="right")
-    table.add_column("Frontier size", justify="right")
+    table.add_column("EQB", justify="right")
     table.add_column("95% CI", justify="right")
     table.add_column("Cost", justify="right")
     table.add_column("Valid")
     table.add_column("Status")
     for item, result, score, completion in rows:
-        if score.censored == "upper":
-            label = f"≥{score.bound:.1f}" if score.bound is not None else "≥max"
-        elif score.censored == "lower":
-            label = f"<{score.bound:.1f}" if score.bound is not None else "<min"
-        elif score.score is not None:
-            label = f"{score.score:.2f}"
-        else:
-            label = "—"
-        size_label = f"{score.size:.1f}" if score.size is not None else "—"
-        ci_label = (
-            f"{score.ci[0]:.1f}–{score.ci[1]:.1f}" if score.ci is not None else "—"
-        )
-        cost = (
-            "n/a"
-            if not result.summary.cost_known
-            else f"${result.summary.total_cost_usd:.3f}"
-        )
+        label = score_label({"score": score.score, "score_bounds": score.bounds})
+        ci_label = f"{score.ci[0]:.1f}–{score.ci[1]:.1f}" if score.ci is not None else "—"
+        cost = "n/a" if not result.summary.cost_known else f"${result.summary.total_cost_usd:.3f}"
         table.add_row(
             item.name,
             label,
-            size_label,
             ci_label,
             cost,
             f"{completion:.0%}",
@@ -414,7 +419,8 @@ def run_frontier_command(
 @app.command("score")
 def score_command(
     run: Path = typer.Option(..., "--run", "-r", help="Run directory."),
-    bootstrap: int = typer.Option(2000, "--bootstrap", help="Bootstrap replicates."),
+    bootstrap: int = typer.Option(2000, "--bootstrap", min=0, help="Bootstrap replicates."),
+    horizon: int = typer.Option(DEFAULT_HORIZON, "--horizon", min=2, max=MAX_PUBLIC_LEVEL),
 ) -> None:
     """Re-score an existing run from its stored predictions."""
     run_json = json.loads((run / "run.json").read_text(encoding="utf-8"))
@@ -422,31 +428,53 @@ def score_command(
     if bundle is None:
         console.print(f"[red]{run} is not a ladder run receipt.[/red]")
         raise typer.Exit(2)
+    if run_json.get("dataset", {}).get("dataset_sha256") != bundle.manifest["dataset_sha256"]:
+        console.print("[red]Dataset hash does not match the regenerated task bank.[/red]")
+        raise typer.Exit(2)
     selected_ids = set(run_json["dataset"]["selected_tasks"])
     tasks = [task for task in bundle.tasks if task.task_id in selected_ids]
     pred_by_id = {p.task_id: p for p in load_predictions(run / "predictions.jsonl")}
     selected_predictions = [pred_by_id[t.task_id] for t in tasks if t.task_id in pred_by_id]
     summary = score_predictions(selected_predictions, tasks)
-    console.print_json(json.dumps(summary.to_dict(), indent=2))
+    try:
+        eqb = area_from_predictions(
+            selected_predictions, tasks, bootstrap_replicates=bootstrap, horizon=horizon
+        ).to_dict()
+    except ValueError as exc:
+        console.print(f"[red]Cannot score this receipt: {exc}[/red]")
+        raise typer.Exit(2) from exc
     updated = {
         **run_json,
         "score": summary.to_dict(),
         "summary": summary.to_dict(),
-        "frontier": frontier_from_predictions(
-            selected_predictions, tasks, bootstrap_replicates=bootstrap
-        ).to_dict(),
+        "eqb": eqb,
     }
+    updated.pop("frontier", None)
     (run / "summary.json").write_text(
         json.dumps(updated, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    (run / "eqb.json").write_text(
+        json.dumps(
+            {
+                "eqb": eqb,
+                "status": run_json.get("status"),
+                "dataset_sha256": bundle.manifest["dataset_sha256"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    console.print_json(json.dumps(eqb, indent=2))
     console.print(f"[green]Updated {run / 'summary.json'}[/green]")
 
 
 @app.command("build-leaderboard")
 def build_leaderboard_command(
     root: Path = typer.Option(Path("."), "--root", help="Repository root."),
-    bootstrap: int = typer.Option(2000, "--bootstrap", help="Bootstrap replicates per row."),
+    bootstrap: int = typer.Option(2000, "--bootstrap", min=0, help="Bootstrap replicates per row."),
     include_probes: bool = typer.Option(False, "--include-probes", help="Include unranked probes."),
     generated_at: Optional[str] = typer.Option(
         None, "--generated-at", help="Override the build timestamp (default: newest run)."

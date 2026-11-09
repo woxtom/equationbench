@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EquationBench Linear — Leaderboard</title>
-<meta name="description" content="How large a dense integer linear system can a language model solve exactly? A 50% frontier on an open-ended ladder.">
+<meta name="description" content="How large a dense integer linear system can a language model solve exactly? Reach and reliability in one integrated success score.">
 <style>
   :root {
     --bg: #ffffff;
@@ -72,7 +72,7 @@
     How large a dense integer linear system can a language model solve exactly?
     Every task is a system <b>A·x = b</b> with a unique integer solution. The model
     gets one prompt, no tools, and must return the exact vector. The score is the
-    system size where a model drops to a 50% success rate.
+    area under its success curve: reach and reliability in one number.
   </p>
   <div class="links">
     <span><a href="https://github.com/woxtom/equationbench">Source and run receipts</a></span>
@@ -86,7 +86,7 @@
 
   <h2>Score against cost</h2>
   <p class="lede" style="font-size:15px">
-    Up and to the left is better. Cost is what the run spent to reach its frontier.
+    Up and to the left is better. Cost is the total spend for the run; runs cover different task sets.
     A filled dot is a model that no other model beats on both axes at once.
   </p>
   <div id="chart-cost" class="chart"></div>
@@ -109,11 +109,12 @@
 
   <h2>How to read it</h2>
   <ul>
-    <li><b>EQB-L</b> is the 50% frontier, in continuous ladder levels. Level <i>L</i> is a system of size round(3·2<sup>(L−1)/3</sup>). Level 10 is 24×24, level 11 is 30×30.</li>
-    <li><b>EQB-C</b> is the rank key: EQB-L × Band. Band is the exact-solve rate over the whole levels floor(EQB-L) − 1 to floor(EQB-L) + 1.</li>
+    <li><b>EQB</b> is effective solved levels: 1 plus the area under the isotonic exact-solve curve. Higher is better. The shared scoring grid is whole levels L1–L11, interpolated in log system size. Half levels are diagnostics only.</li>
+    <li>A full level of difficulty solved with 60% probability contributes 0.6 points. The score is not a frontier size or a percentage. Costs and tokens do not affect rank.</li>
+    <li>Missing grid points receive monotone bounds, not invented outcomes. Fitted 100%/0% plateaus can identify untested easy/hard levels; notes disclose these inferences. Bootstrap intervals are conditional on this model and can understate uncertainty at all-pass/all-fail levels.</li>
     <li><b>Solved</b> counts exact answers over all tasks. <b>Cover</b> counts valid answers over all tasks. Timeouts and provider errors lower cover, not the solve rate.</li>
     <li><b>Tokens</b> is the whole run, input plus output. Hover for the split. Rows that cover more levels use more tokens.</li>
-    <li>Bounds such as <b>≥ 8.0</b> are not measurements. Those rows are unranked. <b>†</b> marks a level with fewer than 3 valid tasks.</li>
+    <li>Ranges labeled <b>bounds</b> reflect unresolved levels, not 95% confidence intervals, and are unranked. <b>†</b> marks a finite estimate that fails the ranking rules.</li>
     <li>Official rows use a direct provider at max effort. Everything else is provisional.</li>
   </ul>
 
@@ -135,17 +136,9 @@ function scoreCell(r) {
     const ci = r.score_ci ? ` <span class="ci">${fmt(r.score_ci[0])}–${fmt(r.score_ci[1])}</span>` : "";
     return fmt(r.score) + ci;
   }
-  if (r.censored === "upper" && r.bound != null) return "≥ " + fmt(r.bound, 1);
-  if (r.censored === "lower" && r.bound != null) return "< " + fmt(r.bound, 1);
+  if (r.score == null && r.score_bounds) return `${fmt(r.score_bounds[0])}–${fmt(r.score_bounds[1])} <span class="ci">bounds</span>`;
   if (r.score != null) return fmt(r.score) + "†";
   return "—";
-}
-
-function bandCell(r) {
-  if (!r.rankable || r.band_rate == null || !r.band_levels || !r.band_levels.length) return "—";
-  const a = r.band_levels[0];
-  const b = r.band_levels[r.band_levels.length - 1];
-  return `${pct(r.band_rate)} <span class="ci">L${a}–L${b}</span>`;
 }
 
 function compactTokens(n) {
@@ -180,7 +173,7 @@ function effortTag(effort) {
 
 function scatter(hostId, legendId, rows, cfg) {
   const pts = rows.filter(
-    (r) => r.rankable && r.composite != null && isFinite(cfg.value(r)) && cfg.value(r) > 0
+    (r) => r.rankable && r.score != null && isFinite(cfg.value(r)) && cfg.value(r) > 0
   );
   const host = document.getElementById(hostId);
   const legend = document.getElementById(legendId);
@@ -203,8 +196,8 @@ function scatter(hostId, legendId, rows, cfg) {
         (q) =>
           q !== p &&
           cfg.value(q) <= cfg.value(p) + 1e-9 &&
-          q.composite >= p.composite - 1e-9 &&
-          (cfg.value(q) < cfg.value(p) - 1e-9 || q.composite > p.composite + 1e-9)
+          q.score >= p.score - 1e-9 &&
+          (cfg.value(q) < cfg.value(p) - 1e-9 || q.score > p.score + 1e-9)
       )
   );
   const isFront = new Set(frontier.map((p) => p.run_dir));
@@ -212,7 +205,7 @@ function scatter(hostId, legendId, rows, cfg) {
   const W = 900, H = 300;
   const m = { l: 56, r: 20, t: 18, b: 44 };
   const xmin = cfg.min, xmax = cfg.max;
-  const ymax = Math.ceil(Math.max(...pts.map((p) => p.composite))) + 0.6;
+  const ymax = Math.ceil(Math.max(...pts.map((p) => p.score))) + 0.6;
   const lo = Math.log10(xmin), hi = Math.log10(xmax);
   const X = (v) => m.l + ((Math.log10(v) - lo) / (hi - lo)) * (W - m.l - m.r);
   const Y = (s) => m.t + (1 - s / ymax) * (H - m.t - m.b);
@@ -233,17 +226,17 @@ function scatter(hostId, legendId, rows, cfg) {
 
   const boxes = pts.map((p) => {
     const x = X(cfg.value(p));
-    const y = Y(p.composite);
+    const y = Y(p.score);
     return [x - 6, y - 6, x + 6, y + 6];
   });
   const marks = [];
-  const sorted = [...pts].sort((a, b) => b.composite - a.composite);
+  const sorted = [...pts].sort((a, b) => b.score - a.score);
   for (const p of sorted) {
     const x = X(cfg.value(p));
-    const y = Y(p.composite);
+    const y = Y(p.score);
     const name = shortName(p.model?.name);
     const label = counts[p.model?.key] > 1 ? `${name} (${effortTag(p.effort)})` : name;
-    const text = `${label} ${p.composite.toFixed(2)}`;
+    const text = `${label} ${p.score.toFixed(2)}`;
     const w = text.length * 6.2;
     const fitsRight = x + 9 + w <= W - m.r;
     const candidates = [
@@ -289,7 +282,7 @@ function scatter(hostId, legendId, rows, cfg) {
       <line x1="${m.l}" y1="${H - m.b}" x2="${W - m.r}" y2="${H - m.b}" stroke="var(--line)"/>
       <line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${H - m.b}" stroke="var(--line)"/>
       <text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle" ${MUTED}>${esc(cfg.axis)}</text>
-      <text transform="translate(15 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" ${MUTED}>EQB-C</text>
+      <text transform="translate(15 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" ${MUTED}>EQB</text>
       ${marks.join("")}
     </svg>`;
 }
@@ -298,7 +291,7 @@ const CHARTS = [
   {
     host: "chart-cost",
     legend: "legend-cost",
-    aria: "EQB-C against run cost",
+    aria: "EQB against run cost",
     axis: "cost of the run (USD, log scale)",
     min: 0.03,
     max: 22,
@@ -311,13 +304,13 @@ const CHARTS = [
     ],
     value: (r) => r.cost_usd,
     tip: (p) =>
-      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB-C ${p.composite.toFixed(2)}, ` +
-      `EQB-L ${fmt(p.score)}, cost $${fmt(p.cost_usd)}`,
+      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB ${p.score.toFixed(2)}, ` +
+      `cost $${fmt(p.cost_usd)}`,
   },
   {
     host: "chart-tokens",
     legend: "legend-tokens",
-    aria: "EQB-C against run token count",
+    aria: "EQB against run token count",
     axis: "tokens in the run (log scale)",
     min: 20000,
     max: 12000000,
@@ -330,7 +323,7 @@ const CHARTS = [
     ],
     value: (r) => r.total_tokens,
     tip: (p) =>
-      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB-C ${p.composite.toFixed(2)}, ` +
+      `${shortName(p.model?.name)} (${effortTag(p.effort)}): EQB ${p.score.toFixed(2)}, ` +
       `${compactTokens(p.total_tokens)} tokens ` +
       `(in ${compactTokens(p.input_tokens)}, out ${compactTokens(p.output_tokens)}, ` +
       `reasoning ${compactTokens(p.reasoning_tokens)})`,
@@ -340,7 +333,7 @@ const CHARTS = [
 function render(data) {
   const rows = data.rows || [];
   const meta = document.getElementById("meta");
-  meta.textContent = `${rows.length} rows · ${data.ranked_count} ranked · built ${data.generated_at.slice(0, 10)} · season seed ${data.season_seed}`;
+  meta.textContent = `${rows.length} rows · ${data.ranked_count} ranked · scoring v${data.scoring_version} · horizon L${data.horizon} · built ${data.generated_at.slice(0, 10)} · season seed ${data.season_seed}`;
 
   const head = `
     <table>
@@ -349,10 +342,8 @@ function render(data) {
           <th class="num">#</th>
           <th>Model</th>
           <th>Effort</th>
-          <th class="num">EQB-C</th>
-          <th class="num">EQB-L (95% CI)</th>
+          <th class="num">EQB (95% CI)</th>
           <th class="num">Solved</th>
-          <th class="num">Band</th>
           <th class="num">Cover</th>
           <th class="num">Tokens</th>
           <th class="num">Cost</th>
@@ -368,10 +359,8 @@ function render(data) {
         <small>${esc(r.model?.provider)} · ${esc(r.official ? "official" : r.rankable ? "provisional" : "unranked")}</small>
       </td>
       <td>${esc(r.effort)}</td>
-      <td class="num">${r.rankable && r.composite != null ? fmt(r.composite) : "—"}</td>
       <td class="num">${scoreCell(r)}</td>
       <td class="num">${r.correct}/${r.n_tasks}</td>
-      <td class="num">${bandCell(r)}</td>
       <td class="num">${pct(r.coverage)}</td>
       <td class="num">${tokenCell(r)}</td>
       <td class="num">${costCell(r)}</td>

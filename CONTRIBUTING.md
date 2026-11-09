@@ -23,10 +23,11 @@ uv run eqb ladder --max-level 20
 - Prompt changes bump `PROMPT_VERSION`.
 - Parser or scoring changes bump `SCORING_VERSION`.
 - A new season rotates the public seed and freezes a new task bank.
-- Rows are comparable only within the same ladder/prompt/scoring/season versions.
+- Rows are comparable only within the same ladder/prompt/scoring/season versions
+  and shared horizon. Current EQB scoring is specified in `docs/ladder.md`.
 
 Do not silently change the coefficient bound, solution bound, task count, or the
-50% threshold.
+shared scoring grid, horizon, integration scale, or missing-level policy.
 
 ## Adding a model
 
@@ -42,8 +43,10 @@ with a high provider-error rate or a silent version change are not eligible.
 ## Data hygiene
 
 - Do not edit predictions or omit failed tasks.
-- Do not commit generated leaderboards or raw transcripts; build them from
-  receipts.
+- Never hand-edit generated leaderboard values. Run `eqb build-leaderboard`,
+  commit its outputs with scoring changes, and verify with `--check`.
+- Preserve historical receipts and raw predictions; do not relabel old frontier
+  summaries as v3 EQB.
 
 ## Code style
 

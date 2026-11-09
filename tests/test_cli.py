@@ -64,12 +64,15 @@ def test_score_rescores_a_ladder_receipt(tmp_path):
     result = CliRunner().invoke(app, ["score", "--run", str(run), "--bootstrap", "0"])
     assert result.exit_code == 0, result.output
     summary = json.loads((run / "summary.json").read_text(encoding="utf-8"))
-    assert summary["frontier"]["score"] is not None
+    assert summary["eqb"]["score"] == pytest.approx(9.581826687639762)
+    assert summary["eqb"]["scoring_version"] == "3.0"
+    assert "frontier" not in summary
+    assert json.loads((run / "eqb.json").read_text())["eqb"] == summary["eqb"]
     assert summary["score"]["n"] == 75
 
 
 def _frontier_args(*extra):
-    return ["run-frontier", "--model", "deepseek-v4-1-flash", "--levels", "2-3", *extra]
+    return ["run-ladder", "--model", "deepseek-v4-1-flash", "--levels", "2-3", *extra]
 
 
 def test_run_frontier_dry_run_makes_no_calls(monkeypatch):
@@ -87,13 +90,15 @@ def test_run_frontier_rejects_bad_options():
     assert runner.invoke(app, ["run-frontier", "--all", "--levels", "5-2"]).exit_code == 2
     assert runner.invoke(app, ["run-frontier", "--all", "--levels", "99"]).exit_code == 2
     assert (
-        runner.invoke(app, _frontier_args("--precision-levels", "9", "--precision-tasks", "1")).exit_code
+        runner.invoke(
+            app, _frontier_args("--precision-levels", "9", "--precision-tasks", "1")
+        ).exit_code
         == 2
     )
 
 
 def test_run_frontier_end_to_end_with_a_fake_provider(monkeypatch, tmp_path):
-    from equationbench.frontier_run import build_ladder_bundle
+    from equationbench.ladder_run import build_ladder_bundle
 
     answers = {task.prompt: task.answer for task in build_ladder_bundle([2, 3]).tasks}
 
@@ -111,10 +116,63 @@ def test_run_frontier_end_to_end_with_a_fake_provider(monkeypatch, tmp_path):
     out = tmp_path / "run"
     result = CliRunner().invoke(app, _frontier_args("--out", str(out), "--bootstrap", "0"))
     assert result.exit_code == 0, result.output
-    frontier = json.loads((out / "frontier.json").read_text(encoding="utf-8"))
-    assert frontier["status"] == "complete"
-    assert frontier["completion"] == 1.0
-    assert frontier["frontier"]["size"] == pytest.approx((4 * 5) ** 0.5)
+    payload = json.loads((out / "eqb.json").read_text(encoding="utf-8"))
+    assert payload["status"] == "complete"
+    assert payload["completion"] == 1.0
+    from equationbench.ladder import level_for_size
+
+    assert payload["eqb"]["score"] == pytest.approx(level_for_size((4 * 5) ** 0.5))
+    assert payload["eqb"]["horizon"] == 11
+    assert not (out / "frontier.json").exists()
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["--horizon", "1"],
+        ["--horizon", "21"],
+        ["--levels", "9.5"],
+        ["--levels", "12", "--horizon", "11"],
+    ],
+)
+def test_invalid_scoring_plan_fails_before_provider_calls(monkeypatch, args):
+    def fail(spec):
+        raise AssertionError("invalid plans must not build a provider")
+
+    monkeypatch.setattr("equationbench.runner.make_provider", fail)
+    result = CliRunner().invoke(app, _frontier_args(*args))
+    assert result.exit_code == 2, result.output
+
+
+def test_legacy_command_alias_and_custom_horizon():
+    result = CliRunner().invoke(
+        app,
+        [
+            "run-frontier",
+            "--model",
+            "deepseek-v4-1-flash",
+            "--levels",
+            "12",
+            "--horizon",
+            "12",
+            "--dry-run",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "EQB horizon: L12" in result.output
+
+
+def test_rescore_rejects_tampered_hash_without_overwriting_summary(tmp_path):
+    run = tmp_path / "run"
+    shutil.copytree(ROOT / "runs/official/2026-10/deepseek-v4-1-flash", run)
+    original = (run / "summary.json").read_bytes()
+    receipt = json.loads((run / "run.json").read_text())
+    receipt["dataset"]["dataset_sha256"] = "invalid"
+    (run / "run.json").write_text(json.dumps(receipt))
+    result = CliRunner().invoke(app, ["score", "--run", str(run), "--bootstrap", "0"])
+    assert result.exit_code == 2
+    assert "hash" in result.output
+    assert (run / "summary.json").read_bytes() == original
 
 
 def test_parse_levels_accepts_half_levels():

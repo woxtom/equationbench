@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Run several models on a small frontier probe in parallel, with per-model logs.
+# Run small ladder probes in parallel, with per-model logs and EQB area bounds.
+# Historical filename; uses the v3 run-ladder command. Probes are not ranked.
 #
 # Usage:
 #   LEVELS=6-7 TASKS=2 THINKING=high CONCURRENCY=4 PARALLEL=3 \
@@ -45,7 +46,7 @@ for key in "${MODELS[@]}"; do
   log="$OUT_ROOT/$key.log"
   run="$OUT_ROOT/$key"
   echo "launch: $key"
-  "$EQB_BIN" run-frontier \
+  "$EQB_BIN" run-ladder \
     --model "$key" \
     --levels "$LEVELS" \
     --tasks-per-level "$TASKS" \

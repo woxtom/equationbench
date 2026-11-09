@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from equationbench.frontier_run import build_ladder_bundle
+from equationbench.ladder_run import build_ladder_bundle
 from equationbench.runner import RunConfig, run_benchmark
 
 

@@ -5,7 +5,7 @@ import random
 
 import pytest
 
-from equationbench.frontier_run import build_ladder_bundle
+from equationbench.ladder_run import build_ladder_bundle
 from equationbench.types import Completion, ModelSpec
 
 

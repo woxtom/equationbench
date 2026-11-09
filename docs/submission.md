@@ -42,17 +42,16 @@ rate.
 
 ## 3. Run the protocol
 
-Use `eqb run-frontier`. The adaptive staircase is not wired yet, so choose the
-levels around the model's frontier by hand. The older fixed-set harness has been
-removed; it is preserved at tag `v1-multitrack`.
+Use `eqb run-ladder --model my-lab-my-model --levels 1-11`. The adaptive
+runner is not wired yet. Scoring v3 integrates success over a shared grid:
 
-The intended v2 protocol:
-
-- Start at L1.
-- Run 5 core tasks per level.
-- Stop when the 50% point is bracketed.
-- Run 5 precision tasks at each of the two bracket levels.
-- Extend above the public cap until the model fails or hits the context/cost cap.
+- Run 5 core tasks at every whole level L1–L11.
+- Use a predeclared precision allocation of up to 5 extra tasks per level.
+- Do not stop merely because the success rate crosses 50%.
+- Half levels are optional diagnostics, not scoring knots.
+- Missing scoring levels can produce bounds and an unranked row. Inferred
+  monotone plateaus are disclosed; full measured coverage is preferable.
+- A horizon extension must apply to all compared rows, not just one model.
 - Record raw responses, usage, cost, latency, provider, route, and reasoning level.
 
 ## 4. Validate the artifacts
@@ -62,7 +61,8 @@ A run directory must contain:
 ```
 run.json            # model, provider, route, task bank hash, config, timestamps
 predictions.jsonl   # one row per task: level, n, task_id, response, status, usage
-summary.json        # frontier score, interval, censoring, cost, completion rate
+summary.json        # eqb area score, interval/bounds, cost, completion rate
+eqb.json            # v3 score, horizon, inferred/unresolved/ignored levels
 ```
 
 Check:
@@ -71,7 +71,9 @@ Check:
 - the task-bank hash matches;
 - every level has at least 3 valid tasks;
 - provider errors and timeouts are marked `infra`, not `wrong`;
-- the frontier is bracketed, or the row is explicitly censored;
+- all whole-level scoring knots are identified, or the row explicitly shows bounds;
+- scoring version and horizon match the comparison;
+- at least 90% of all tasks are valid for a provisional ranked row (100% for official);
 - cost basis and pricing source are recorded.
 
 ## 5. Open a pull request

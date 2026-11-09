@@ -1,8 +1,7 @@
 """Open-ended linear-system ladder.
 
-The ladder is geometric: each level is a constant step in ``log n``, so a
-frontier score expressed in levels is also a constant step in the log of the
-system size.  Levels are unbounded in principle; ``size_for_level`` simply
+The ladder is geometric: each ideal level is a constant step in ``log n``.
+EQB integrates success across actual log-size coordinates.  Levels are unbounded in principle; ``size_for_level`` simply
 rounds the ideal geometric size to an integer.
 
 The public task bank is deterministic from ``(season_seed, level, index)``.
@@ -31,7 +30,7 @@ LEVEL_STEP = 2 ** (1 / 3)
 COEFF_BOUND = 30
 X_BOUND = 9
 
-#: Core bank + precision bank used at the two bracket levels.
+#: Core bank + precision bank for predeclared extra sampling.
 TASKS_PER_LEVEL = 5
 PRECISION_TASKS = 5
 
@@ -75,7 +74,7 @@ def size_for_level(level: float) -> int:
 def level_for_size(size: float) -> float:
     """Continuous inverse of the ideal geometric ladder.
 
-    This is useful for displaying a frontier size as a level.  It is not the
+    This supplies the log-size coordinate for area integration.  It is not the
     inverse of the rounded ``size_for_level`` mapping; use the actual integer
     sizes when interpolating a measured curve.
     """

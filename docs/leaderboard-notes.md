@@ -1,34 +1,36 @@
 ## How to read the table
 
-- Ranked rows are sorted by `EQB-C` (`EQB-L × Band`). `EQB-L` is shown beside it.
-- `Band` counts only the whole levels `floor(EQB-L) - 1` to `floor(EQB-L) + 1`. Easy levels below the frontier and half levels do not change it.
-- `≥` and `<` are bounds, not finite scores. Those rows are unranked.
-- `†` is a finite estimate from a level with fewer than 3 valid tasks. It is shown for reference only and is not ranked.
-- `Official` rows use a direct provider and max effort. `Provisional` rows are exploratory.
-- Effort levels are not the same test. Use the `Effort` column before you compare rows.
-- Official rows use 5 tasks at L1-L8 and 10 tasks at L9-L11.
-- Half levels such as L9.5 are extra sizes between two whole levels. They sharpen `EQB-L` but do not count in `Band`. Every ranked row with a real gap at its bracket has one. L10.5 (n=27) went 3/5 for Astra high, 1/5 for Terra max and DeepSeek max, and 1/4 for Sol.
-- DeepSeek high uses 10 tasks at L10-L11. The other high rows use 5 core tasks.
-- GPT-6.1 Sol high has exactly 90% valid coverage (4 timeouts), the minimum for a ranked row.
-- GPT-6.1 Sol high uses the core 5-task row. Its 10-task precision extension had 7 timeouts and 84% valid completion.
-- `*` means the cost excludes at least one timed-out call with no cost record.
+- Ranked rows are sorted by **EQB effective solved levels** alone, with a task-bootstrap 95% interval. No frontier multiplier, moving band, or cost bonus.
+- Scoring v3.0 integrates the isotonic success curve on whole levels L1–L11 in actual log-size coordinates. Half levels remain diagnostics and count toward run cost/coverage, not EQB.
+- Ranges marked `[bounds]` reflect unresolved grid regions, conditional on fitted rates. They are not confidence intervals and are unranked.
+- `†` marks a finite estimate that fails another ranking rule.
+- Notes list untested levels inferred from equal-rate monotone plateaus. A 100% first fitted rate or a zero last fitted rate can identify a missing easy prefix or hard suffix under this model; it is not proof about true probabilities.
+- `Official` rows use a direct provider at max effort and 100% valid coverage. `Provisional` rows require at least 90%. Every observed scoring level needs at least 3 valid trials.
+- Effort levels and routes differ. Do not treat point-estimate order as proof of a pairwise win.
+- `Solved` is exact answers divided by all tasks; `Cover` is valid responses divided by all tasks. Infrastructure failures are excluded from per-level rate estimates.
+- `*` on cost means at least one call had no cost record. Whole-run cost/token comparisons depend on task coverage.
 
-## What the data show
+## What changed in v3
 
-Astra high and Sol form the top pair. Astra reached L10 5/5 and failed L11 0/5; Sol passed L10 3/4 and failed L11 0/3. Their band rates are equal (67%), so EQB-L decides the order: Astra 10.59, Sol 10.25.
+DeepSeek max ranks above high on integrated performance. There is no effort bonus:
+both use the same difficulty weights, and neither receives an easier scoring window.
 
-Terra max is third. It is more reliable below L10 (L9 10/10) but weaker at L10 (6/10), which pulls its band rate to 53%.
+The exploratory area preview included selectively sampled half levels. Published
+v3 scores use the common whole-level grid instead, so some values differ slightly.
 
-DeepSeek is the least reliable of the four near the frontier. Its L10 rate is 5/10 at max and 2/10 at high. At max effort its frontier (10.00) is close to Terra's (10.16), but its band rate is 37% against 53%.
+GPT-6 Luna high begins at L3 with 4/5 correct. Its missing L1–L2 rates are not
+identified; it now shows bounds rather than an invented ranked score. Other
+incomplete provider-limited runs remain unranked.
 
-L11 (30x30) is still the wall. Astra, Sol, Terra, and DeepSeek all failed every valid L11 task. No model cleared L11.
-
-Gemini 4 Argon high reached L9 at 2/4 and then the opencode-go 5-hour limit blocked L10. It is reported as a bound (>=9.0), not a score.
+The shared horizon is L11 (30×30). Every valid L11 response in the current top
+rows was wrong. Extending the horizon is a shared protocol update, never a
+per-model scoring choice.
 
 ## Caveats
 
-- OpenAI lists `gpt-6.1-sol` and `gpt-6.1-terra`, but no `gpt-6.1-luna`. The Luna row uses `gpt-6-luna`.
-- High-effort rows start at L5 (strong models) or L3 (weaker models). The score needs only the levels around the bracket.
-- `Band` jumps when `EQB-L` crosses a whole number, because the three-level window moves. Treat small EQB-C differences near a whole-number score as noise.
-- A degenerate CI (equal low and high ends) means every task at the bracket levels passed or failed. The task bootstrap cannot show variance in that case.
-- The stale 2026-10 batch probes are not used in the ranked rows.
+- Bootstrap intervals are conditional on the fitted curve and grid. At all-pass/all-fail levels, resampling cannot express unobserved failures/successes; small banks can understate uncertainty even when the overall CI is not degenerate.
+- Official legacy runs have 5 tasks at L1–L8 and 10 at L9–L11. Other rows have different precision allocations. Trial counts refine estimates rather than directly weight the integrated area.
+- GPT-6.1 Sol high uses the core 5-task receipt: 90% valid coverage and 4 timeouts. Its larger precision extension had 84% valid coverage and is not used for ranking.
+- Historical receipt summaries and `frontier.json` files retain their original versions. This table is recomputed from predictions with scoring v3.0; old frontier and composite values are not comparable.
+- The adaptive runner and sealed holdout are not implemented. New runs should measure the full common grid with a predeclared precision plan.
+- The stale batch probes are not used in ranked rows.

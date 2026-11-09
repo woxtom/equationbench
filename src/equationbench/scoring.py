@@ -1,6 +1,6 @@
 """Run summaries: accuracy, usage, cost, and latency for a set of predictions.
 
-The score itself is computed in :mod:`equationbench.frontier`.
+The score itself is computed in :mod:`equationbench.area`.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Build a reproducible leaderboard from EquationBench run receipts.
 
-The builder never trusts a stored frontier score.  It regenerates the task bank
+The builder never trusts a stored EQB score.  It regenerates the task bank
 from the recorded season seed and level set, validates the dataset hash, and
 re-scores the raw predictions.
 """
@@ -10,7 +10,6 @@ from __future__ import annotations
 import csv
 import io
 import json
-import math
 import re
 import statistics
 from collections import defaultdict
@@ -19,10 +18,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from . import FRONTIER_SCORING_VERSION, GENERATOR_VERSION, PROMPT_VERSION
-from .frontier import FrontierScore
-from .frontier_run import bundle_from_receipt, frontier_from_predictions
-from .ladder import DEFAULT_SEASON_SEED, LADDER_VERSION
+from . import GENERATOR_VERSION, PROMPT_VERSION, SCORING_VERSION
+from .area import DEFAULT_HORIZON, SCORE_METHOD, AreaScore
+from .ladder import DEFAULT_SEASON_SEED, LADDER_VERSION, level_for_size, size_for_level
+from .ladder_run import area_from_predictions, bundle_from_receipt
 from .runner import load_predictions
 from .stats import percentile
 from .types import Level, Prediction, Task
@@ -32,7 +31,6 @@ RANKED_TIERS = {"official", "provisional"}
 MIN_VALID_PER_LEVEL = 3
 MIN_COMPLETION = 0.90
 MIN_TASKS_PER_LEVEL = 5
-BAND_RADIUS = 1
 OUTPUT_TOKEN_CAP = 65000
 
 JSON_OUT = Path("data/leaderboard.json")
@@ -70,21 +68,23 @@ CSV_FIELDS = (
     "correct",
     "accuracy",
     "solved_rate",
-    "band_levels",
-    "band_correct",
-    "band_valid",
-    "band_rate",
     "coverage",
     "missing",
     "provider_errors",
     "completion",
     "score",
-    "composite",
     "score_ci_low",
     "score_ci_high",
-    "size",
+    "scoring_version",
+    "score_method",
+    "horizon",
+    "horizon_coordinate",
+    "score_bounds_low",
+    "score_bounds_high",
+    "inferred_levels",
+    "unresolved_levels",
+    "ignored_levels",
     "censored",
-    "bound",
     "cost_usd",
     "cost_known",
     "cost_basis",
@@ -138,9 +138,7 @@ def _tally(tasks: Sequence[Task], by_id: dict[str, Prediction]) -> _Tally:
     tally = _Tally(
         valid=[],
         infra=[],
-        by_level=defaultdict(
-            lambda: {"valid": 0, "correct": 0, "provider_error": 0, "missing": 0}
-        ),
+        by_level=defaultdict(lambda: {"valid": 0, "correct": 0, "provider_error": 0, "missing": 0}),
     )
     for task in tasks:
         stats = tally.by_level[task.level]
@@ -211,7 +209,7 @@ def _level_rows(
     levels: Sequence[Level],
     tasks: Sequence[Task],
     by_level: dict[Level, dict[str, int]],
-    score: FrontierScore | None,
+    score: AreaScore | None,
 ) -> list[dict[str, Any]]:
     rows = []
     for level in levels:
@@ -241,7 +239,7 @@ def _unranked_reasons(
     status: str,
     completion: float,
     levels_ok: bool,
-    score: FrontierScore | None,
+    score: AreaScore | None,
     score_is_finite: bool,
 ) -> list[str]:
     reasons: list[str] = []
@@ -256,9 +254,9 @@ def _unranked_reasons(
     if not levels_ok:
         reasons.append("at least one used level has fewer than 3 valid tasks")
     if score is None:
-        reasons.append("frontier is not estimable")
+        reasons.append("EQB is not estimable")
     elif score.censored:
-        reasons.append(f"score is censored ({score.censored})")
+        reasons.append(f"unresolved whole levels: {score.unresolved_levels}")
     elif score.score is None:
         reasons.append("score is not finite")
     if not score_is_finite and not reasons:
@@ -266,59 +264,21 @@ def _unranked_reasons(
     return reasons
 
 
-def _band_fields(
-    score: FrontierScore | None,
-    levels: Sequence[Level],
-    by_level: dict[Level, dict[str, int]],
-) -> dict[str, Any]:
-    """Solve rate over the whole levels within one step of ``floor(EQB-L)``.
-
-    Only whole levels count, so a run with extra half levels gets the same
-    window as one without.
-    """
-    band_levels: list[int] = []
-    correct = valid = 0
-    if score is not None and score.score is not None:
-        centre = math.floor(score.score)
-        window = range(centre - BAND_RADIUS, centre + BAND_RADIUS + 1)
-        for level in levels:
-            stats = by_level[level]
-            if level in window and stats["valid"]:
-                band_levels.append(level)
-                correct += stats["correct"]
-                valid += stats["valid"]
+def _score_fields(score: AreaScore | None) -> dict[str, Any]:
     return {
-        "band_levels": band_levels,
-        "band_correct": correct,
-        "band_valid": valid,
-        "band_rate": (correct / valid) if valid else None,
-    }
-
-
-def _score_fields(score: FrontierScore | None, band_rate: float | None) -> dict[str, Any]:
-    if score is None:
-        return {
-            "score": None,
-            "composite": None,
-            "size": None,
-            "score_ci": None,
-            "size_ci": None,
-            "censored": None,
-            "bound": None,
-            "bound_size": None,
-            "scoring_version": None,
-        }
-    finite = score.score is not None and score.censored is None
-    return {
-        "score": score.score if score.censored is None else None,
-        "composite": score.score * band_rate if finite and band_rate is not None else None,
-        "size": score.size,
-        "score_ci": list(score.ci) if score.ci else None,
-        "size_ci": list(score.size_ci) if score.size_ci else None,
-        "censored": score.censored,
-        "bound": score.bound,
-        "bound_size": score.bound_size,
-        "scoring_version": score.scoring_version,
+        "score": score.score if score else None,
+        "score_ci": list(score.ci) if score and score.ci else None,
+        "score_bounds": list(score.bounds) if score else None,
+        "censored": score.censored if score else None,
+        "scoring_version": SCORING_VERSION,
+        "score_method": SCORE_METHOD,
+        "horizon": score.horizon if score else DEFAULT_HORIZON,
+        "horizon_coordinate": score.horizon_coordinate
+        if score
+        else level_for_size(size_for_level(DEFAULT_HORIZON)),
+        "inferred_levels": score.inferred_levels if score else [],
+        "unresolved_levels": score.unresolved_levels if score else [],
+        "ignored_levels": score.ignored_levels if score else [],
     }
 
 
@@ -360,11 +320,11 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
         warnings.append(f"{len(unknown)} prediction task ids are outside the task bank")
 
     tally = _tally(tasks, by_id)
-    score: FrontierScore | None
+    score: AreaScore | None
     try:
-        score = frontier_from_predictions(tally.valid, tasks, bootstrap_replicates=bootstrap)
+        score = area_from_predictions(tally.valid, tasks, bootstrap_replicates=bootstrap)
     except ValueError as exc:
-        warnings.append(f"frontier could not be estimated: {exc}")
+        warnings.append(f"EQB could not be estimated: {exc}")
         score = None
 
     n_tasks = len(tasks)
@@ -377,9 +337,18 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
     warnings.extend(_infra_warnings(tally.infra))
     if score is not None and score.ci is not None and abs(score.ci[1] - score.ci[0]) < 1e-9:
         warnings.append(
-            "CI is degenerate: every bracket-level task passed or failed, "
+            "CI is degenerate: every scoring-level task passed or failed, "
             "so the task bootstrap has no variance"
         )
+
+    if score is not None and score.unresolved_levels:
+        warnings.append(f"EQB bounds only: unresolved levels {score.unresolved_levels}")
+    if score is not None and score.inferred_levels:
+        warnings.append(f"monotone plateau inferred at levels {score.inferred_levels}")
+    if score is not None and any(
+        row["level"] == score.horizon and row["smoothed"] > 0 for row in score.levels
+    ):
+        warnings.append("nonzero success at the shared horizon; consider extending it")
 
     attempted = tally.valid + tally.infra
     latencies = [p.latency_ms for p in tally.valid if p.latency_ms]
@@ -393,13 +362,11 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
     route = str(model.get("provider") or "unknown")
     status = str(run.get("status") or "unknown")
 
-    used_levels = [level for level in levels if tally.by_level[level]["valid"]]
-    levels_ok = len(used_levels) >= 2 and all(
-        tally.by_level[level]["valid"] >= MIN_VALID_PER_LEVEL for level in levels
+    used_levels = [row["level"] for row in score.levels] if score else []
+    levels_ok = bool(used_levels) and all(
+        tally.by_level[level]["valid"] >= MIN_VALID_PER_LEVEL for level in used_levels
     )
-    score_is_finite = bool(
-        score is not None and score.score is not None and score.censored is None
-    )
+    score_is_finite = bool(score is not None and score.score is not None and score.censored is None)
     reasons = _unranked_reasons(
         n_tasks=n_tasks,
         n_valid=n_valid,
@@ -411,6 +378,8 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
     )
     common_ok = (
         status == "complete"
+        and dataset_hash_ok
+        and not unknown
         and score_is_finite
         and levels_ok
         and tasks_per_level >= MIN_TASKS_PER_LEVEL
@@ -428,7 +397,6 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
     if not rankable and not reasons:
         reasons.append("run does not meet the ranked-row rules")
 
-    band = _band_fields(score, levels, tally.by_level)
     return {
         "run_dir": str(relative),
         "run_id": run.get("run_id"),
@@ -477,12 +445,11 @@ def load_run(run_dir: Path, bootstrap: int, *, root: Path) -> dict[str, Any] | N
         "reasons": reasons,
         "note": note,
         "short_note": (
-            (warnings[0] if warnings else "")
+            ("; ".join(warnings) if warnings else "")
             or (note if not rankable else "")
             or (reasons[0] if reasons else "")
         ),
-        **band,
-        **_score_fields(score, band["band_rate"]),
+        **_score_fields(score),
     }
 
 
@@ -518,17 +485,13 @@ def keep_strongest(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
 def rank_rows(rows: Sequence[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Assign ranks in place and return ``(ranked, unranked)``."""
     ranked = sorted(
-        [row for row in rows if row.get("rankable") and row.get("composite") is not None],
-        key=lambda row: (
-            -float(row["composite"]),
-            -float(row["score"]),
-            -(row.get("solved_rate") or 0.0),
-            -(row.get("correct") or 0),
-            row.get("cost_per_100_valid") or math.inf,
-        ),
+        [row for row in rows if row.get("rankable") and row.get("score") is not None],
+        key=lambda row: (-float(row["score"]), row.get("run_dir") or ""),
     )
+    previous = None
     for index, row in enumerate(ranked, start=1):
-        row["rank"] = index
+        row["rank"] = previous["rank"] if previous and row["score"] == previous["score"] else index
+        previous = row
     ranked_ids = {row.get("run_dir") for row in ranked}
     unranked = sorted(
         [row for row in rows if row.get("run_dir") not in ranked_ids],
@@ -560,14 +523,18 @@ def build_payload(
         "ladder_version": LADDER_VERSION,
         "generator_version": GENERATOR_VERSION,
         "prompt_version": PROMPT_VERSION,
-        "scoring_version": FRONTIER_SCORING_VERSION,
+        "scoring_version": SCORING_VERSION,
+        "score_method": SCORE_METHOD,
+        "horizon": DEFAULT_HORIZON,
+        "horizon_coordinate": level_for_size(size_for_level(DEFAULT_HORIZON)),
         "bootstrap_replicates": bootstrap,
         "rules": {
             "min_valid_per_level": MIN_VALID_PER_LEVEL,
             "min_completion": MIN_COMPLETION,
             "ranked_tiers": sorted(RANKED_TIERS),
-            "composite": "EQB-C = EQB-L * band_rate",
-            "band": "whole levels floor(EQB-L) - 1 to floor(EQB-L) + 1",
+            "score": "EQB = 1 + integral of isotonic success over log-size difficulty",
+            "grid": "whole levels 1 through horizon; half levels are diagnostics only",
+            "missing_levels": "monotone bounds; rank only when all grid knots are identified",
             "official_effort": "max",
             "official_providers": sorted(DIRECT_PROVIDERS),
         },
@@ -578,15 +545,11 @@ def build_payload(
 
 
 def score_label(row: dict[str, Any]) -> str:
-    bound = row.get("bound")
     if row.get("score") is not None:
         return f"{row['score']:.2f}"
-    if row.get("censored") == "upper":
-        return f"≥{bound:.1f}" if bound is not None else "≥max"
-    if row.get("censored") == "lower":
-        return f"<{bound:.1f}" if bound is not None else "<min"
-    if row.get("censored") == "ambiguous":
-        return f"~{bound:.1f}" if bound is not None else "ambiguous"
+    bounds = row.get("score_bounds")
+    if bounds is not None:
+        return f"{bounds[0]:.2f}–{bounds[1]:.2f} [bounds]"
     return "—"
 
 
@@ -612,30 +575,20 @@ def compact_tokens(value: Any) -> str:
 
 def markdown_table(rows: Sequence[dict[str, Any]]) -> list[str]:
     lines = [
-        "| # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Tokens | Cost | Note |",
-        "|---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",
+        "| # | Model | Effort | Status | EQB (95% CI) | Solved | Cover | Tokens | Cost | Note |",
+        "|---:|---|---|---|---:|---:|---:|---:|---:|---|",
     ]
     for row in rows:
         name = row.get("model", {}).get("name") or row.get("run_dir")
         receipt = row.get("run_dir") or ""
         linked = f"[{name}]({receipt})" if receipt else name
         rankable = row.get("rankable")
-        composite = (
-            f"{row['composite']:.2f}" if row.get("composite") is not None and rankable else "—"
-        )
         score = score_label(row)
         if score != "—" and not rankable and not row.get("censored"):
             score = f"{score}†"
         ci = row.get("score_ci")
         if ci and rankable:
             score = f"{score} ({ci[0]:.2f}–{ci[1]:.2f})"
-        band_levels = row.get("band_levels") or []
-        band_rate = row.get("band_rate")
-        band = (
-            f"{band_rate * 100:.0f}% (L{band_levels[0]}–L{band_levels[-1]})"
-            if rankable and band_rate is not None and band_levels
-            else "—"
-        )
         cover = row.get("coverage")
         cover_label = f"{cover * 100:.0f}%" if cover is not None else "—"
         status = "Official" if row.get("official") else ("Provisional" if rankable else "Unranked")
@@ -646,10 +599,8 @@ def markdown_table(rows: Sequence[dict[str, Any]]) -> list[str]:
             linked,
             row.get("effort") or "—",
             status,
-            composite,
             score,
             solved,
-            band,
             cover_label,
             compact_tokens(row.get("total_tokens")),
             format_cost(row),
@@ -671,14 +622,12 @@ def render_markdown(payload: dict[str, Any], notes: str) -> str:
         "",
         "Web view: <https://woxtom.github.io/equationbench/>",
         "",
-        "`EQB-C = EQB-L × Band` is the ranked composite. It rewards a high "
-        "frontier and reliability near that frontier. `EQB-L` is the 50% "
-        "frontier. `Band` is the exact-solve rate over the whole levels "
-        "`floor(EQB-L) - 1` to `floor(EQB-L) + 1`. Testing extra easy or hard "
-        "levels does not move that window. `Solved` is exact "
-        "answers divided by all tasks. `Cover` is valid tasks divided by all "
-        "tasks. Provider errors are excluded from the rate, but they lower the "
-        "coverage.",
+        "`EQB` is effective solved levels: 1 plus area under the isotonic success "
+        "curve on the shared whole-level grid, through L"
+        f"{payload['horizon']}. Higher is better. Interpolation uses log system size. "
+        "Ranges marked [bounds] reflect unresolved levels, not confidence intervals, "
+        "and are unranked. `Solved` is exact answers over all tasks; `Cover` is valid "
+        "answers over all tasks. Provider errors lower coverage, not per-level accuracy.",
         "",
     ]
     return "\n".join(head + markdown_table(payload["rows"])) + "\n\n" + notes.strip() + "\n"
@@ -687,9 +636,16 @@ def render_markdown(payload: dict[str, Any], notes: str) -> str:
 def _csv_row(row: dict[str, Any]) -> dict[str, Any]:
     model = row.get("model", {})
     ci = row.get("score_ci") or [None, None]
+    bounds = row.get("score_bounds") or [None, None]
     joined = {
         key: ",".join(str(level) for level in row.get(key) or [])
-        for key in ("levels_tested", "precision_levels", "band_levels")
+        for key in (
+            "levels_tested",
+            "precision_levels",
+            "inferred_levels",
+            "unresolved_levels",
+            "ignored_levels",
+        )
     }
     return {
         **{field: row.get(field) for field in CSV_FIELDS},
@@ -701,6 +657,8 @@ def _csv_row(row: dict[str, Any]) -> dict[str, Any]:
         "model": model.get("model"),
         "score_ci_low": ci[0],
         "score_ci_high": ci[1],
+        "score_bounds_low": bounds[0],
+        "score_bounds_high": bounds[1],
         "reasons": "; ".join(row.get("reasons") or []),
         "warnings": "; ".join(row.get("warnings") or []),
     }
@@ -708,7 +666,7 @@ def _csv_row(row: dict[str, Any]) -> dict[str, Any]:
 
 def render_csv(rows: Iterable[dict[str, Any]]) -> str:
     buffer = io.StringIO(newline="")
-    writer = csv.DictWriter(buffer, fieldnames=CSV_FIELDS)
+    writer = csv.DictWriter(buffer, fieldnames=CSV_FIELDS, lineterminator="\n")
     writer.writeheader()
     writer.writerows(_csv_row(row) for row in rows)
     return buffer.getvalue()

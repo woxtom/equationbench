@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from equationbench.frontier_run import build_ladder_bundle
+from equationbench.ladder_run import build_ladder_bundle
 
 
 def test_precision_levels_add_tasks_only_at_the_bracket():

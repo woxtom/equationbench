@@ -3,25 +3,16 @@
   "generated_at": "2026-11-09T08:03:18+00:00",
   "generator": "eqb build-leaderboard",
   "generator_version": "2.0.0",
+  "horizon": 11,
+  "horizon_coordinate": 10.965784284662087,
   "ladder_version": "1",
   "prompt_version": "1.0",
-  "ranked_count": 10,
+  "ranked_count": 9,
   "rows": [
     {
       "accuracy": 0.72,
-      "band_correct": 10,
-      "band_levels": [
-        9,
-        10,
-        11
-      ],
-      "band_rate": 0.6666666666666666,
-      "band_valid": 15,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 7.057184367366308,
       "correct": 18,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -31,6 +22,20 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-11-09T08:03:18+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        10.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
       "input_tokens": 70491,
       "level_task_counts": {
         "10": 5,
@@ -77,7 +82,6 @@
           "p": 0.6,
           "provider_error": 0,
           "size": 27,
-          "smoothed": 0.6,
           "valid": 5
         },
         {
@@ -121,41 +125,34 @@
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-high",
       "run_id": "20261109T075100Z-openai-gpt-6-astra-08f4063f",
-      "score": 10.585776551049463,
+      "score": 10.482892142331043,
+      "score_bounds": [
+        10.482892142331043,
+        10.482892142331043
+      ],
       "score_ci": [
-        10.318609377704338,
-        10.737779644494513
+        10.482892142331043,
+        10.482892142331043
       ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 27.478309608612893,
-      "size_ci": [
-        25.833399981920827,
-        28.460498941515425
-      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "CI is degenerate: every scoring-level task passed or failed, so the task bootstrap has no variance; monotone plateau inferred at levels [1, 2, 3, 4, 5, 6, 7]",
       "solved_rate": 0.72,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 515080,
+      "unresolved_levels": [],
       "valid": 25,
-      "warnings": []
+      "warnings": [
+        "CI is degenerate: every scoring-level task passed or failed, so the task bootstrap has no variance",
+        "monotone plateau inferred at levels [1, 2, 3, 4, 5, 6, 7]"
+      ]
     },
     {
       "accuracy": 0.8055555555555556,
-      "band_correct": 8,
-      "band_levels": [
-        9,
-        10,
-        11
-      ],
-      "band_rate": 0.6666666666666666,
-      "band_valid": 12,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 0.9,
-      "composite": 6.836591668108978,
       "correct": 29,
       "cost_basis": "provider_reported_partial",
       "cost_known": true,
@@ -165,6 +162,17 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-11-09T06:51:54+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        10.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
       "input_tokens": 49787,
       "level_task_counts": {
         "10": 5,
@@ -244,7 +252,6 @@
           "p": 0.25,
           "provider_error": 1,
           "size": 27,
-          "smoothed": 0.25,
           "valid": 4
         },
         {
@@ -291,44 +298,35 @@
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5",
       "run_id": "20261109T061154Z-openai-gpt-6-1-sol-ed5fe373",
-      "score": 10.254887502163468,
+      "score": 10.235780986519194,
+      "score_bounds": [
+        10.235780986519194,
+        10.235780986519194
+      ],
       "score_ci": [
-        9.662965012722431,
-        10.661778097771986
+        9.741558674895494,
+        10.482892142331043
       ],
-      "scoring_version": "2.2",
-      "short_note": "4 provider timeout(s)",
-      "size": 25.45584412271571,
-      "size_ci": [
-        22.2019964116462,
-        27.96509255358473
-      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "4 provider timeout(s); monotone plateau inferred at levels [1, 2, 3, 4]; cost excludes 4 call(s) with no cost record",
       "solved_rate": 0.8055555555555556,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 566883,
+      "unresolved_levels": [],
       "valid": 36,
       "warnings": [
         "4 provider timeout(s)",
+        "monotone plateau inferred at levels [1, 2, 3, 4]",
         "cost excludes 4 call(s) with no cost record"
       ]
     },
     {
       "accuracy": 0.76,
-      "band_correct": 16,
-      "band_levels": [
-        9,
-        10,
-        11
-      ],
-      "band_rate": 0.5333333333333333,
-      "band_valid": 30,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 5.401303333910259,
       "correct": 57,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -338,6 +336,12 @@
       "dataset_hash_ok": true,
       "effort": "max",
       "finished_at": "2026-11-09T06:44:14+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        10.5
+      ],
+      "inferred_levels": [],
       "input_tokens": 134302,
       "level_task_counts": {
         "1": 5,
@@ -461,7 +465,6 @@
           "p": 0.2,
           "provider_error": 0,
           "size": 27,
-          "smoothed": 0.2,
           "valid": 5
         },
         {
@@ -516,384 +519,31 @@
       "reasons": [],
       "run_dir": "runs/official/2026-10/openai-gpt-6-1-terra",
       "run_id": "20261109T061154Z-openai-gpt-6-1-terra-15ab81e6",
-      "score": 10.127443751081735,
+      "score": 10.087514293032084,
+      "score_bounds": [
+        10.087514293032084,
+        10.087514293032084
+      ],
       "score_ci": [
-        9.711112868047797,
-        10.585776551049463
+        9.790980906057863,
+        10.384047680006303
       ],
-      "scoring_version": "2.2",
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
       "short_note": "",
-      "size": 24.71720572688541,
-      "size_ci": [
-        22.450361803121734,
-        27.478309608612904
-      ],
       "solved_rate": 0.76,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "official",
       "total_tokens": 1406875,
+      "unresolved_levels": [],
       "valid": 75,
       "warnings": []
     },
     {
-      "accuracy": 0.54,
-      "band_correct": 10,
-      "band_levels": [
-        8,
-        9,
-        10
-      ],
-      "band_rate": 0.5,
-      "band_valid": 20,
-      "bound": null,
-      "bound_size": null,
-      "censored": null,
-      "completion": 1.0,
-      "composite": 4.656886167085716,
-      "correct": 27,
-      "cost_basis": "provider_reported",
-      "cost_known": true,
-      "cost_per_100_valid": 10.5688608,
-      "cost_usd": 5.2844304,
-      "coverage": 1.0,
-      "dataset_hash_ok": true,
-      "effort": "high",
-      "finished_at": "2026-11-09T05:31:26+00:00",
-      "input_tokens": 119588,
-      "level_task_counts": {
-        "10": 10,
-        "11": 10,
-        "5": 5,
-        "6": 5,
-        "7": 5,
-        "8": 5,
-        "9": 5,
-        "9.5": 5
-      },
-      "levels": [
-        {
-          "correct": 5,
-          "level": 5,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 8,
-          "smoothed": 1.0,
-          "valid": 5
-        },
-        {
-          "correct": 5,
-          "level": 6,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 10,
-          "smoothed": 1.0,
-          "valid": 5
-        },
-        {
-          "correct": 5,
-          "level": 7,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 12,
-          "smoothed": 1.0,
-          "valid": 5
-        },
-        {
-          "correct": 4,
-          "level": 8,
-          "missing": 0,
-          "p": 0.8,
-          "provider_error": 0,
-          "size": 15,
-          "smoothed": 0.8,
-          "valid": 5
-        },
-        {
-          "correct": 4,
-          "level": 9,
-          "missing": 0,
-          "p": 0.8,
-          "provider_error": 0,
-          "size": 19,
-          "smoothed": 0.8,
-          "valid": 5
-        },
-        {
-          "correct": 2,
-          "level": 9.5,
-          "missing": 0,
-          "p": 0.4,
-          "provider_error": 0,
-          "size": 21,
-          "smoothed": 0.4,
-          "valid": 5
-        },
-        {
-          "correct": 2,
-          "level": 10,
-          "missing": 0,
-          "p": 0.2,
-          "provider_error": 0,
-          "size": 24,
-          "smoothed": 0.2,
-          "valid": 10
-        },
-        {
-          "correct": 0,
-          "level": 11,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 30,
-          "smoothed": 0.0,
-          "valid": 10
-        }
-      ],
-      "levels_tested": [
-        5,
-        6,
-        7,
-        8,
-        9,
-        9.5,
-        10,
-        11
-      ],
-      "median_latency_ms": 281348,
-      "missing": 0,
-      "model": {
-        "key": "deepseek-v4-1-flash",
-        "lab": "DeepSeek",
-        "model": "deepseek-flash",
-        "name": "DeepSeek V4.1 Flash",
-        "provider": "deepseek"
-      },
-      "n_tasks": 50,
-      "note": "High-effort precision extension: 5 extra tasks at L10 and L11; L9.5 (n=21) added to split the L9-L10 gap.",
-      "official": false,
-      "output_tokens": 4373795,
-      "p95_latency_ms": 894453,
-      "precision_levels": [
-        10,
-        11
-      ],
-      "precision_tasks": 5,
-      "provider_errors": 0,
-      "rank": 4,
-      "rankable": true,
-      "reasoning_tokens": 4253146,
-      "reasons": [],
-      "run_dir": "runs/provisional/2026-10/high/deepseek-v4-1-flash",
-      "run_id": "20261109T051200Z-deepseek-v4-1-flash-fa722a8f",
-      "score": 9.313772334171432,
-      "score_ci": [
-        8.733117349790987,
-        9.768825906469125
-      ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 20.481080817774284,
-      "size_ci": [
-        17.909687805948728,
-        22.751731975676787
-      ],
-      "solved_rate": 0.54,
-      "status": "complete",
-      "tasks_per_level": 5,
-      "tier": "provisional",
-      "total_tokens": 4493383,
-      "valid": 50,
-      "warnings": []
-    },
-    {
-      "accuracy": 0.45,
-      "band_correct": 8,
-      "band_levels": [
-        6,
-        7,
-        8
-      ],
-      "band_rate": 0.5333333333333333,
-      "band_valid": 15,
-      "bound": null,
-      "bound_size": null,
-      "censored": null,
-      "completion": 1.0,
-      "composite": 4.041967407685687,
-      "correct": 18,
-      "cost_basis": "provider_reported",
-      "cost_known": true,
-      "cost_per_100_valid": 14.957375,
-      "cost_usd": 5.982950000000001,
-      "coverage": 1.0,
-      "dataset_hash_ok": true,
-      "effort": "medium",
-      "finished_at": "2026-11-09T05:17:32+00:00",
-      "input_tokens": 73150,
-      "level_task_counts": {
-        "10": 5,
-        "11": 5,
-        "5": 5,
-        "6": 5,
-        "7": 5,
-        "7.5": 5,
-        "8": 5,
-        "9": 5
-      },
-      "levels": [
-        {
-          "correct": 5,
-          "level": 5,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 8,
-          "smoothed": 1.0,
-          "valid": 5
-        },
-        {
-          "correct": 5,
-          "level": 6,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 10,
-          "smoothed": 1.0,
-          "valid": 5
-        },
-        {
-          "correct": 3,
-          "level": 7,
-          "missing": 0,
-          "p": 0.6,
-          "provider_error": 0,
-          "size": 12,
-          "smoothed": 0.8,
-          "valid": 5
-        },
-        {
-          "correct": 5,
-          "level": 7.5,
-          "missing": 0,
-          "p": 1.0,
-          "provider_error": 0,
-          "size": 13,
-          "smoothed": 0.8,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 8,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 15,
-          "smoothed": 0.0,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 9,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 19,
-          "smoothed": 0.0,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 10,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 24,
-          "smoothed": 0.0,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 11,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 30,
-          "smoothed": 0.0,
-          "valid": 5
-        }
-      ],
-      "levels_tested": [
-        5,
-        6,
-        7,
-        7.5,
-        8,
-        9,
-        10,
-        11
-      ],
-      "median_latency_ms": 57354,
-      "missing": 0,
-      "model": {
-        "key": "openai-gpt-6-astra",
-        "lab": "OpenAI",
-        "model": "gpt-6-astra",
-        "name": "GPT-6 Astra",
-        "provider": "openai"
-      },
-      "n_tasks": 40,
-      "note": "GPT-6 Astra medium-effort bracket: L5-L11; L7.5 (n=13) added to split the L7-L8 gap.",
-      "official": false,
-      "output_tokens": 105029,
-      "p95_latency_ms": 223301,
-      "precision_levels": [],
-      "precision_tasks": 0,
-      "provider_errors": 0,
-      "rank": 5,
-      "rankable": true,
-      "reasoning_tokens": 103414,
-      "reasons": [],
-      "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-medium",
-      "run_id": "20261109T051200Z-openai-gpt-6-astra-f37108b0",
-      "score": 7.578688889410663,
-      "score_ci": [
-        7.449657090993522,
-        7.656107968460947
-      ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 13.716674010185432,
-      "size_ci": [
-        13.313778788260585,
-        13.964240043768942
-      ],
-      "solved_rate": 0.45,
-      "status": "complete",
-      "tasks_per_level": 5,
-      "tier": "provisional",
-      "total_tokens": 178179,
-      "valid": 40,
-      "warnings": []
-    },
-    {
       "accuracy": 0.6933333333333334,
-      "band_correct": 11,
-      "band_levels": [
-        9,
-        10,
-        11
-      ],
-      "band_rate": 0.36666666666666664,
-      "band_valid": 30,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 3.6666666666666665,
       "correct": 52,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -903,6 +553,12 @@
       "dataset_hash_ok": true,
       "effort": "max",
       "finished_at": "2026-11-09T06:37:27+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        10.5
+      ],
+      "inferred_levels": [],
       "input_tokens": 132961,
       "level_task_counts": {
         "1": 5,
@@ -1026,7 +682,6 @@
           "p": 0.2,
           "provider_error": 0,
           "size": 27,
-          "smoothed": 0.2,
           "valid": 5
         },
         {
@@ -1075,47 +730,384 @@
       ],
       "precision_tasks": 5,
       "provider_errors": 0,
-      "rank": 6,
+      "rank": 4,
       "rankable": true,
       "reasoning_tokens": 7174182,
       "reasons": [],
       "run_dir": "runs/official/2026-10/deepseek-v4-1-flash",
       "run_id": "20261109T061154Z-deepseek-v4-1-flash-15ab81e6",
-      "score": 10.0,
+      "score": 9.581826687639762,
+      "score_bounds": [
+        9.581826687639762,
+        9.581826687639762
+      ],
       "score_ci": [
-        8.818376579249755,
-        10.538784523276828
+        9.179283029735412,
+        9.985803507265189
       ],
-      "scoring_version": "2.2",
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
       "short_note": "",
-      "size": 24.0,
-      "size_ci": [
-        18.265989793319733,
-        27.181578643151276
-      ],
       "solved_rate": 0.6933333333333334,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "official",
       "total_tokens": 7538659,
+      "unresolved_levels": [],
       "valid": 75,
       "warnings": []
     },
     {
-      "accuracy": 0.3,
-      "band_correct": 8,
-      "band_levels": [
-        5,
-        6,
-        7
-      ],
-      "band_rate": 0.5333333333333333,
-      "band_valid": 15,
-      "bound": null,
-      "bound_size": null,
+      "accuracy": 0.54,
       "censored": null,
       "completion": 1.0,
-      "composite": 3.589869468094637,
+      "correct": 27,
+      "cost_basis": "provider_reported",
+      "cost_known": true,
+      "cost_per_100_valid": 10.5688608,
+      "cost_usd": 5.2844304,
+      "coverage": 1.0,
+      "dataset_hash_ok": true,
+      "effort": "high",
+      "finished_at": "2026-11-09T05:31:26+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        9.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "input_tokens": 119588,
+      "level_task_counts": {
+        "10": 10,
+        "11": 10,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "8": 5,
+        "9": 5,
+        "9.5": 5
+      },
+      "levels": [
+        {
+          "correct": 5,
+          "level": 5,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 8,
+          "smoothed": 1.0,
+          "valid": 5
+        },
+        {
+          "correct": 5,
+          "level": 6,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 10,
+          "smoothed": 1.0,
+          "valid": 5
+        },
+        {
+          "correct": 5,
+          "level": 7,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 12,
+          "smoothed": 1.0,
+          "valid": 5
+        },
+        {
+          "correct": 4,
+          "level": 8,
+          "missing": 0,
+          "p": 0.8,
+          "provider_error": 0,
+          "size": 15,
+          "smoothed": 0.8,
+          "valid": 5
+        },
+        {
+          "correct": 4,
+          "level": 9,
+          "missing": 0,
+          "p": 0.8,
+          "provider_error": 0,
+          "size": 19,
+          "smoothed": 0.8,
+          "valid": 5
+        },
+        {
+          "correct": 2,
+          "level": 9.5,
+          "missing": 0,
+          "p": 0.4,
+          "provider_error": 0,
+          "size": 21,
+          "valid": 5
+        },
+        {
+          "correct": 2,
+          "level": 10,
+          "missing": 0,
+          "p": 0.2,
+          "provider_error": 0,
+          "size": 24,
+          "smoothed": 0.2,
+          "valid": 10
+        },
+        {
+          "correct": 0,
+          "level": 11,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 30,
+          "smoothed": 0.0,
+          "valid": 10
+        }
+      ],
+      "levels_tested": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        9.5,
+        10,
+        11
+      ],
+      "median_latency_ms": 281348,
+      "missing": 0,
+      "model": {
+        "key": "deepseek-v4-1-flash",
+        "lab": "DeepSeek",
+        "model": "deepseek-flash",
+        "name": "DeepSeek V4.1 Flash",
+        "provider": "deepseek"
+      },
+      "n_tasks": 50,
+      "note": "High-effort precision extension: 5 extra tasks at L10 and L11; L9.5 (n=21) added to split the L9-L10 gap.",
+      "official": false,
+      "output_tokens": 4373795,
+      "p95_latency_ms": 894453,
+      "precision_levels": [
+        10,
+        11
+      ],
+      "precision_tasks": 5,
+      "provider_errors": 0,
+      "rank": 5,
+      "rankable": true,
+      "reasoning_tokens": 4253146,
+      "reasons": [],
+      "run_dir": "runs/provisional/2026-10/high/deepseek-v4-1-flash",
+      "run_id": "20261109T051200Z-deepseek-v4-1-flash-fa722a8f",
+      "score": 9.289825368382603,
+      "score_bounds": [
+        9.289825368382603,
+        9.289825368382603
+      ],
+      "score_ci": [
+        8.685293300665542,
+        9.790980906057863
+      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "monotone plateau inferred at levels [1, 2, 3, 4]",
+      "solved_rate": 0.54,
+      "status": "complete",
+      "tasks_per_level": 5,
+      "tier": "provisional",
+      "total_tokens": 4493383,
+      "unresolved_levels": [],
+      "valid": 50,
+      "warnings": [
+        "monotone plateau inferred at levels [1, 2, 3, 4]"
+      ]
+    },
+    {
+      "accuracy": 0.45,
+      "censored": null,
+      "completion": 1.0,
+      "correct": 18,
+      "cost_basis": "provider_reported",
+      "cost_known": true,
+      "cost_per_100_valid": 14.957375,
+      "cost_usd": 5.982950000000001,
+      "coverage": 1.0,
+      "dataset_hash_ok": true,
+      "effort": "medium",
+      "finished_at": "2026-11-09T05:17:32+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        7.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "input_tokens": 73150,
+      "level_task_counts": {
+        "10": 5,
+        "11": 5,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "7.5": 5,
+        "8": 5,
+        "9": 5
+      },
+      "levels": [
+        {
+          "correct": 5,
+          "level": 5,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 8,
+          "smoothed": 1.0,
+          "valid": 5
+        },
+        {
+          "correct": 5,
+          "level": 6,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 10,
+          "smoothed": 1.0,
+          "valid": 5
+        },
+        {
+          "correct": 3,
+          "level": 7,
+          "missing": 0,
+          "p": 0.6,
+          "provider_error": 0,
+          "size": 12,
+          "smoothed": 0.6,
+          "valid": 5
+        },
+        {
+          "correct": 5,
+          "level": 7.5,
+          "missing": 0,
+          "p": 1.0,
+          "provider_error": 0,
+          "size": 13,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 8,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 15,
+          "smoothed": 0.0,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 9,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 19,
+          "smoothed": 0.0,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 10,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 24,
+          "smoothed": 0.0,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 11,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 30,
+          "smoothed": 0.0,
+          "valid": 5
+        }
+      ],
+      "levels_tested": [
+        5,
+        6,
+        7,
+        7.5,
+        8,
+        9,
+        10,
+        11
+      ],
+      "median_latency_ms": 57354,
+      "missing": 0,
+      "model": {
+        "key": "openai-gpt-6-astra",
+        "lab": "OpenAI",
+        "model": "gpt-6-astra",
+        "name": "GPT-6 Astra",
+        "provider": "openai"
+      },
+      "n_tasks": 40,
+      "note": "GPT-6 Astra medium-effort bracket: L5-L11; L7.5 (n=13) added to split the L7-L8 gap.",
+      "official": false,
+      "output_tokens": 105029,
+      "p95_latency_ms": 223301,
+      "precision_levels": [],
+      "precision_tasks": 0,
+      "provider_errors": 0,
+      "rank": 6,
+      "rankable": true,
+      "reasoning_tokens": 103414,
+      "reasons": [],
+      "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-medium",
+      "run_id": "20261109T051200Z-openai-gpt-6-astra-f37108b0",
+      "score": 7.13191464189835,
+      "score_bounds": [
+        7.13191464189835,
+        7.13191464189835
+      ],
+      "score_ci": [
+        6.780937141465656,
+        7.4828921423310435
+      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "monotone plateau inferred at levels [1, 2, 3, 4]",
+      "solved_rate": 0.45,
+      "status": "complete",
+      "tasks_per_level": 5,
+      "tier": "provisional",
+      "total_tokens": 178179,
+      "unresolved_levels": [],
+      "valid": 40,
+      "warnings": [
+        "monotone plateau inferred at levels [1, 2, 3, 4]"
+      ]
+    },
+    {
+      "accuracy": 0.3,
+      "censored": null,
+      "completion": 1.0,
       "correct": 12,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -1125,6 +1117,17 @@
       "dataset_hash_ok": true,
       "effort": "low",
       "finished_at": "2026-11-09T05:15:11+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        6.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
       "input_tokens": 71914,
       "level_task_counts": {
         "10": 5,
@@ -1154,7 +1157,7 @@
           "p": 0.6,
           "provider_error": 0,
           "size": 10,
-          "smoothed": 0.7,
+          "smoothed": 0.6,
           "valid": 5
         },
         {
@@ -1164,7 +1167,6 @@
           "p": 0.8,
           "provider_error": 0,
           "size": 11,
-          "smoothed": 0.7,
           "valid": 5
         },
         {
@@ -1251,41 +1253,33 @@
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-low",
       "run_id": "20261109T051200Z-openai-gpt-6-astra-dcb51a95",
-      "score": 6.731005252677445,
+      "score": 6.254470890816616,
+      "score_bounds": [
+        6.254470890816616,
+        6.254470890816616
+      ],
       "score_ci": [
-        6.049932735054938,
-        6.811703676874211
+        5.903493390383922,
+        6.605448391249309
       ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 11.276891887624101,
-      "size_ci": [
-        9.634924839989964,
-        11.489125293076059
-      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "monotone plateau inferred at levels [1, 2, 3, 4]",
       "solved_rate": 0.3,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 131420,
+      "unresolved_levels": [],
       "valid": 40,
-      "warnings": []
+      "warnings": [
+        "monotone plateau inferred at levels [1, 2, 3, 4]"
+      ]
     },
     {
       "accuracy": 0.4,
-      "band_correct": 10,
-      "band_levels": [
-        3,
-        4,
-        5
-      ],
-      "band_rate": 0.6666666666666666,
-      "band_valid": 15,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 2.8572887420979076,
       "correct": 10,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -1295,6 +1289,20 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-11-09T05:08:12+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [
+        4.5
+      ],
+      "inferred_levels": [
+        1,
+        2,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
       "input_tokens": 13270,
       "level_task_counts": {
         "3": 5,
@@ -1331,7 +1339,6 @@
           "p": 0.0,
           "provider_error": 0,
           "size": 7,
-          "smoothed": 0.1,
           "valid": 5
         },
         {
@@ -1341,7 +1348,7 @@
           "p": 0.2,
           "provider_error": 0,
           "size": 8,
-          "smoothed": 0.1,
+          "smoothed": 0.2,
           "valid": 5
         },
         {
@@ -1385,156 +1392,33 @@
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/high/openai-gpt-6-1-terra",
       "run_id": "20261109T050626Z-openai-gpt-6-1-terra-c426d61f",
-      "score": 4.285933113146862,
+      "score": 4.640224355634336,
+      "score_bounds": [
+        4.640224355634336,
+        4.640224355634336
+      ],
       "score_ci": [
-        3.868482797083103,
-        4.476555188578103
+        4.215713105850683,
+        5.0824037121340595
       ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 6.409774214061809,
-      "size_ci": [
-        5.820420692674802,
-        6.698389321204962
-      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "monotone plateau inferred at levels [1, 2, 7, 8, 9, 10, 11]",
       "solved_rate": 0.4,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 43160,
+      "unresolved_levels": [],
       "valid": 25,
-      "warnings": []
+      "warnings": [
+        "monotone plateau inferred at levels [1, 2, 7, 8, 9, 10, 11]"
+      ]
     },
     {
       "accuracy": 0.3,
-      "band_correct": 6,
-      "band_levels": [
-        3,
-        4
-      ],
-      "band_rate": 0.6,
-      "band_valid": 10,
-      "bound": null,
-      "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 2.2816345173747927,
-      "correct": 6,
-      "cost_basis": "provider_reported",
-      "cost_known": true,
-      "cost_per_100_valid": 0.1942165,
-      "cost_usd": 0.0388433,
-      "coverage": 1.0,
-      "dataset_hash_ok": true,
-      "effort": "high",
-      "finished_at": "2026-10-30T09:04:54+00:00",
-      "input_tokens": 10743,
-      "level_task_counts": null,
-      "levels": [
-        {
-          "correct": 4,
-          "level": 3,
-          "missing": 0,
-          "p": 0.8,
-          "provider_error": 0,
-          "size": 5,
-          "smoothed": 0.8,
-          "valid": 5
-        },
-        {
-          "correct": 2,
-          "level": 4,
-          "missing": 0,
-          "p": 0.4,
-          "provider_error": 0,
-          "size": 6,
-          "smoothed": 0.4,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 5,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 8,
-          "smoothed": 0.0,
-          "valid": 5
-        },
-        {
-          "correct": 0,
-          "level": 6,
-          "missing": 0,
-          "p": 0.0,
-          "provider_error": 0,
-          "size": 10,
-          "smoothed": 0.0,
-          "valid": 5
-        }
-      ],
-      "levels_tested": [
-        3,
-        4,
-        5,
-        6
-      ],
-      "median_latency_ms": 63236,
-      "missing": 0,
-      "model": {
-        "key": "openai-gpt-6-luna",
-        "lab": "OpenAI",
-        "model": "gpt-6-luna",
-        "name": "GPT-6 Luna",
-        "provider": "openai"
-      },
-      "n_tasks": 20,
-      "note": "High-effort provisional bracket: L3-L6, 5 core tasks/level; L5 pilot reused.",
-      "official": false,
-      "output_tokens": 75538,
-      "p95_latency_ms": 118624,
-      "precision_levels": [],
-      "precision_tasks": 5,
-      "provider_errors": 0,
-      "rank": 9,
-      "rankable": true,
-      "reasoning_tokens": 74848,
-      "reasons": [],
-      "run_dir": "runs/provisional/2026-10/high/openai-gpt-6-luna",
-      "run_id": "20261030T085255Z-openai-gpt-6-luna-aa91b947",
-      "score": 3.8027241956246547,
-      "score_ci": [
-        3.4081725868739636,
-        4.466917186688699
-      ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 5.732656753226201,
-      "size_ci": [
-        5.233175696960528,
-        6.683489600268768
-      ],
-      "solved_rate": 0.3,
-      "status": "complete",
-      "tasks_per_level": 5,
-      "tier": "provisional",
-      "total_tokens": 86281,
-      "valid": 20,
-      "warnings": []
-    },
-    {
-      "accuracy": 0.3,
-      "band_correct": 6,
-      "band_levels": [
-        3,
-        4
-      ],
-      "band_rate": 0.6,
-      "band_valid": 10,
-      "bound": null,
-      "bound_size": null,
-      "censored": null,
-      "completion": 1.0,
-      "composite": 2.2224517760621896,
       "correct": 6,
       "cost_basis": "provider_reported",
       "cost_known": true,
@@ -1544,6 +1428,18 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-10-30T10:15:34+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [
+        1,
+        2,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
       "input_tokens": 10896,
       "level_task_counts": null,
       "levels": [
@@ -1611,47 +1507,39 @@
       "precision_levels": [],
       "precision_tasks": 5,
       "provider_errors": 0,
-      "rank": 10,
+      "rank": 9,
       "rankable": true,
       "reasoning_tokens": 579441,
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/high/zai-glm-5-3-flash",
       "run_id": "20261030T085303Z-zai-glm-5-3-flash-aa91b947",
-      "score": 3.7040862934369825,
+      "score": 3.8088699627831004,
+      "score_bounds": [
+        3.8088699627831004,
+        3.8088699627831004
+      ],
       "score_ci": [
-        3.6054483912493085,
-        4.207518749639422
+        3.6054483912493094,
+        4.215713105850683
       ],
-      "scoring_version": "2.2",
-      "short_note": "",
-      "size": 5.6034858955620805,
-      "size_ci": [
-        5.47722557505166,
-        6.2946903805298895
-      ],
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "monotone plateau inferred at levels [1, 2, 7, 8, 9, 10, 11]",
       "solved_rate": 0.3,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 599248,
+      "unresolved_levels": [],
       "valid": 20,
-      "warnings": []
+      "warnings": [
+        "monotone plateau inferred at levels [1, 2, 7, 8, 9, 10, 11]"
+      ]
     },
     {
       "accuracy": 0.9166666666666666,
-      "band_correct": 11,
-      "band_levels": [
-        6,
-        7,
-        8
-      ],
-      "band_rate": 0.9166666666666666,
-      "band_valid": 12,
-      "bound": 8.0,
-      "bound_size": 15.0,
-      "censored": "upper",
+      "censored": "incomplete",
       "completion": 0.4,
-      "composite": null,
       "correct": 11,
       "cost_basis": "unknown",
       "cost_known": false,
@@ -1661,6 +1549,16 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-11-01T16:13:29+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "input_tokens": 68,
       "level_task_counts": {
         "10": 5,
@@ -1758,43 +1656,40 @@
         "run status is aborted",
         "valid completion is 40%",
         "at least one used level has fewer than 3 valid tasks",
-        "score is censored (upper)"
+        "unresolved whole levels: [9, 10, 11]"
       ],
       "run_dir": "runs/provisional/2026-10/openrouter/anthropic-claude-haiku-5-5-high",
       "run_id": "20261101T145819Z-anthropic-claude-haiku-5-5-openrouter-1909b6e2",
       "score": null,
-      "score_ci": [
-        7.482892142331044,
-        7.965784284662087
+      "score_bounds": [
+        7.980115901872866,
+        9.224338213496566
       ],
-      "scoring_version": "2.2",
-      "short_note": "5 response(s) hit the output token cap",
-      "size": 15.0,
-      "size_ci": [
-        13.416407864998742,
-        15.000000000000004
-      ],
+      "score_ci": null,
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "5 response(s) hit the output token cap; EQB bounds only: unresolved levels [9, 10, 11]; monotone plateau inferred at levels [1, 2, 3, 4, 5]",
       "solved_rate": 0.9166666666666666,
       "status": "aborted",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 1739434,
+      "unresolved_levels": [
+        9,
+        10,
+        11
+      ],
       "valid": 12,
       "warnings": [
-        "5 response(s) hit the output token cap"
+        "5 response(s) hit the output token cap",
+        "EQB bounds only: unresolved levels [9, 10, 11]",
+        "monotone plateau inferred at levels [1, 2, 3, 4, 5]"
       ]
     },
     {
       "accuracy": 1.0,
-      "band_correct": 0,
-      "band_levels": [],
-      "band_rate": null,
-      "band_valid": 0,
-      "bound": 8.0,
-      "bound_size": 15.0,
-      "censored": "upper",
+      "censored": "incomplete",
       "completion": 0.6545454545454545,
-      "composite": null,
       "correct": 36,
       "cost_basis": "unknown",
       "cost_known": false,
@@ -1804,6 +1699,10 @@
       "dataset_hash_ok": true,
       "effort": "max",
       "finished_at": null,
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [],
       "input_tokens": 18789,
       "level_task_counts": null,
       "levels": [
@@ -1949,40 +1848,161 @@
         "run status is aborted",
         "valid completion is 65%",
         "at least one used level has fewer than 3 valid tasks",
-        "score is censored (upper)"
+        "unresolved whole levels: [9, 10, 11]"
       ],
       "run_dir": "runs/provisional/2026-10/openai-gpt-5-6-luna",
       "run_id": "20261021T142848Z-openai-gpt-5-6-luna-8924cf19",
       "score": null,
+      "score_bounds": [
+        8.477339661414687,
+        10.965784284662087
+      ],
       "score_ci": null,
-      "scoring_version": "2.2",
-      "short_note": "7 response(s) hit the output token cap",
-      "size": null,
-      "size_ci": null,
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "7 response(s) hit the output token cap; EQB bounds only: unresolved levels [9, 10, 11]",
       "solved_rate": 1.0,
       "status": "aborted",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 2151346,
+      "unresolved_levels": [
+        9,
+        10,
+        11
+      ],
       "valid": 36,
       "warnings": [
-        "7 response(s) hit the output token cap"
+        "7 response(s) hit the output token cap",
+        "EQB bounds only: unresolved levels [9, 10, 11]"
+      ]
+    },
+    {
+      "accuracy": 0.3,
+      "censored": "incomplete",
+      "completion": 1.0,
+      "correct": 6,
+      "cost_basis": "provider_reported",
+      "cost_known": true,
+      "cost_per_100_valid": 0.1942165,
+      "cost_usd": 0.0388433,
+      "coverage": 1.0,
+      "dataset_hash_ok": true,
+      "effort": "high",
+      "finished_at": "2026-10-30T09:04:54+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "input_tokens": 10743,
+      "level_task_counts": null,
+      "levels": [
+        {
+          "correct": 4,
+          "level": 3,
+          "missing": 0,
+          "p": 0.8,
+          "provider_error": 0,
+          "size": 5,
+          "smoothed": 0.8,
+          "valid": 5
+        },
+        {
+          "correct": 2,
+          "level": 4,
+          "missing": 0,
+          "p": 0.4,
+          "provider_error": 0,
+          "size": 6,
+          "smoothed": 0.4,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 5,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 8,
+          "smoothed": 0.0,
+          "valid": 5
+        },
+        {
+          "correct": 0,
+          "level": 6,
+          "missing": 0,
+          "p": 0.0,
+          "provider_error": 0,
+          "size": 10,
+          "smoothed": 0.0,
+          "valid": 5
+        }
+      ],
+      "levels_tested": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "median_latency_ms": 63236,
+      "missing": 0,
+      "model": {
+        "key": "openai-gpt-6-luna",
+        "lab": "OpenAI",
+        "model": "gpt-6-luna",
+        "name": "GPT-6 Luna",
+        "provider": "openai"
+      },
+      "n_tasks": 20,
+      "note": "High-effort provisional bracket: L3-L6, 5 core tasks/level; L5 pilot reused.",
+      "official": false,
+      "output_tokens": 75538,
+      "p95_latency_ms": 118624,
+      "precision_levels": [],
+      "precision_tasks": 5,
+      "provider_errors": 0,
+      "rank": null,
+      "rankable": false,
+      "reasoning_tokens": 74848,
+      "reasons": [
+        "unresolved whole levels: [1, 2]"
+      ],
+      "run_dir": "runs/provisional/2026-10/high/openai-gpt-6-luna",
+      "run_id": "20261030T085255Z-openai-gpt-6-luna-aa91b947",
+      "score": null,
+      "score_bounds": [
+        3.49120185606703,
+        3.836802784100545
+      ],
+      "score_ci": null,
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "EQB bounds only: unresolved levels [1, 2]; monotone plateau inferred at levels [7, 8, 9, 10, 11]",
+      "solved_rate": 0.3,
+      "status": "complete",
+      "tasks_per_level": 5,
+      "tier": "provisional",
+      "total_tokens": 86281,
+      "unresolved_levels": [
+        1,
+        2
+      ],
+      "valid": 20,
+      "warnings": [
+        "EQB bounds only: unresolved levels [1, 2]",
+        "monotone plateau inferred at levels [7, 8, 9, 10, 11]"
       ]
     },
     {
       "accuracy": 0.7777777777777778,
-      "band_correct": 7,
-      "band_levels": [
-        8,
-        9
-      ],
-      "band_rate": 0.7777777777777778,
-      "band_valid": 9,
-      "bound": 9.0,
-      "bound_size": 19.0,
-      "censored": "upper",
+      "censored": "incomplete",
       "completion": 0.6,
-      "composite": null,
       "correct": 7,
       "cost_basis": "provider_reported_partial",
       "cost_known": true,
@@ -1992,6 +2012,18 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-11-01T03:06:17+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
       "input_tokens": 19289,
       "level_task_counts": {
         "10": 5,
@@ -2056,44 +2088,39 @@
       "reasons": [
         "run status is aborted",
         "valid completion is 60%",
-        "at least one used level has fewer than 3 valid tasks",
-        "score is censored (upper)"
+        "unresolved whole levels: [10, 11]"
       ],
       "run_dir": "runs/provisional/2026-10/gemini/google-gemini-4-argon-high",
       "run_id": "20261101T022953Z-google-gemini-4-argon-b9df0616",
       "score": null,
-      "score_ci": [
-        8.477339661414687,
-        8.988895038167287
+      "score_bounds": [
+        8.985893590249166,
+        9.721561973038387
       ],
-      "scoring_version": "2.2",
-      "short_note": "cost excludes 3 call(s) with no cost record",
-      "size": 19.0,
-      "size_ci": [
-        16.881943016134134,
-        19.0
-      ],
+      "score_ci": null,
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "EQB bounds only: unresolved levels [10, 11]; monotone plateau inferred at levels [1, 2, 3, 4, 5, 6, 7]; cost excludes 3 call(s) with no cost record",
       "solved_rate": 0.7777777777777778,
       "status": "aborted",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 532632,
+      "unresolved_levels": [
+        10,
+        11
+      ],
       "valid": 9,
       "warnings": [
+        "EQB bounds only: unresolved levels [10, 11]",
+        "monotone plateau inferred at levels [1, 2, 3, 4, 5, 6, 7]",
         "cost excludes 3 call(s) with no cost record"
       ]
     },
     {
       "accuracy": 1.0,
-      "band_correct": 0,
-      "band_levels": [],
-      "band_rate": null,
-      "band_valid": 0,
-      "bound": 5.0,
-      "bound_size": 8.0,
-      "censored": "upper",
+      "censored": "incomplete",
       "completion": 0.65,
-      "composite": null,
       "correct": 13,
       "cost_basis": "unknown",
       "cost_known": false,
@@ -2103,6 +2130,13 @@
       "dataset_hash_ok": true,
       "effort": "high",
       "finished_at": "2026-10-30T11:22:48+00:00",
+      "horizon": 11,
+      "horizon_coordinate": 10.965784284662087,
+      "ignored_levels": [],
+      "inferred_levels": [
+        1,
+        2
+      ],
       "input_tokens": 5889,
       "level_task_counts": null,
       "levels": [
@@ -2174,33 +2208,45 @@
       "reasons": [
         "run status is aborted",
         "valid completion is 65%",
-        "at least one used level has fewer than 3 valid tasks",
-        "score is censored (upper)"
+        "unresolved whole levels: [6, 7, 8, 9, 10, 11]"
       ],
       "run_dir": "runs/provisional/2026-10/high/xiaomi-mimo-v2-6-flash",
       "run_id": "20261030T085303Z-xiaomi-mimo-v2-6-flash-aa91b947",
       "score": null,
+      "score_bounds": [
+        5.728004640167574,
+        10.965784284662087
+      ],
       "score_ci": null,
-      "scoring_version": "2.2",
-      "short_note": "2 provider timeout(s)",
-      "size": null,
-      "size_ci": null,
+      "score_method": "isotonic-whole-level-log-area",
+      "scoring_version": "3.0",
+      "short_note": "2 provider timeout(s); EQB bounds only: unresolved levels [6, 7, 8, 9, 10, 11]; monotone plateau inferred at levels [1, 2]",
       "solved_rate": 1.0,
       "status": "aborted",
       "tasks_per_level": 5,
       "tier": "provisional",
       "total_tokens": 572985,
+      "unresolved_levels": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
       "valid": 13,
       "warnings": [
-        "2 provider timeout(s)"
+        "2 provider timeout(s)",
+        "EQB bounds only: unresolved levels [6, 7, 8, 9, 10, 11]",
+        "monotone plateau inferred at levels [1, 2]"
       ]
     }
   ],
   "rules": {
-    "band": "whole levels floor(EQB-L) - 1 to floor(EQB-L) + 1",
-    "composite": "EQB-C = EQB-L * band_rate",
+    "grid": "whole levels 1 through horizon; half levels are diagnostics only",
     "min_completion": 0.9,
     "min_valid_per_level": 3,
+    "missing_levels": "monotone bounds; rank only when all grid knots are identified",
     "official_effort": "max",
     "official_providers": [
       "deepseek",
@@ -2209,9 +2255,11 @@
     "ranked_tiers": [
       "official",
       "provisional"
-    ]
+    ],
+    "score": "EQB = 1 + integral of isotonic success over log-size difficulty"
   },
-  "scoring_version": "2.2",
+  "score_method": "isotonic-whole-level-log-area",
+  "scoring_version": "3.0",
   "season_seed": 731992,
-  "unranked_count": 4
+  "unranked_count": 5
 }

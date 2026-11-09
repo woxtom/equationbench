@@ -1,10 +1,10 @@
 # EquationBench Linear Methodology
 
-**Version:** 2.0.0 · **Status:** v2 frontier scaffolding
+**Scoring version:** 3.0 · **Status:** integrated EQB scoring implemented
 
 EquationBench measures one thing: can a model solve a dense integer linear
-system exactly, and how large a system can it solve before its success rate falls
-to 50%?
+system exactly, across an increasing range of sizes? One integrated score
+captures both reach and reliability.
 
 The detailed ladder and scoring specification is in [ladder.md](ladder.md).
 This page states the guarantees and the limits.
@@ -49,13 +49,21 @@ every entry must be an exact integer in the requested order.
 
 ## 4. Score
 
-The primary score is the **50% frontier** $L^*$, in continuous ladder levels.
-It is unbounded and does not depend on the number of levels tested. See
-[ladder.md](ladder.md) for the formula, censoring rules, and confidence
-intervals.
+The single score is **EQB effective solved levels**: 1 plus area under the
+non-increasing isotonic exact-solve curve, integrated in actual log system size.
+Every row uses the same whole-level grid L1–L11. Half levels are diagnostics.
+Additional trials refine rates, not the difficulty weights.
 
-The legacy fixed-set 0–100 score is retained only in the archived v1 tag. It is
-not the v2 rank.
+Missing grid knots receive monotone bounds; unresolved regions produce an
+unranked range. Inferred plateaus are disclosed, not counted as observations.
+The task bootstrap refits and integrates the entire curve. Small all-pass or
+all-fail samples can understate uncertainty. See [ladder.md](ladder.md) for the
+complete formula, bounds, horizon policy, and interval limitations.
+
+The horizon is shared and versioned. EQB has a ceiling at a fixed horizon, but
+there is no permanent ceiling across extensions. Extending an all-zero tail
+does not dilute the score. Scores from different horizons are not comparable.
+The v1 fixed-set score and v2 frontier/composite are retired, not relabeled.
 
 ## 5. Contamination
 
@@ -74,8 +82,9 @@ the mitigation.
   reported by the provider is recorded.
 - Cost is provider-reported and shown with a cost basis. Subscription and API
   list prices are not mixed without a label.
-- The staircase is intended to keep cost proportional to the model's frontier:
-  weak models stop early; strong models pay for the hard levels.
+- Prefer full-grid coverage and predeclared precision sampling. The adaptive
+  runner is not implemented. Total cost depends on the selected task set, so
+  cost charts are descriptive rather than controlled efficiency comparisons.
 - Provider errors and timeouts are infrastructure failures, not model answers.
   They are retried and excluded from the denominator; completion rate is reported.
 

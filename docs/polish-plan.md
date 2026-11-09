@@ -1,5 +1,8 @@
 # EquationBench Linear v2 — Polish Plan
 
+> **Archived v2 design plan.** Superseded by scoring v3.0 in [ladder.md](ladder.md).
+> Frontier formulas and stopping rules below are historical, not the active protocol.
+
 **Decision:** drop the other six tracks. Make EquationBench a **linear-systems-only**
 benchmark with an **open-ended geometric difficulty ladder** and a **frontier score**
 that has no ceiling. Use a small slate of cheap, stable, directly-served models.

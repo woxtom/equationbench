@@ -23,7 +23,10 @@ def test_official_run_is_recomputed_and_rankable() -> None:
     assert row is not None
     assert row["official"] is True
     assert row["rankable"] is True
-    assert row["score"] == pytest.approx(10.0)
+    assert row["score"] == pytest.approx(9.581826687639762)
+    assert row["scoring_version"] == "3.0"
+    assert row["horizon"] == 11
+    assert "composite" not in row and "band_rate" not in row
     assert row["valid"] == 75
     assert row["precision_levels"] == [9, 10, 11]
     assert row["provider_errors"] == 0
@@ -41,11 +44,12 @@ def test_incomplete_probe_is_not_rankable() -> None:
     assert row["reasons"]
 
 
-def test_score_labels_cover_censoring() -> None:
+def test_score_labels_cover_bounds() -> None:
     assert builder.score_label({"score": 9.25}) == "9.25"
-    assert builder.score_label({"score": None, "censored": "upper", "bound": 11.0}) == "≥11.0"
-    assert builder.score_label({"score": None, "censored": "lower", "bound": 3.0}) == "<3.0"
-    assert builder.score_label({"score": None, "censored": "ambiguous", "bound": 7.0}) == "~7.0"
+    assert (
+        builder.score_label({"score": None, "score_bounds": [3.49, 3.84]}) == "3.49–3.84 [bounds]"
+    )
+    assert builder.score_label({"score": None}) == "—"
 
 
 def test_web_page_and_pages_workflow_exist() -> None:
@@ -82,8 +86,9 @@ def test_leaderboard_json_has_fields_the_page_uses() -> None:
             "n_tasks",
             "coverage",
             "cost_known",
-            "band_levels",
-            "band_rate",
+            "score_bounds",
+            "horizon",
+            "scoring_version",
         ):
             assert key in row, key
 
@@ -127,19 +132,50 @@ def test_readme_without_markers_is_an_error() -> None:
         builder.render_readme("no markers here", [])
 
 
-def _level_stats(*levels):
-    return {level: {"correct": 1, "valid": 2} for level in levels}
+def test_deepseek_max_ranks_above_high_from_receipts():
+    rows = [
+        builder.load_run(ROOT / path, bootstrap=0, root=ROOT)
+        for path in (
+            "runs/official/2026-10/deepseek-v4-1-flash",
+            "runs/provisional/2026-10/high/deepseek-v4-1-flash",
+        )
+    ]
+    ranked, unranked = builder.rank_rows(rows)
+    assert not unranked
+    assert [row["effort"] for row in ranked] == ["max", "high"]
+    assert ranked[0]["score"] > ranked[1]["score"]
 
 
-@pytest.mark.parametrize(
-    ("score", "expected"),
-    [(10.0, [9, 10, 11]), (10.99, [9, 10, 11]), (9.99, [8, 9, 10])],
-)
-def test_band_is_three_whole_levels(score, expected):
-    from equationbench.frontier import FrontierScore
+def test_missing_easy_levels_are_unranked_not_assumed_perfect():
+    row = builder.load_run(
+        ROOT / "runs/provisional/2026-10/high/openai-gpt-6-luna", bootstrap=0, root=ROOT
+    )
+    assert row["rankable"] is False
+    assert row["score"] is None
+    assert row["unresolved_levels"] == [1, 2]
+    assert row["score_bounds"][0] < row["score_bounds"][1]
+    assert "[bounds]" in builder.score_label(row)
 
-    frontier = FrontierScore(score, None, None, None, None, None, None)
-    levels = [7, 8, 9, 9.5, 10, 10.5, 11, 12]
-    band = builder._band_fields(frontier, levels, _level_stats(*levels))
-    assert band["band_levels"] == expected
-    assert band["band_valid"] == 6
+
+def test_exact_score_ties_do_not_use_cost_or_raw_solve_counts():
+    rows = [
+        {"run_dir": "a", "rankable": True, "score": 8, "correct": 100, "cost_usd": 1},
+        {"run_dir": "b", "rankable": True, "score": 8, "correct": 10, "cost_usd": 10},
+        {"run_dir": "c", "rankable": True, "score": 7},
+    ]
+    ranked, _ = builder.rank_rows(rows)
+    assert [row["rank"] for row in ranked] == [1, 1, 3]
+
+
+def test_active_outputs_retire_composite_and_band():
+    import json
+
+    payload = json.loads((ROOT / "data/leaderboard.json").read_text())
+    assert payload["scoring_version"] == "3.0"
+    for row in payload["rows"]:
+        assert "composite" not in row
+        assert "band_rate" not in row
+        assert "size" not in row
+    page = (ROOT / "docs/index.html").read_text()
+    assert ".composite" not in page and "bandCell" not in page
+    assert "EQB-L" not in page and "EQB-C" not in page

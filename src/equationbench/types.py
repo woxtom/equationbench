@@ -19,7 +19,7 @@ ParseStatus = Literal[
 
 
 #: Failures of the provider, not answers from the model.  They are excluded from
-#: the frontier denominator.
+#: per-level exact-solve denominators.
 INFRA_STATUSES: tuple[ParseStatus, ...] = ("provider_error", "timeout")
 
 

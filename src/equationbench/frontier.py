@@ -1,4 +1,6 @@
-"""Frontier scoring for the linear ladder.
+"""Legacy v2 frontier estimator, retained for reproducing historical results.
+
+Current runs and leaderboards use :mod:`equationbench.area` (scoring v3).
 
 The score is the continuous ladder level at which a model has a 50% chance of
 solving an exact system.  It is *not* a fraction of a fixed test set, so adding
