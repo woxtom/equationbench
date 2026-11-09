@@ -1,6 +1,6 @@
 {
   "bootstrap_replicates": 2000,
-  "generated_at": "2026-11-09T06:51:54+00:00",
+  "generated_at": "2026-11-09T08:03:18+00:00",
   "generator": "eqb build-leaderboard",
   "generator_version": "2.0.0",
   "ladder_version": "1",
@@ -8,7 +8,7 @@
   "ranked_count": 10,
   "rows": [
     {
-      "accuracy": 0.75,
+      "accuracy": 0.72,
       "band_correct": 10,
       "band_levels": [
         9,
@@ -21,19 +21,20 @@
       "bound_size": null,
       "censored": null,
       "completion": 1.0,
-      "composite": 6.98859476155403,
-      "correct": 15,
+      "composite": 7.057184367366308,
+      "correct": 18,
       "cost_basis": "provider_reported",
       "cost_known": true,
-      "cost_per_100_valid": 83.94492000000001,
-      "cost_usd": 16.788984000000003,
+      "cost_per_100_valid": 90.784096,
+      "cost_usd": 22.696024,
       "coverage": 1.0,
       "dataset_hash_ok": true,
       "effort": "high",
-      "finished_at": "2026-11-01T02:38:09+00:00",
-      "input_tokens": 51217,
+      "finished_at": "2026-11-09T08:03:18+00:00",
+      "input_tokens": 70491,
       "level_task_counts": {
         "10": 5,
+        "10.5": 5,
         "11": 5,
         "8": 5,
         "9": 5
@@ -70,6 +71,16 @@
           "valid": 5
         },
         {
+          "correct": 3,
+          "level": 10.5,
+          "missing": 0,
+          "p": 0.6,
+          "provider_error": 0,
+          "size": 27,
+          "smoothed": 0.6,
+          "valid": 5
+        },
+        {
           "correct": 0,
           "level": 11,
           "missing": 0,
@@ -84,9 +95,10 @@
         8,
         9,
         10,
+        10.5,
         11
       ],
-      "median_latency_ms": 310245,
+      "median_latency_ms": 391294,
       "missing": 0,
       "model": {
         "key": "openai-gpt-6-astra",
@@ -95,41 +107,39 @@
         "name": "GPT-6 Astra",
         "provider": "openai"
       },
-      "n_tasks": 20,
-      "note": "High-effort bracket resumed after quota reset: L8-L10 reused, last L10 task + L11 added.",
+      "n_tasks": 25,
+      "note": "High-effort bracket: L8-L11; L10.5 (n=27) added to split the L10-L11 gap.",
       "official": false,
-      "output_tokens": 325439,
-      "p95_latency_ms": 1179892,
+      "output_tokens": 439725,
+      "p95_latency_ms": 1116721,
       "precision_levels": [],
       "precision_tasks": 0,
       "provider_errors": 0,
       "rank": 1,
       "rankable": true,
-      "reasoning_tokens": 324279,
+      "reasoning_tokens": 438219,
       "reasons": [],
       "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-high",
-      "run_id": "20261101T022953Z-openai-gpt-6-astra-e23b11fc",
-      "score": 10.482892142331044,
+      "run_id": "20261109T075100Z-openai-gpt-6-astra-08f4063f",
+      "score": 10.585776551049463,
       "score_ci": [
-        10.482892142331046,
-        10.482892142331044
+        10.318609377704338,
+        10.737779644494513
       ],
       "scoring_version": "2.2",
-      "short_note": "CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance",
-      "size": 26.832815729997478,
+      "short_note": "",
+      "size": 27.478309608612893,
       "size_ci": [
-        26.8328157299975,
-        26.83281572999749
+        25.833399981920827,
+        28.460498941515425
       ],
-      "solved_rate": 0.75,
+      "solved_rate": 0.72,
       "status": "complete",
       "tasks_per_level": 5,
       "tier": "provisional",
-      "total_tokens": 381520,
-      "valid": 20,
-      "warnings": [
-        "CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance"
-      ]
+      "total_tokens": 515080,
+      "valid": 25,
+      "warnings": []
     },
     {
       "accuracy": 0.8055555555555556,

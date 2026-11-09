@@ -1,6 +1,6 @@
 # EquationBench Linear Leaderboard
 
-Generated: `2026-11-09T06:51:54+00:00`
+Generated: `2026-11-09T08:03:18+00:00`
 
 Season seed `731992` · ladder v1 · scoring v2.2. One table, all runs.
 
@@ -10,7 +10,7 @@ Web view: <https://woxtom.github.io/equationbench/>
 
 | # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Tokens | Cost | Note |
 |---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 6.99 | 10.48 (10.48–10.48) | 15/20 | 67% (L9–L11) | 100% | 382k | $16.79 | CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance |
+| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 7.06 | 10.59 (10.32–10.74) | 18/25 | 67% (L9–L11) | 100% | 515k | $22.70 |  |
 | 2 | [GPT-6.1 Sol](runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5) | high | Provisional | 6.84 | 10.25 (9.66–10.66) | 29/40 | 67% (L9–L11) | 90% | 567k | $5.06* | 4 provider timeout(s) |
 | 3 | [GPT-6.1 Terra](runs/official/2026-10/openai-gpt-6-1-terra) | max | Official | 5.40 | 10.13 (9.71–10.59) | 57/75 | 53% (L9–L11) | 100% | 1.41M | $6.45 |  |
 | 4 | [DeepSeek V4.1 Flash](runs/provisional/2026-10/high/deepseek-v4-1-flash) | high | Provisional | 4.66 | 9.31 (8.73–9.77) | 27/50 | 50% (L8–L10) | 100% | 4.49M | $5.28 |  |
@@ -34,7 +34,7 @@ Web view: <https://woxtom.github.io/equationbench/>
 - `Official` rows use a direct provider and max effort. `Provisional` rows are exploratory.
 - Effort levels are not the same test. Use the `Effort` column before you compare rows.
 - Official rows use 5 tasks at L1-L8 and 10 tasks at L9-L11.
-- Half levels such as L9.5 are extra sizes between two whole levels. They sharpen `EQB-L` but do not count in `Band`. Every ranked row with a real gap at its bracket has one, except Astra high. L10.5 (n=27) went 1/5 for Terra max and DeepSeek max, and 1/4 for Sol.
+- Half levels such as L9.5 are extra sizes between two whole levels. They sharpen `EQB-L` but do not count in `Band`. Every ranked row with a real gap at its bracket has one. L10.5 (n=27) went 3/5 for Astra high, 1/5 for Terra max and DeepSeek max, and 1/4 for Sol.
 - DeepSeek high uses 10 tasks at L10-L11. The other high rows use 5 core tasks.
 - GPT-6.1 Sol high has exactly 90% valid coverage (4 timeouts), the minimum for a ranked row.
 - GPT-6.1 Sol high uses the core 5-task row. Its 10-task precision extension had 7 timeouts and 84% valid completion.
@@ -42,7 +42,7 @@ Web view: <https://woxtom.github.io/equationbench/>
 
 ## What the data show
 
-Astra high and Sol form the top pair. Astra reached L10 5/5 and failed L11 0/5; Sol passed L10 3/4 and failed L11 0/3. Their band rates are equal (67%), so EQB-L decides the order: Astra 10.48, Sol 10.25.
+Astra high and Sol form the top pair. Astra reached L10 5/5 and failed L11 0/5; Sol passed L10 3/4 and failed L11 0/3. Their band rates are equal (67%), so EQB-L decides the order: Astra 10.59, Sol 10.25.
 
 Terra max is third. It is more reliable below L10 (L9 10/10) but weaker at L10 (6/10), which pulls its band rate to 53%.
 
@@ -57,5 +57,5 @@ Gemini 4 Argon high reached L9 at 2/4 and then the opencode-go 5-hour limit bloc
 - OpenAI lists `gpt-6.1-sol` and `gpt-6.1-terra`, but no `gpt-6.1-luna`. The Luna row uses `gpt-6-luna`.
 - High-effort rows start at L5 (strong models) or L3 (weaker models). The score needs only the levels around the bracket.
 - `Band` jumps when `EQB-L` crosses a whole number, because the three-level window moves. Treat small EQB-C differences near a whole-number score as noise.
-- A degenerate CI (for example 10.48-10.48) means every task at the bracket levels passed or failed. The task bootstrap cannot show variance in that case.
+- A degenerate CI (equal low and high ends) means every task at the bracket levels passed or failed. The task bootstrap cannot show variance in that case.
 - The stale 2026-10 batch probes are not used in the ranked rows.

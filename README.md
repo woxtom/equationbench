@@ -83,7 +83,7 @@ Season seed `731992` · ladder v1. One table, all runs.
 <!-- leaderboard:start -->
 | # | Model | Effort | Status | EQB-C | EQB-L (95% CI) | Solved | Band | Cover | Tokens | Cost | Note |
 |---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 6.99 | 10.48 (10.48–10.48) | 15/20 | 67% (L9–L11) | 100% | 382k | $16.79 | CI is degenerate: every bracket-level task passed or failed, so the task bootstrap has no variance |
+| 1 | [GPT-6 Astra](runs/provisional/2026-10/astra/openai-gpt-6-astra-high) | high | Provisional | 7.06 | 10.59 (10.32–10.74) | 18/25 | 67% (L9–L11) | 100% | 515k | $22.70 |  |
 | 2 | [GPT-6.1 Sol](runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5) | high | Provisional | 6.84 | 10.25 (9.66–10.66) | 29/40 | 67% (L9–L11) | 90% | 567k | $5.06* | 4 provider timeout(s) |
 | 3 | [GPT-6.1 Terra](runs/official/2026-10/openai-gpt-6-1-terra) | max | Official | 5.40 | 10.13 (9.71–10.59) | 57/75 | 53% (L9–L11) | 100% | 1.41M | $6.45 |  |
 | 4 | [DeepSeek V4.1 Flash](runs/provisional/2026-10/high/deepseek-v4-1-flash) | high | Provisional | 4.66 | 9.31 (8.73–9.77) | 27/50 | 50% (L8–L10) | 100% | 4.49M | $5.28 |  |
@@ -108,13 +108,13 @@ Season seed `731992` · ladder v1. One table, all runs.
 - `Official` rows use a direct provider and max effort. `Provisional` rows are exploratory.
 - Effort levels are not the same test. Read the `Effort` column first.
 - Official rows use 5 tasks at L1–L8 and 10 tasks at L9–L11.
-- Half levels such as L9.5 are extra sizes between two whole levels. They sharpen `EQB-L` but do not count in `Band`. Every ranked row with a real gap at its bracket has one, except Astra high. L10.5 (n=27) went 1/5 for Terra max and DeepSeek max, and 1/4 for Sol.
+- Half levels such as L9.5 are extra sizes between two whole levels. They sharpen `EQB-L` but do not count in `Band`. Every ranked row with a real gap at its bracket has one. L10.5 (n=27) went 3/5 for Astra high, 1/5 for Terra max and DeepSeek max, and 1/4 for Sol.
 
 **What the data show**
 
 Astra high and Sol form the top pair. Astra passed L10 5/5 and failed L11 0/5.
 Sol passed L10 3/4 and failed L11 0/3. Their band rates are equal at 67%, so
-`EQB-L` decides the order: Astra 10.48, Sol 10.25.
+`EQB-L` decides the order: Astra 10.59, Sol 10.25.
 
 Terra max is third. It is the most reliable model below L10 (L9 10/10), but it
 drops to 6/10 at L10, which pulls its band rate to 53%.
@@ -213,13 +213,12 @@ tests/               generator, scorer, parser, runner, and CLI tests
 ## What is next
 
 1. Wire the adaptive staircase and the 5-task precision bank into the runner.
-2. Add L10.5 to GPT-6 Astra high (up to ~$12 for 5 tasks).
-3. Run GPT-6.1 Sol and GPT-6 Astra at max effort on L10–L11 for a max-vs-max
+2. Run GPT-6.1 Sol and GPT-6 Astra at max effort on L10–L11 for a max-vs-max
    comparison. Astra is expensive, so use a hard budget cap.
-4. Finish the Claude Haiku L8 bracket at an effort that does not hit the output
+3. Finish the Claude Haiku L8 bracket at an effort that does not hit the output
    cap.
-5. Add the frontier curve, Pareto chart, and budget table to the site.
-6. Replace provisional rows with clean direct-provider rows when routes and
+4. Add the frontier curve, Pareto chart, and budget table to the site.
+5. Replace provisional rows with clean direct-provider rows when routes and
    coverage pass the official rules.
 
 See [`docs/polish-plan.md`](docs/polish-plan.md).
