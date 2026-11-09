@@ -18,6 +18,26 @@ ParseStatus = Literal[
 ]
 
 
+#: Failures of the provider, not answers from the model.  They are excluded from
+#: the frontier denominator.
+INFRA_STATUSES: tuple[ParseStatus, ...] = ("provider_error", "timeout")
+
+
+Level = int | float
+
+
+def normalize_level(value: float) -> Level:
+    """A ladder level: a whole number, or a half level such as ``10.5``.
+
+    Whole levels are always ``int``, because a level's text form is part of its
+    task seed and ``"10.0"`` would generate different tasks from ``"10"``.
+    """
+    doubled = float(value) * 2
+    if not doubled.is_integer():
+        raise ValueError(f"levels must be whole or half steps, got {value}")
+    return int(value) if float(value).is_integer() else float(value)
+
+
 def canonical_json(value: Any) -> str:
     """Stable JSON encoding used for hashes and dataset serialization."""
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
@@ -42,7 +62,7 @@ class GenResult:
 class Task:
     task_id: str
     family: str
-    level: int
+    level: Level
     seed: int
     prompt: str
     answer: str
@@ -84,7 +104,7 @@ class Task:
         return cls(
             task_id=data["task_id"],
             family=data["family"],
-            level=int(data["level"]),
+            level=normalize_level(data["level"]),
             seed=int(data["seed"]),
             prompt=data["prompt"],
             answer=data["answer"],
@@ -113,6 +133,10 @@ class Prediction:
     stop_reason: str | None = None
     started_at: str | None = None
     finished_at: str | None = None
+
+    @property
+    def is_infra(self) -> bool:
+        return self.parse_status in INFRA_STATUSES
 
     def to_dict(self) -> dict[str, Any]:
         return {

@@ -1,23 +1,20 @@
 {
   "aborted_reason": null,
   "actual_thinking_levels": {
-    "high": 45
+    "high": 50
   },
   "benchmark": "EquationBench",
   "config": {
     "concurrency": 5,
-    "families": null,
-    "levels": null,
-    "limit": null,
-    "max_cost": 6.0,
-    "notes": "High-effort precision extension: 5 extra tasks at L10 and L11; core L5-L11 reused.",
+    "max_cost": 6.68,
+    "notes": "High-effort precision extension: 5 extra tasks at L10 and L11; L9.5 (n=21) added to split the L9-L10 gap.",
     "retries": 0,
     "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
     "thinking_requested": "high",
     "timeout": 2400.0
   },
   "dataset": {
-    "dataset_sha256": "4947f5e66e7e29be6af628340db516f110536252a46294270d3b38f4cfa5d63b",
+    "dataset_sha256": "d01298ed1fb81e7554639bb0c43c495141122486524a497f243cc7f96d14d0ba",
     "manifest": {
       "base_size": 3,
       "coefficient_bound": 30,
@@ -29,11 +26,12 @@
           "6": 5,
           "7": 5,
           "8": 5,
-          "9": 5
+          "9": 5,
+          "9.5": 5
         },
-        "total": 45
+        "total": 50
       },
-      "dataset_sha256": "4947f5e66e7e29be6af628340db516f110536252a46294270d3b38f4cfa5d63b",
+      "dataset_sha256": "d01298ed1fb81e7554639bb0c43c495141122486524a497f243cc7f96d14d0ba",
       "description": "Fixed paired ladder set: 5 core tasks per level, L5 to L11; +5 precision tasks at L10,11.",
       "formula": "round(3 * 2 ** ((level - 1) / 3))",
       "generator_version": "2.0.0+ladder1",
@@ -45,7 +43,8 @@
         "6": 5,
         "7": 5,
         "8": 5,
-        "9": 5
+        "9": 5,
+        "9.5": 5
       },
       "levels": [
         {
@@ -94,6 +93,15 @@
           "zone": "core"
         },
         {
+          "approx_prompt_chars": 4668,
+          "approx_prompt_tokens": 1167,
+          "level": 9.5,
+          "precision_tasks": 5,
+          "size": 21,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
           "approx_prompt_chars": 5876,
           "approx_prompt_tokens": 1469,
           "level": 10,
@@ -118,6 +126,7 @@
         7,
         8,
         9,
+        9.5,
         10,
         11
       ],
@@ -140,6 +149,7 @@
         "135f77ced662c2b2": "d462da9c1f146f7f66cf1354ee609571a5cc24288b4373ba9c0508600cac6a81",
         "143eef2fda2a95ac": "b05c4f1a73715a61535b3ca49ff40dd83c5239ab13e9a0575db0ffd7d6c4985b",
         "1cd5941d522f3750": "18483fb0811c082aca86935cf309a56fa19d7e52a5a6dafc0540200a234ce51e",
+        "1fc70d3a510bf4cf": "be385057c0d8b02ce636a145aacf0458c0379c35460f425e29fa969bf1b4f9e7",
         "27a0653f23943fb0": "e7311eaec8314a169be6176782bac7e6dc8f0dcb4eff9113e7416898c58ae269",
         "2a7bcaef7bf381e5": "da6f487da3feed00963a15f0756e890e5d4729e4918e64e3017d98ebb5590c1f",
         "39419e7d696f5801": "c4083ea9be2aaca8b011252626b342b2334176458ec583ab5093bfba5eb1e56b",
@@ -147,6 +157,7 @@
         "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
         "40c8252cf6870843": "7066df360b2b2370af268bcbcf7eee1b1d8b42d9476985be1e6914a3ccab6ede",
         "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
+        "477bd9e0ad54bce5": "eba857612b687af794f5de8026bfef18b1e99cb7b850515c4db19767f2756f5a",
         "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
         "4f3e8494bf99ff2b": "20ce0e200fa219078987712053fca5d6a7815f135bc9845e63923715b28324d9",
         "534ceeb3b6388b5c": "abc97b53d926412be1e9e3a4d56656e3f415da7f1b7d898f31f1ff908852e3ea",
@@ -155,6 +166,7 @@
         "598eaad1809924bd": "20db31c0a6b3ccc0d8acf4ed26db66097ad64daa0987708c0f4dc9ca61b61bd2",
         "5adfd7221c86d7d2": "e3dd847b3a02ff1744199afacbf9f6923586c5fe06fdf60a3e7fc3d5d5cb4d02",
         "5d14ba9969ef40bc": "b092a0955440759f22b1f771ad83b5d584f7f0ec1028161f3e854faf933220af",
+        "5daedadf7c968a8b": "822f13fa139f1e712087cc1d9884555411eb243ddab5b0e328d0e779190eafb6",
         "60907954247589e8": "7884d9589e91f4276e333aeae392a6c8fb1fa9b71615a3665f8cd1a12e236bb2",
         "628a0ce52dc4cf2d": "76415b366da8782a7cc4bd2132e4379c9272fd9f8af1e922a16fe1d604fc5d49",
         "649b15603a4dba0f": "d4f7fbc7cd2f130435792781dd3e56d62714d879c223d3fad4319aa1da19d3b4",
@@ -173,10 +185,12 @@
         "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
         "b8999b6f928ac90f": "adafe63a471d8a2843dde1d7b78f4ecaffe19a28823c5f08d9ea298fa5e3f56e",
         "bc7a9a97096b60be": "a30a95b63635984474751598bc8a469cf5e45faf0d31734ed0bdf7f68339682b",
+        "bcfa0c1bb7d4858c": "b7e103507f9c276e2d77e581a161a8103dc5902fa1e1f4eeb6a2caad666c56da",
         "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc",
         "e991fd15bedee602": "5d5ccf9008649833b90f3502346487057f95fc1e5bcdaa43e89c1893dbb2fa9e",
         "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e",
         "ecf17fb30c5e9870": "481c2b0dfd4293a5d8f4883976fb882dcb717e487a9463f11fca45177b54207c",
+        "ee125b9cd9db3b36": "0e09363332994a126d935347ca782efda46467882897c3ee089cc55f4e06e55c",
         "f9bbf2d5bdf9df74": "f884901c1c29554817ec8c172f5bfdb16d9b3d3a317b2917b2a71c0fc22abb0b"
       },
       "tasks_per_level": 5
@@ -209,6 +223,11 @@
       "27a0653f23943fb0",
       "4f3e8494bf99ff2b",
       "eb0f22245e95e0e2",
+      "1fc70d3a510bf4cf",
+      "bcfa0c1bb7d4858c",
+      "5daedadf7c968a8b",
+      "ee125b9cd9db3b36",
+      "477bd9e0ad54bce5",
       "70dce59126112537",
       "7bc7b4b0741ae944",
       "58f4a0a7f79c4123",
@@ -234,22 +253,20 @@
   "dataset_version": "v2",
   "environment": {
     "argv": [
-      ".venv/bin/eqb",
+      "/home/wot/project/equationbench/.venv/bin/eqb",
       "run-frontier",
-      "--model",
+      "-m",
       "deepseek-v4-1-flash",
+      "--thinking",
+      "high",
       "--levels",
-      "5-11",
-      "--tasks-per-level",
-      "5",
+      "5,6,7,8,9,9.5,10,11",
       "--precision-levels",
       "10-11",
       "--precision-tasks",
       "5",
       "--out",
       "runs/provisional/2026-10/high/deepseek-v4-1-flash",
-      "--thinking",
-      "high",
       "--concurrency",
       "5",
       "--timeout",
@@ -257,18 +274,19 @@
       "--retries",
       "0",
       "--max-cost",
-      "6",
-      "--bootstrap",
-      "2000",
+      "6.68",
       "--notes",
-      "High-effort precision extension: 5 extra tasks at L10 and L11; core L5-L11 reused."
+      "High-effort precision extension: 5 extra tasks at L10 and L11; L9.5 (n=21) added to split the L9-L10 gap.",
+      "--include-disabled",
+      "--bootstrap",
+      "1000"
     ],
-    "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+    "git_commit": "b97369b04e1de3453a7f992648b21bb9d0b2dbaa",
     "host": "wot",
     "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
     "python": "3.14.7"
   },
-  "finished_at": "2026-10-31T07:22:38+00:00",
+  "finished_at": "2026-11-09T05:31:26+00:00",
   "generator_version": "2.0.0",
   "model": {
     "api_key_env": null,
@@ -289,13 +307,13 @@
     "provider_kind": "pi",
     "thinking": "high"
   },
-  "n_existing_at_start": 35,
-  "n_predictions": 45,
-  "n_selected": 45,
+  "n_existing_at_start": 45,
+  "n_predictions": 50,
+  "n_selected": 50,
   "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
   "prompt_version": "1.0",
-  "run_id": "20261031T070627Z-deepseek-v4-1-flash-eb29d714",
-  "started_at": "2026-10-31T07:06:27+00:00",
+  "run_id": "20261109T051200Z-deepseek-v4-1-flash-fa722a8f",
+  "started_at": "2026-11-09T05:12:00+00:00",
   "status": "complete",
   "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
 }

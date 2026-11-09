@@ -41,9 +41,6 @@ with a high provider-error rate or a silent version change are not eligible.
 
 ## Data hygiene
 
-- Do not commit sealed keys or seeds. They live outside the repo in
-  `~/.config/equationbench` or `$EQB_SECRETS_DIR`.
-- Do not publish decrypted sealed tasks before the reveal date.
 - Do not edit predictions or omit failed tasks.
 - Do not commit generated leaderboards or raw transcripts; build them from
   receipts.

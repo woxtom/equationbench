@@ -61,8 +61,14 @@ from
 - Indices 6–10 are the **precision bank**, used at the two bracket levels.
 
 All models answer the same tasks at a level. The public season seed makes every
-task reproducible; the sealed holdout uses a different seed so it can verify top
-rows and later seasons.
+task reproducible. A sealed holdout with a different seed is planned to verify
+top rows and later seasons; it is not implemented yet.
+
+A **half level** such as L9.5 is an extra size between two whole levels: the
+rounded geometric midpoint of their real sizes (L9 is 19, L10 is 24, so L9.5 is
+21). It exists only where an integer fits between them, so L1.5 to L3.5 do not
+exist. Half levels are added around a bracket with `--levels 9,9.5,10`. They use
+the same seed scheme, never change whole-level tasks, and do not count in `Band`.
 
 Generate any level:
 

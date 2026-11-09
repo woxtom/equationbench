@@ -1,29 +1,27 @@
 {
   "aborted_reason": null,
   "actual_thinking_levels": {
-    "high": 32
+    "high": 36
   },
   "benchmark": "EquationBench",
   "config": {
     "concurrency": 5,
-    "families": null,
-    "levels": null,
-    "limit": null,
-    "max_cost": 12.0,
-    "notes": "L11 limit probe: L5-L10 reused, one missing L10 task plus L11, timeout 2400s, no retries.",
+    "max_cost": 6.38,
+    "notes": "Core 5-task row; L10.5 (n=27) added to split the L10-L11 gap.",
     "retries": 0,
     "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
     "thinking_requested": "high",
     "timeout": 2400.0
   },
   "dataset": {
-    "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+    "dataset_sha256": "dc698e57f2cff8ee800abab141e916d892095b9612a17eb146f7cc0cdc181d16",
     "manifest": {
       "base_size": 3,
       "coefficient_bound": 30,
       "counts": {
         "by_level": {
           "10": 5,
+          "10.5": 5,
           "11": 5,
           "5": 5,
           "6": 5,
@@ -31,13 +29,23 @@
           "8": 5,
           "9": 5
         },
-        "total": 35
+        "total": 40
       },
-      "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
-      "description": "Fixed paired ladder set: 5 tasks per level, L5 to L11.",
+      "dataset_sha256": "dc698e57f2cff8ee800abab141e916d892095b9612a17eb146f7cc0cdc181d16",
+      "description": "Fixed paired ladder set: 5 core tasks per level, L5 to L11.",
       "formula": "round(3 * 2 ** ((level - 1) / 3))",
       "generator_version": "2.0.0+ladder1",
       "ladder_version": "1",
+      "level_task_counts": {
+        "10": 5,
+        "10.5": 5,
+        "11": 5,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "8": 5,
+        "9": 5
+      },
       "levels": [
         {
           "approx_prompt_chars": 1204,
@@ -94,6 +102,15 @@
           "zone": "core"
         },
         {
+          "approx_prompt_chars": 7236,
+          "approx_prompt_tokens": 1809,
+          "level": 10.5,
+          "precision_tasks": 5,
+          "size": 27,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
           "approx_prompt_chars": 8750,
           "approx_prompt_tokens": 2188,
           "level": 11,
@@ -110,12 +127,14 @@
         8,
         9,
         10,
+        10.5,
         11
       ],
       "max_public_level": 11,
       "name": "ladder-L5-L11",
       "official_cap_level": 17,
-      "precision_tasks": 5,
+      "precision_levels": [],
+      "precision_tasks": 0,
       "prompt_version": "1.0",
       "season_seed": 731992,
       "solution_bound": 9,
@@ -128,9 +147,12 @@
         "1cd5941d522f3750": "18483fb0811c082aca86935cf309a56fa19d7e52a5a6dafc0540200a234ce51e",
         "27a0653f23943fb0": "e7311eaec8314a169be6176782bac7e6dc8f0dcb4eff9113e7416898c58ae269",
         "2a7bcaef7bf381e5": "da6f487da3feed00963a15f0756e890e5d4729e4918e64e3017d98ebb5590c1f",
+        "3557c8e67ffd06f8": "a7a91f19eeb2e32a2a1c273515a419b5132611ca288f5284c6a7864dd352aadc",
+        "38f04a784027e285": "0aec5432660dc51c4547d5b1e637ddf5c27fb351fe1af4791bc3cd444b8eb469",
         "39419e7d696f5801": "c4083ea9be2aaca8b011252626b342b2334176458ec583ab5093bfba5eb1e56b",
         "39d9e53c1cdb8c4a": "3c998fee2d9d84194b53e6cd438930cf3470a88f4b3efd7b7fa87d16c17f163a",
         "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
+        "40a0b30d137cf1ee": "3e18fb39021ad621f082d5154bf023913aca0ffff036733c93636371fe0c1ce6",
         "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
         "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
         "4f3e8494bf99ff2b": "20ce0e200fa219078987712053fca5d6a7815f135bc9845e63923715b28324d9",
@@ -145,6 +167,7 @@
         "76df98ef142a0f75": "af957348a5ff9f6a60eaa1db66020f47d8bf7a1a657af6c05570a8cfb31708c9",
         "7aa6f40bb4eeafce": "8fa7cbd7dd047c6ff2934d7901c65715250bf4f4bfc79920a196add2c09d6d86",
         "7bc7b4b0741ae944": "379afe838f80af4af7cc4f374c0e4b3830ec9c92edaba8804fc6c49f69142fd2",
+        "7dce5a0ce7267a0a": "57ca455a783494048422f7d1bdf21d1801e2b6ea6483792f843371094c075161",
         "7f7033cb8ea831b2": "3fddc89d4366319c5866b921e5ba2f99e8ff6d374e9fd0b38f8ae47c244b38e4",
         "8f979bb2870bc64b": "4aaae40dd5edc039a0c3e4fdcea391aabb9a125b8595fcf300e5cc66b1412015",
         "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
@@ -154,7 +177,8 @@
         "bc7a9a97096b60be": "a30a95b63635984474751598bc8a469cf5e45faf0d31734ed0bdf7f68339682b",
         "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc",
         "e991fd15bedee602": "5d5ccf9008649833b90f3502346487057f95fc1e5bcdaa43e89c1893dbb2fa9e",
-        "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e"
+        "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e",
+        "f2b2faef5bf282a2": "3d3c4ee474d3a19fd22fd960e9b591ec7cd5363e55d5ef3920f48fc15bb3f382"
       },
       "tasks_per_level": 5
     },
@@ -191,6 +215,11 @@
       "58f4a0a7f79c4123",
       "bc7a9a97096b60be",
       "1cd5941d522f3750",
+      "40a0b30d137cf1ee",
+      "38f04a784027e285",
+      "3557c8e67ffd06f8",
+      "f2b2faef5bf282a2",
+      "7dce5a0ce7267a0a",
       "39419e7d696f5801",
       "8f979bb2870bc64b",
       "7aa6f40bb4eeafce",
@@ -201,18 +230,18 @@
   "dataset_version": "v2",
   "environment": {
     "argv": [
-      ".venv/bin/eqb",
+      "/home/wot/project/equationbench/.venv/bin/eqb",
       "run-frontier",
-      "--model",
+      "-m",
       "openai-gpt-6-1-sol",
+      "--thinking",
+      "high",
       "--levels",
-      "5-11",
+      "5-10,10.5,11",
       "--tasks-per-level",
       "5",
       "--out",
-      "runs/provisional/2026-10/high/openai-gpt-6-1-sol",
-      "--thinking",
-      "high",
+      "runs/provisional/2026-10/high/openai-gpt-6-1-sol-core5",
       "--concurrency",
       "5",
       "--timeout",
@@ -220,26 +249,27 @@
       "--retries",
       "0",
       "--max-cost",
-      "12",
+      "6.38",
       "--bootstrap",
       "1000",
       "--notes",
-      "L11 limit probe: L5-L10 reused, one missing L10 task plus L11, timeout 2400s, no retries."
+      "Core 5-task row; L10.5 (n=27) added to split the L10-L11 gap.",
+      "--include-disabled"
     ],
-    "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+    "git_commit": "b97369b04e1de3453a7f992648b21bb9d0b2dbaa",
     "host": "wot",
     "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
     "python": "3.14.7"
   },
-  "finished_at": "2026-10-30T12:17:59+00:00",
+  "finished_at": "2026-11-09T06:51:54+00:00",
   "frontier": {
     "bootstrap_replicates": 1000,
     "bound": null,
     "bound_size": null,
     "censored": null,
     "ci": [
-      9.666666666666666,
-      10.5
+      9.662965012722431,
+      10.661778097771986
     ],
     "levels": [
       {
@@ -291,6 +321,14 @@
         "valid": 4
       },
       {
+        "correct": 1,
+        "level": 10.5,
+        "p": 0.25,
+        "size": 27,
+        "smoothed": 0.25,
+        "valid": 4
+      },
+      {
         "correct": 0,
         "level": 11,
         "p": 0.0,
@@ -300,12 +338,12 @@
       }
     ],
     "method": "isotonic-log-interpolation",
-    "score": 10.333333333333334,
-    "scoring_version": "2.0",
-    "size": 25.921433733415356,
+    "score": 10.254887502163468,
+    "scoring_version": "2.2",
+    "size": 25.45584412271571,
     "size_ci": [
-      22.220993094894972,
-      26.93908915942496
+      22.2019964116462,
+      27.96509255358473
     ]
   },
   "generator_version": "2.0.0",
@@ -328,30 +366,23 @@
     "provider_kind": "pi",
     "thinking": "high"
   },
-  "n_existing_at_start": 29,
-  "n_predictions": 35,
-  "n_selected": 35,
+  "n_existing_at_start": 35,
+  "n_predictions": 40,
+  "n_selected": 40,
   "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
   "prompt_version": "1.0",
-  "run_id": "20261030T113759Z-openai-gpt-6-1-sol-6dbc3f8d",
+  "run_id": "20261109T061154Z-openai-gpt-6-1-sol-ed5fe373",
   "score": {
-    "accuracy": 0.8,
-    "accuracy_ci": [
-      0.5142857142857142,
-      1.0
-    ],
-    "by_family": {
-      "linear": {
-        "accuracy": 0.8,
-        "correct": 28,
-        "n": 35,
-        "score": 73.21428571428571
-      }
-    },
+    "accuracy": 0.725,
     "by_level": {
       "10": {
         "accuracy": 0.6,
         "correct": 3,
+        "n": 5
+      },
+      "10.5": {
+        "accuracy": 0.2,
+        "correct": 1,
         "n": 5
       },
       "11": {
@@ -386,52 +417,38 @@
       }
     },
     "completion_rate": 1.0,
-    "correct": 28,
+    "correct": 29,
     "cost_known": true,
-    "cost_per_100": 11.070982857142857,
-    "input_tokens": 41760,
-    "median_latency_ms": 403258,
+    "input_tokens": 49787,
+    "median_latency_ms": 416744,
     "missing": 0,
-    "n": 35,
-    "output_tokens": 378998,
-    "p95_latency_ms": 2103959,
-    "reasoning_tokens": 374935,
-    "score": 73.21428571428571,
-    "score_ci": [
-      40.32258064516129,
-      100.0
-    ],
+    "n": 40,
+    "output_tokens": 496232,
+    "p95_latency_ms": 2400014,
+    "reasoning_tokens": 488985,
     "scoring_version": "1.0",
     "status_counts": {
-      "correct": 28,
-      "timeout": 3,
-      "unparseable": 1,
-      "wrong": 3
+      "correct": 29,
+      "timeout": 4,
+      "unparseable": 2,
+      "wrong": 5
     },
-    "total_cost_usd": 3.874844,
-    "total_tokens": 434198,
-    "weighted_accuracy": 0.7321428571428571
+    "total_cost_usd": 5.0639804,
+    "total_tokens": 566883
   },
-  "started_at": "2026-10-30T11:37:59+00:00",
+  "started_at": "2026-11-09T06:11:54+00:00",
   "status": "complete",
   "summary": {
-    "accuracy": 0.8,
-    "accuracy_ci": [
-      0.5142857142857142,
-      1.0
-    ],
-    "by_family": {
-      "linear": {
-        "accuracy": 0.8,
-        "correct": 28,
-        "n": 35,
-        "score": 73.21428571428571
-      }
-    },
+    "accuracy": 0.725,
     "by_level": {
       "10": {
         "accuracy": 0.6,
         "correct": 3,
+        "n": 5
+      },
+      "10.5": {
+        "accuracy": 0.2,
+        "correct": 1,
         "n": 5
       },
       "11": {
@@ -466,31 +483,24 @@
       }
     },
     "completion_rate": 1.0,
-    "correct": 28,
+    "correct": 29,
     "cost_known": true,
-    "cost_per_100": 11.070982857142857,
-    "input_tokens": 41760,
-    "median_latency_ms": 403258,
+    "input_tokens": 49787,
+    "median_latency_ms": 416744,
     "missing": 0,
-    "n": 35,
-    "output_tokens": 378998,
-    "p95_latency_ms": 2103959,
-    "reasoning_tokens": 374935,
-    "score": 73.21428571428571,
-    "score_ci": [
-      40.32258064516129,
-      100.0
-    ],
+    "n": 40,
+    "output_tokens": 496232,
+    "p95_latency_ms": 2400014,
+    "reasoning_tokens": 488985,
     "scoring_version": "1.0",
     "status_counts": {
-      "correct": 28,
-      "timeout": 3,
-      "unparseable": 1,
-      "wrong": 3
+      "correct": 29,
+      "timeout": 4,
+      "unparseable": 2,
+      "wrong": 5
     },
-    "total_cost_usd": 3.874844,
-    "total_tokens": 434198,
-    "weighted_accuracy": 0.7321428571428571
+    "total_cost_usd": 5.0639804,
+    "total_tokens": 566883
   },
   "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
 }

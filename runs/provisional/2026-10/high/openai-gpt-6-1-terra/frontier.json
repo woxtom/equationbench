@@ -1,14 +1,14 @@
 {
   "completion": 1.0,
-  "dataset_sha256": "9e3a2111b1ed5c800de25405ecb5a047a75f16d868fe62993cc525339c5e284d",
+  "dataset_sha256": "ff778776f1e002ca1ae7153b0dd145d7de6e0b1426e408ebe1bd3ce4a1f4fd34",
   "frontier": {
     "bootstrap_replicates": 1000,
     "bound": null,
     "bound_size": null,
     "censored": null,
     "ci": [
-      3.8333333333333335,
-      5.166666666666667
+      3.868482797083103,
+      4.476555188578103
     ],
     "levels": [
       {
@@ -28,11 +28,19 @@
         "valid": 5
       },
       {
+        "correct": 0,
+        "level": 4.5,
+        "p": 0.0,
+        "size": 7,
+        "smoothed": 0.1,
+        "valid": 5
+      },
+      {
         "correct": 1,
         "level": 5,
         "p": 0.2,
         "size": 8,
-        "smoothed": 0.2,
+        "smoothed": 0.1,
         "valid": 5
       },
       {
@@ -45,18 +53,26 @@
       }
     ],
     "method": "isotonic-log-interpolation",
-    "score": 4.5,
-    "scoring_version": "2.0",
-    "size": 6.734772289856238,
+    "score": 4.285933113146862,
+    "scoring_version": "2.2",
+    "size": 6.409774214061809,
     "size_ci": [
-      5.773343021364871,
-      7.856307451049841
+      5.820420692674802,
+      6.698389321204962
     ]
   },
   "ladder_version": "1",
+  "level_task_counts": {
+    "3": 5,
+    "4": 5,
+    "4.5": 5,
+    "5": 5,
+    "6": 5
+  },
   "levels_tested": [
     3,
     4,
+    4.5,
     5,
     6
   ],
@@ -77,30 +93,29 @@
     "price_output": null,
     "provider": "openai",
     "provider_kind": "pi",
-    "thinking": "high"
+    "thinking": "max"
   },
+  "precision_levels": [],
+  "precision_tasks": 0,
   "run": {
     "aborted_reason": null,
     "metadata": {
       "aborted_reason": null,
       "actual_thinking_levels": {
-        "high": 20
+        "high": 25
       },
       "benchmark": "EquationBench",
       "config": {
         "concurrency": 2,
-        "families": null,
-        "levels": null,
-        "limit": null,
-        "max_cost": 5.0,
-        "notes": "High-effort provisional bracket: L3-L6, 5 core tasks/level; L5 pilot reused.",
+        "max_cost": 0.6,
+        "notes": "High-effort provisional bracket: L3-L6, 5 core tasks/level; L4.5 (n=7) added to split the L4-L5 gap.",
         "retries": 2,
         "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
         "thinking_requested": "high",
         "timeout": 1200.0
       },
       "dataset": {
-        "dataset_sha256": "9e3a2111b1ed5c800de25405ecb5a047a75f16d868fe62993cc525339c5e284d",
+        "dataset_sha256": "ff778776f1e002ca1ae7153b0dd145d7de6e0b1426e408ebe1bd3ce4a1f4fd34",
         "manifest": {
           "base_size": 3,
           "coefficient_bound": 30,
@@ -108,16 +123,24 @@
             "by_level": {
               "3": 5,
               "4": 5,
+              "4.5": 5,
               "5": 5,
               "6": 5
             },
-            "total": 20
+            "total": 25
           },
-          "dataset_sha256": "9e3a2111b1ed5c800de25405ecb5a047a75f16d868fe62993cc525339c5e284d",
-          "description": "Fixed paired ladder set: 5 tasks per level, L3 to L6.",
+          "dataset_sha256": "ff778776f1e002ca1ae7153b0dd145d7de6e0b1426e408ebe1bd3ce4a1f4fd34",
+          "description": "Fixed paired ladder set: 5 core tasks per level, L3 to L6.",
           "formula": "round(3 * 2 ** ((level - 1) / 3))",
           "generator_version": "2.0.0+ladder1",
           "ladder_version": "1",
+          "level_task_counts": {
+            "3": 5,
+            "4": 5,
+            "4.5": 5,
+            "5": 5,
+            "6": 5
+          },
           "levels": [
             {
               "approx_prompt_chars": 812,
@@ -134,6 +157,15 @@
               "level": 4,
               "precision_tasks": 5,
               "size": 6,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 1056,
+              "approx_prompt_tokens": 264,
+              "level": 4.5,
+              "precision_tasks": 5,
+              "size": 7,
               "tasks_per_level": 5,
               "zone": "core"
             },
@@ -159,13 +191,15 @@
           "levels_included": [
             3,
             4,
+            4.5,
             5,
             6
           ],
           "max_public_level": 6,
           "name": "ladder-L3-L6",
           "official_cap_level": 17,
-          "precision_tasks": 5,
+          "precision_levels": [],
+          "precision_tasks": 0,
           "prompt_version": "1.0",
           "season_seed": 731992,
           "solution_bound": 9,
@@ -176,18 +210,23 @@
             "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
             "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
             "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
+            "5a9aba3f45c29135": "65f204415eb1812d6390eb716613b776c5b9a5898cfe6670665dbffba5c5984b",
             "5c58348b2cec1667": "8ccbe2a0f0587c4b1e0a7bc4ae64ba31cb306d2184ca4c52fce852c4af1c3ec3",
             "5d14ba9969ef40bc": "b092a0955440759f22b1f771ad83b5d584f7f0ec1028161f3e854faf933220af",
             "628a0ce52dc4cf2d": "76415b366da8782a7cc4bd2132e4379c9272fd9f8af1e922a16fe1d604fc5d49",
             "706fbe12cee39b05": "7e4debdd5857e6cefd1f5b05d574ceb41156124955174ce8a0dbc814c688b3fc",
             "78c4fa0e7706d486": "959ffc795333f9aa8ae48d80a7f8ecc31fe205d5eca43c6eee6b1f5ced07afa9",
+            "7aeddf88acde5526": "6f2515ee002a77e97d283224e35291ef6960ce818a891ea9998d68505698215f",
             "7f7033cb8ea831b2": "3fddc89d4366319c5866b921e5ba2f99e8ff6d374e9fd0b38f8ae47c244b38e4",
             "84bd57d574c1620b": "bf974f5ff03733fb5a7ae7772d44868127774c92a93aea7edbf9efe5997a2d3c",
             "8fca1310c4a8d5f5": "463ae60d43eff8a6228f70627c1d1a89cf9208702e631f26cff44ece099cb3f4",
+            "a055b06783dcf515": "bc727fb25ea929190630f9000ca537e1e99fc649465f2f9942dc0c19ba214463",
             "a18913d547d5ddd4": "3d9b407dbd34a3d312a6448c2ce66b07eca2dcbc0ad776ae989fbd1515545fc6",
             "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
             "af63a40e2cdfa253": "7211879d2173743c267f37e59d4278480b94c392883ef8301f8620eb6c66985c",
             "b331470aece46ee7": "5580f87ce9e7d2546838069e8212ce22ff57dc4edc38a17928a625eec80dc06f",
+            "bd742a06a41e534b": "e13c8f62dd29c5e055d8405fa4b11665e6344596441b05fce31a0a6a9f69edb9",
+            "c061fcafc274397d": "41550decc7a386e97a093e4020db52eea5a2d90c113896ec893bddc43e34dd36",
             "e1ecaf9692e6bd69": "86eb0699dcccdb5b69a6cfc2522e52829818de4799cdf26efbd769c2f65db882",
             "f6ef5a90f7c156e4": "a1930f0eb27a789fbd0ab69244f00808f16c6bc9dce9f14badcdce02b9c075eb"
           },
@@ -206,6 +245,11 @@
           "af63a40e2cdfa253",
           "b331470aece46ee7",
           "78c4fa0e7706d486",
+          "7aeddf88acde5526",
+          "c061fcafc274397d",
+          "a055b06783dcf515",
+          "bd742a06a41e534b",
+          "5a9aba3f45c29135",
           "4d9f8aff87e282da",
           "12fba6b7962e75bb",
           "628a0ce52dc4cf2d",
@@ -221,18 +265,16 @@
       "dataset_version": "v2",
       "environment": {
         "argv": [
-          ".venv/bin/eqb",
+          "/home/wot/project/equationbench/.venv/bin/eqb",
           "run-frontier",
-          "--model",
+          "-m",
           "openai-gpt-6-1-terra",
-          "--levels",
-          "3-6",
-          "--tasks-per-level",
-          "5",
-          "--out",
-          "runs/provisional/2026-10/high/openai-gpt-6-1-terra",
           "--thinking",
           "high",
+          "--levels",
+          "3,4,4.5,5,6",
+          "--out",
+          "runs/provisional/2026-10/high/openai-gpt-6-1-terra",
           "--concurrency",
           "2",
           "--timeout",
@@ -240,18 +282,19 @@
           "--retries",
           "2",
           "--max-cost",
-          "5",
+          "0.6",
           "--bootstrap",
           "1000",
+          "--include-disabled",
           "--notes",
-          "High-effort provisional bracket: L3-L6, 5 core tasks/level; L5 pilot reused."
+          "High-effort provisional bracket: L3-L6, 5 core tasks/level; L4.5 (n=7) added to split the L4-L5 gap."
         ],
-        "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+        "git_commit": "b97369b04e1de3453a7f992648b21bb9d0b2dbaa",
         "host": "wot",
         "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
         "python": "3.14.7"
       },
-      "finished_at": "2026-10-30T08:57:23+00:00",
+      "finished_at": "2026-11-09T05:08:12+00:00",
       "generator_version": "2.0.0",
       "model": {
         "api_key_env": null,
@@ -272,33 +315,21 @@
         "provider_kind": "pi",
         "thinking": "high"
       },
-      "n_existing_at_start": 1,
-      "n_predictions": 20,
-      "n_selected": 20,
+      "n_existing_at_start": 20,
+      "n_predictions": 25,
+      "n_selected": 25,
       "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
       "prompt_version": "1.0",
-      "run_id": "20261030T085255Z-openai-gpt-6-1-terra-aa91b947",
-      "started_at": "2026-10-30T08:52:55+00:00",
+      "run_id": "20261109T050626Z-openai-gpt-6-1-terra-c426d61f",
+      "started_at": "2026-11-09T05:06:26+00:00",
       "status": "complete",
       "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
     },
     "run_dir": "runs/provisional/2026-10/high/openai-gpt-6-1-terra",
-    "run_id": "20261030T085255Z-openai-gpt-6-1-terra-aa91b947",
+    "run_id": "20261109T050626Z-openai-gpt-6-1-terra-c426d61f",
     "status": "complete",
     "summary": {
-      "accuracy": 0.5,
-      "accuracy_ci": [
-        0.1,
-        0.9
-      ],
-      "by_family": {
-        "linear": {
-          "accuracy": 0.5,
-          "correct": 10,
-          "n": 20,
-          "score": 40.0
-        }
-      },
+      "accuracy": 0.4,
       "by_level": {
         "3": {
           "accuracy": 1.0,
@@ -308,6 +339,11 @@
         "4": {
           "accuracy": 0.8,
           "correct": 4,
+          "n": 5
+        },
+        "4.5": {
+          "accuracy": 0.0,
+          "correct": 0,
           "n": 5
         },
         "5": {
@@ -324,28 +360,21 @@
       "completion_rate": 1.0,
       "correct": 10,
       "cost_known": true,
-      "cost_per_100": 0.5601850000000002,
-      "input_tokens": 10782,
-      "median_latency_ms": 22088,
+      "input_tokens": 13270,
+      "median_latency_ms": 22476,
       "missing": 0,
-      "n": 20,
-      "output_tokens": 20251,
-      "p95_latency_ms": 66258,
-      "reasoning_tokens": 19453,
-      "score": 40.0,
-      "score_ci": [
-        9.090909090909092,
-        88.57142857142857
-      ],
+      "n": 25,
+      "output_tokens": 29890,
+      "p95_latency_ms": 71309,
+      "reasoning_tokens": 28866,
       "scoring_version": "1.0",
       "status_counts": {
         "correct": 10,
-        "unparseable": 9,
+        "unparseable": 14,
         "wrong": 1
       },
-      "total_cost_usd": 0.11203700000000003,
-      "total_tokens": 31033,
-      "weighted_accuracy": 0.4
+      "total_cost_usd": 0.16272,
+      "total_tokens": 43160
     }
   },
   "season_seed": 731992,

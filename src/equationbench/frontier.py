@@ -9,7 +9,7 @@ Pipeline:
 1. collect per-level outcomes,
 2. smooth the success curve with a non-increasing isotonic regression,
 3. find the adjacent levels that bracket 50%,
-4. interpolate in ladder level (equivalently, in log system size),
+4. interpolate in the log of the real integer system sizes,
 5. bootstrap tasks within each level for a confidence interval.
 """
 
@@ -21,7 +21,9 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
 from . import FRONTIER_SCORING_VERSION
-from .ladder import ideal_size_for_level, size_for_level
+from .ladder import ideal_size_for_level, level_for_size, size_for_level
+from .stats import percentile
+from .types import Level
 
 FRONTIER_THRESHOLD = 0.5
 DEFAULT_BOOTSTRAP_REPLICATES = 2000
@@ -38,7 +40,7 @@ class LevelResult:
     tuple of booleans so bootstrap resampling is straightforward.
     """
 
-    level: int
+    level: Level
     outcomes: tuple[bool, ...]
 
     def __post_init__(self) -> None:
@@ -58,7 +60,7 @@ class LevelResult:
         return self.correct / self.valid if self.valid else 0.0
 
     @classmethod
-    def from_counts(cls, level: int, correct: int, valid: int) -> LevelResult:
+    def from_counts(cls, level: Level, correct: int, valid: int) -> LevelResult:
         if valid < 0:
             raise ValueError(f"valid must be non-negative, got {valid}")
         if correct < 0 or correct > valid:
@@ -66,7 +68,7 @@ class LevelResult:
         return cls(level=level, outcomes=(True,) * correct + (False,) * (valid - correct))
 
     @classmethod
-    def from_outcomes(cls, level: int, outcomes: Iterable[bool]) -> LevelResult:
+    def from_outcomes(cls, level: Level, outcomes: Iterable[bool]) -> LevelResult:
         return cls(level=level, outcomes=tuple(bool(item) for item in outcomes))
 
 
@@ -96,15 +98,6 @@ class FrontierScore:
     def is_finite(self) -> bool:
         return self.score is not None
 
-    @property
-    def rank_key(self) -> float:
-        """Sort key: higher is better; censored upper ranks above finite."""
-        if self.censored == "upper":
-            return float("inf")
-        if self.censored == "lower":
-            return float("-inf")
-        return float(self.score or 0.0)
-
     def to_dict(self) -> dict:
         return {
             "score": self.score,
@@ -127,21 +120,6 @@ class _Estimate:
     size: float | None
     censored: str | None
     bound: float | None
-
-
-def _percentile(values: Sequence[float], p: float) -> float | None:
-    if not values:
-        return None
-    ordered = sorted(values)
-    if len(ordered) == 1:
-        return float(ordered[0])
-    position = (len(ordered) - 1) * p
-    lower = math.floor(position)
-    upper = math.ceil(position)
-    if lower == upper:
-        return float(ordered[lower])
-    fraction = position - lower
-    return float(ordered[lower] * (1 - fraction) + ordered[upper] * fraction)
 
 
 def isotonic_decreasing(
@@ -182,13 +160,25 @@ def isotonic_decreasing(
     return fitted
 
 
+def _estimate_at(size: float, censored: str | None, bound: float | None) -> _Estimate:
+    return _Estimate(score=level_for_size(size), size=size, censored=censored, bound=bound)
+
+
 def _estimate_from_curve(
-    levels: Sequence[int], smoothed: Sequence[float]
+    levels: Sequence[Level], smoothed: Sequence[float]
 ) -> _Estimate:
+    """Locate the 50% crossing.
+
+    Rounding makes the ladder uneven: L2 is 4 variables where the ideal size is
+    3.78, and L11 is 30 where it is 30.24.  The crossing is therefore found in
+    the sizes the model was actually given, then labelled on the continuous
+    ``1 + 3 * log2(n / 3)`` scale.
+    """
     if not levels:
         raise ValueError("no levels supplied")
     if len(levels) != len(smoothed):
         raise ValueError("levels and smoothed curve must have the same length")
+    sizes = [size_for_level(level) for level in levels]
 
     # Below the first level: only a lower bound is available.
     if smoothed[0] < FRONTIER_THRESHOLD:
@@ -201,13 +191,7 @@ def _estimate_from_curve(
 
     # Flat 50% curve: the threshold is everywhere and nowhere.
     if all(abs(value - FRONTIER_THRESHOLD) < 1e-12 for value in smoothed):
-        midpoint = (levels[0] + levels[-1]) / 2
-        return _Estimate(
-            score=midpoint,
-            size=ideal_size_for_level(midpoint),
-            censored="ambiguous",
-            bound=None,
-        )
+        return _estimate_at(math.sqrt(sizes[0] * sizes[-1]), "ambiguous", None)
 
     for index in range(len(levels) - 1):
         upper = smoothed[index]
@@ -216,13 +200,11 @@ def _estimate_from_curve(
             span = upper - lower
             fraction = (upper - FRONTIER_THRESHOLD) / span if span else 0.0
             fraction = min(1.0, max(0.0, fraction))
-            level = levels[index] + fraction * (levels[index + 1] - levels[index])
-            return _Estimate(
-                score=level,
-                size=ideal_size_for_level(level),
-                censored=None,
-                bound=None,
-            )
+            # Geometric form of the log interpolation: a crossing exactly on a
+            # tested size must stay exact, because the band window compares
+            # the score against whole levels.
+            size = sizes[index] * (sizes[index + 1] / sizes[index]) ** fraction
+            return _estimate_at(size, None, None)
 
     # Every tested level is at or above the threshold.
     if abs(smoothed[-1] - FRONTIER_THRESHOLD) < 1e-12:
@@ -233,20 +215,10 @@ def _estimate_from_curve(
         start = len(smoothed) - 1
         while start > 0 and abs(smoothed[start - 1] - FRONTIER_THRESHOLD) < 1e-12:
             start -= 1
+        bound = float(levels[-1])
         if start < len(smoothed) - 1:
-            midpoint = (levels[start] + levels[-1]) / 2
-            return _Estimate(
-                score=midpoint,
-                size=ideal_size_for_level(midpoint),
-                censored="ambiguous",
-                bound=float(levels[-1]),
-            )
-        return _Estimate(
-            score=float(levels[-1]),
-            size=ideal_size_for_level(levels[-1]),
-            censored="upper",
-            bound=float(levels[-1]),
-        )
+            return _estimate_at(math.sqrt(sizes[start] * sizes[-1]), "ambiguous", bound)
+        return _estimate_at(float(sizes[-1]), "upper", bound)
     return _Estimate(
         score=None,
         size=None,
@@ -255,7 +227,7 @@ def _estimate_from_curve(
     )
 
 
-def _fit_curve(results: Sequence[LevelResult]) -> tuple[list[int], list[float], list[float]]:
+def _fit_curve(results: Sequence[LevelResult]) -> tuple[list[Level], list[float], list[float]]:
     ordered = sorted((result for result in results if result.valid > 0), key=lambda r: r.level)
     if not ordered:
         raise ValueError("no level has a valid outcome")
@@ -323,8 +295,8 @@ def estimate_frontier(
         # heavily censored run should show a bound, not a fake narrow CI.
         if len(samples) >= max(20, int(0.5 * bootstrap_replicates)):
             alpha = (1 - confidence) / 2
-            low = _percentile(samples, alpha)
-            high = _percentile(samples, 1 - alpha)
+            low = percentile(samples, alpha)
+            high = percentile(samples, 1 - alpha)
             if low is not None and high is not None:
                 ci = (low, high)
                 size_ci = (
@@ -339,14 +311,14 @@ def estimate_frontier(
         size_ci=size_ci,
         censored=point.censored,
         bound=point.bound,
-        bound_size=ideal_size_for_level(point.bound) if point.bound is not None else None,
+        bound_size=float(size_for_level(point.bound)) if point.bound is not None else None,
         levels=_level_payload(results, smoothed),
         bootstrap_replicates=bootstrap_replicates,
     )
 
 
 def estimate_from_counts(
-    counts: Mapping[int, tuple[int, int]],
+    counts: Mapping[Level, tuple[int, int]],
     *,
     bootstrap_replicates: int = DEFAULT_BOOTSTRAP_REPLICATES,
     bootstrap_seed: int = DEFAULT_BOOTSTRAP_SEED,
@@ -366,7 +338,7 @@ def estimate_from_counts(
 
 
 def estimate_from_outcomes(
-    outcomes: Mapping[int, Sequence[bool]],
+    outcomes: Mapping[Level, Sequence[bool]],
     *,
     bootstrap_replicates: int = DEFAULT_BOOTSTRAP_REPLICATES,
     bootstrap_seed: int = DEFAULT_BOOTSTRAP_SEED,

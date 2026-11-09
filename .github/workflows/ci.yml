@@ -17,3 +17,4 @@ jobs:
       - run: uv run ruff check src tests
       - run: uv run pytest
       - run: uv run eqb ladder --max-level 10 --measure
+      - run: uv run eqb build-leaderboard --check

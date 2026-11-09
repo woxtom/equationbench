@@ -44,3 +44,12 @@ def test_precision_levels_must_be_selected():
 def test_precision_tasks_must_be_positive_with_levels():
     with pytest.raises(ValueError, match="precision_tasks"):
         build_ladder_bundle([10], precision_levels=[10], precision_tasks=0)
+
+
+def test_bundle_with_half_levels_keeps_whole_level_tasks_unchanged():
+    plain = build_ladder_bundle([9, 10])
+    mixed = build_ladder_bundle([9, 9.5, 10])
+    assert mixed.manifest["levels_included"] == [9, 9.5, 10]
+    assert mixed.manifest["level_task_counts"]["9.5"] == 5
+    assert {t.task_id for t in plain.tasks} < {t.task_id for t in mixed.tasks}
+    assert [row["size"] for row in mixed.manifest["levels"]] == [19, 21, 24]

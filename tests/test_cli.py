@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import json
+import shutil
+from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from equationbench.cli import app
+from equationbench.types import Completion
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_version_and_list_models():
@@ -40,20 +46,6 @@ def test_ladder_measure_generates_real_prompts():
     assert "linear ladder" in result.output
 
 
-def test_build_and_verify_dataset(tmp_path):
-    runner = CliRunner()
-    out = tmp_path / "dataset"
-    result = runner.invoke(
-        app,
-        ["build-dataset", "--profile", "dev", "--out", str(out), "--per-cell", "1"],
-    )
-    assert result.exit_code == 0, result.output
-    assert (out / "tasks.jsonl").exists()
-    result = runner.invoke(app, ["verify-dataset", "--path", str(out)])
-    assert result.exit_code == 0, result.output
-    assert "OK" in result.output
-
-
 def test_model_registry_uses_declared_thinking_levels():
     from equationbench.providers import load_models
 
@@ -64,3 +56,74 @@ def test_model_registry_uses_declared_thinking_levels():
     assert enabled
     assert all(model.thinking in allowed for model in enabled)
     assert any(model.thinking == "max" for model in enabled)
+
+
+def test_score_rescores_a_ladder_receipt(tmp_path):
+    run = tmp_path / "run"
+    shutil.copytree(ROOT / "runs" / "official" / "2026-10" / "deepseek-v4-1-flash", run)
+    result = CliRunner().invoke(app, ["score", "--run", str(run), "--bootstrap", "0"])
+    assert result.exit_code == 0, result.output
+    summary = json.loads((run / "summary.json").read_text(encoding="utf-8"))
+    assert summary["frontier"]["score"] is not None
+    assert summary["score"]["n"] == 75
+
+
+def _frontier_args(*extra):
+    return ["run-frontier", "--model", "deepseek-v4-1-flash", "--levels", "2-3", *extra]
+
+
+def test_run_frontier_dry_run_makes_no_calls(monkeypatch):
+    def fail(spec):
+        raise AssertionError("dry run must not build a provider")
+
+    monkeypatch.setattr("equationbench.runner.make_provider", fail)
+    result = CliRunner().invoke(app, _frontier_args("--dry-run"))
+    assert result.exit_code == 0, result.output
+    assert "Dry run" in result.output
+
+
+def test_run_frontier_rejects_bad_options():
+    runner = CliRunner()
+    assert runner.invoke(app, ["run-frontier", "--all", "--levels", "5-2"]).exit_code == 2
+    assert runner.invoke(app, ["run-frontier", "--all", "--levels", "99"]).exit_code == 2
+    assert (
+        runner.invoke(app, _frontier_args("--precision-levels", "9", "--precision-tasks", "1")).exit_code
+        == 2
+    )
+
+
+def test_run_frontier_end_to_end_with_a_fake_provider(monkeypatch, tmp_path):
+    from equationbench.frontier_run import build_ladder_bundle
+
+    answers = {task.prompt: task.answer for task in build_ladder_bundle([2, 3]).tasks}
+
+    class Solver:
+        def __init__(self, spec):
+            self.spec = spec
+
+        def complete(self, system, prompt, timeout):
+            n = len(json.loads(answers[prompt]))
+            # Solve the 4-variable level, fail the 5-variable level.
+            text = answers[prompt] if n == 4 else "[" + ", ".join(["0"] * n) + "]"
+            return Completion(text=f'{{"answer": {text}}}', cost_usd=0.01, latency_ms=5)
+
+    monkeypatch.setattr("equationbench.runner.make_provider", Solver)
+    out = tmp_path / "run"
+    result = CliRunner().invoke(app, _frontier_args("--out", str(out), "--bootstrap", "0"))
+    assert result.exit_code == 0, result.output
+    frontier = json.loads((out / "frontier.json").read_text(encoding="utf-8"))
+    assert frontier["status"] == "complete"
+    assert frontier["completion"] == 1.0
+    assert frontier["frontier"]["size"] == pytest.approx((4 * 5) ** 0.5)
+
+
+def test_parse_levels_accepts_half_levels():
+    from equationbench.cli import _parse_levels
+
+    assert _parse_levels("9,9.5,10-11") == [9, 9.5, 10, 11]
+    assert all(isinstance(level, int) for level in _parse_levels("9.0,10"))
+
+
+def test_run_frontier_rejects_a_half_level_with_no_size():
+    result = CliRunner().invoke(app, ["run-frontier", "--all", "--levels", "2.5"])
+    assert result.exit_code == 2

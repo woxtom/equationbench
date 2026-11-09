@@ -5,22 +5,13 @@ import random
 
 import pytest
 
-from equationbench.dataset import DatasetProfile, write_dataset
+from equationbench.frontier_run import build_ladder_bundle
 from equationbench.types import Completion, ModelSpec
 
 
 @pytest.fixture(scope="session")
-def tiny_dataset(tmp_path_factory):
-    path = tmp_path_factory.mktemp("eqb-dataset") / "dataset"
-    profile = DatasetProfile(
-        name="tiny",
-        per_cell=1,
-        master_seed=123456789,
-        sealed=False,
-        description="Tiny test dataset.",
-    )
-    bundle = write_dataset(profile, path)
-    return bundle
+def tiny_dataset():
+    return build_ladder_bundle([1, 2, 3, 4, 5], tasks_per_level=1)
 
 
 class FakeProvider:

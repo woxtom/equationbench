@@ -1,23 +1,20 @@
 {
   "aborted_reason": null,
   "actual_thinking_levels": {
-    "medium": 35
+    "medium": 40
   },
   "benchmark": "EquationBench",
   "config": {
     "concurrency": 5,
-    "families": null,
-    "levels": null,
-    "limit": null,
-    "max_cost": 15.0,
-    "notes": "GPT-6 Astra medium-effort bracket: L5-L9 added; L10-L11 reused.",
+    "max_cost": 6.93,
+    "notes": "GPT-6 Astra medium-effort bracket: L5-L11; L7.5 (n=13) added to split the L7-L8 gap.",
     "retries": 0,
     "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
     "thinking_requested": "medium",
     "timeout": 1800.0
   },
   "dataset": {
-    "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+    "dataset_sha256": "0a2986f4c18d586e94f6ad0b70db0cb2f55d3266460deda85a726bfb0dc8a94f",
     "manifest": {
       "base_size": 3,
       "coefficient_bound": 30,
@@ -28,12 +25,13 @@
           "5": 5,
           "6": 5,
           "7": 5,
+          "7.5": 5,
           "8": 5,
           "9": 5
         },
-        "total": 35
+        "total": 40
       },
-      "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+      "dataset_sha256": "0a2986f4c18d586e94f6ad0b70db0cb2f55d3266460deda85a726bfb0dc8a94f",
       "description": "Fixed paired ladder set: 5 core tasks per level, L5 to L11.",
       "formula": "round(3 * 2 ** ((level - 1) / 3))",
       "generator_version": "2.0.0+ladder1",
@@ -44,6 +42,7 @@
         "5": 5,
         "6": 5,
         "7": 5,
+        "7.5": 5,
         "8": 5,
         "9": 5
       },
@@ -72,6 +71,15 @@
           "level": 7,
           "precision_tasks": 5,
           "size": 12,
+          "tasks_per_level": 5,
+          "zone": "core"
+        },
+        {
+          "approx_prompt_chars": 2196,
+          "approx_prompt_tokens": 549,
+          "level": 7.5,
+          "precision_tasks": 5,
+          "size": 13,
           "tasks_per_level": 5,
           "zone": "core"
         },
@@ -116,6 +124,7 @@
         5,
         6,
         7,
+        7.5,
         8,
         9,
         10,
@@ -138,9 +147,11 @@
         "1cd5941d522f3750": "18483fb0811c082aca86935cf309a56fa19d7e52a5a6dafc0540200a234ce51e",
         "27a0653f23943fb0": "e7311eaec8314a169be6176782bac7e6dc8f0dcb4eff9113e7416898c58ae269",
         "2a7bcaef7bf381e5": "da6f487da3feed00963a15f0756e890e5d4729e4918e64e3017d98ebb5590c1f",
+        "300b3d18548ef229": "c95adc81dc2a8eb55bfff333331fe9f501fb30462012b0fe6a56676d22c53620",
         "39419e7d696f5801": "c4083ea9be2aaca8b011252626b342b2334176458ec583ab5093bfba5eb1e56b",
         "39d9e53c1cdb8c4a": "3c998fee2d9d84194b53e6cd438930cf3470a88f4b3efd7b7fa87d16c17f163a",
         "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
+        "43d01f69ae5801e0": "9aff2cfee393b1f308650535d1262cc419af715206b1fa23f027feca36c3dbe0",
         "44df8ff62e117134": "d3f9590a26adc61e91d9ea2e8ee3a844f9d8b0d8a9477b82c64486777dd662cc",
         "4d9f8aff87e282da": "6f3cf3e1e6335ea33a47dd062fc93c450300406c542e9fc6652c83e963f9aeca",
         "4f3e8494bf99ff2b": "20ce0e200fa219078987712053fca5d6a7815f135bc9845e63923715b28324d9",
@@ -160,9 +171,12 @@
         "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
         "9dcd83b02f2ca113": "66749315303dc9a30d7a4f644be63adad5b0743f7d874f9bb71290ad53cf0b56",
         "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
+        "af5d5b57f07e3cd6": "67f34a927b35a514df7d741a05216835237354f6edc4f0ad87d118a8a9aaba70",
         "b8999b6f928ac90f": "adafe63a471d8a2843dde1d7b78f4ecaffe19a28823c5f08d9ea298fa5e3f56e",
+        "b8f1b7554432a8bc": "999f7f74e3ba8eb6e83c42f905236b5929c7b240463c90715cb081126e397354",
         "bc7a9a97096b60be": "a30a95b63635984474751598bc8a469cf5e45faf0d31734ed0bdf7f68339682b",
         "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc",
+        "cbe984a21857df4b": "241f4c1ee55645016de6ebecfa7ef0021a7d4816315456bd9717d343363014b3",
         "e991fd15bedee602": "5d5ccf9008649833b90f3502346487057f95fc1e5bcdaa43e89c1893dbb2fa9e",
         "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e"
       },
@@ -186,6 +200,11 @@
       "9dcd83b02f2ca113",
       "534ceeb3b6388b5c",
       "60907954247589e8",
+      "cbe984a21857df4b",
+      "b8f1b7554432a8bc",
+      "300b3d18548ef229",
+      "43d01f69ae5801e0",
+      "af5d5b57f07e3cd6",
       "c18e2954377b5798",
       "56735e17159a017e",
       "39d9e53c1cdb8c4a",
@@ -211,18 +230,16 @@
   "dataset_version": "v2",
   "environment": {
     "argv": [
-      ".venv/bin/eqb",
+      "/home/wot/project/equationbench/.venv/bin/eqb",
       "run-frontier",
-      "--model",
+      "-m",
       "openai-gpt-6-astra",
-      "--levels",
-      "5-11",
-      "--tasks-per-level",
-      "5",
-      "--out",
-      "runs/provisional/2026-10/astra/openai-gpt-6-astra-medium",
       "--thinking",
       "medium",
+      "--levels",
+      "5,6,7,7.5,8,9,10,11",
+      "--out",
+      "runs/provisional/2026-10/astra/openai-gpt-6-astra-medium",
       "--concurrency",
       "5",
       "--timeout",
@@ -230,26 +247,27 @@
       "--retries",
       "0",
       "--max-cost",
-      "15",
-      "--bootstrap",
-      "1000",
+      "6.93",
       "--notes",
-      "GPT-6 Astra medium-effort bracket: L5-L9 added; L10-L11 reused."
+      "GPT-6 Astra medium-effort bracket: L5-L11; L7.5 (n=13) added to split the L7-L8 gap.",
+      "--include-disabled",
+      "--bootstrap",
+      "1000"
     ],
-    "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+    "git_commit": "b97369b04e1de3453a7f992648b21bb9d0b2dbaa",
     "host": "wot",
     "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
     "python": "3.14.7"
   },
-  "finished_at": "2026-10-31T09:09:04+00:00",
+  "finished_at": "2026-11-09T05:17:32+00:00",
   "frontier": {
     "bootstrap_replicates": 1000,
     "bound": null,
     "bound_size": null,
     "censored": null,
     "ci": [
-      6.625,
-      7.5
+      7.449657090993522,
+      7.656107968460947
     ],
     "levels": [
       {
@@ -273,7 +291,15 @@
         "level": 7,
         "p": 0.6,
         "size": 12,
-        "smoothed": 0.6,
+        "smoothed": 0.8,
+        "valid": 5
+      },
+      {
+        "correct": 5,
+        "level": 7.5,
+        "p": 1.0,
+        "size": 13,
+        "smoothed": 0.8,
         "valid": 5
       },
       {
@@ -310,12 +336,12 @@
       }
     ],
     "method": "isotonic-log-interpolation",
-    "score": 7.166666666666667,
-    "scoring_version": "2.0",
-    "size": 12.471110712382124,
+    "score": 7.578688889410663,
+    "scoring_version": "2.2",
+    "size": 13.716674010185432,
     "size_ci": [
-      11.004048518456056,
-      13.46954457971248
+      13.313778788260585,
+      13.964240043768942
     ]
   },
   "generator_version": "2.0.0",
@@ -338,26 +364,14 @@
     "provider_kind": "pi",
     "thinking": "medium"
   },
-  "n_existing_at_start": 10,
-  "n_predictions": 35,
-  "n_selected": 35,
+  "n_existing_at_start": 35,
+  "n_predictions": 40,
+  "n_selected": 40,
   "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
   "prompt_version": "1.0",
-  "run_id": "20261031T090103Z-openai-gpt-6-astra-6dbc3f8d",
+  "run_id": "20261109T051200Z-openai-gpt-6-astra-f37108b0",
   "score": {
-    "accuracy": 0.37142857142857144,
-    "accuracy_ci": [
-      0.08571428571428572,
-      0.7142857142857143
-    ],
-    "by_family": {
-      "linear": {
-        "accuracy": 0.37142857142857144,
-        "correct": 13,
-        "n": 35,
-        "score": 27.142857142857142
-      }
-    },
+    "accuracy": 0.45,
     "by_level": {
       "10": {
         "accuracy": 0.0,
@@ -384,6 +398,11 @@
         "correct": 3,
         "n": 5
       },
+      "7.5": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
       "8": {
         "accuracy": 0.0,
         "correct": 0,
@@ -396,47 +415,28 @@
       }
     },
     "completion_rate": 1.0,
-    "correct": 13,
+    "correct": 18,
     "cost_known": true,
-    "cost_per_100": 11.22162857142857,
-    "input_tokens": 67627,
-    "median_latency_ms": 38038,
+    "input_tokens": 73150,
+    "median_latency_ms": 57353,
     "missing": 0,
-    "n": 35,
-    "output_tokens": 65026,
-    "p95_latency_ms": 173813,
-    "reasoning_tokens": 63651,
-    "score": 27.142857142857142,
-    "score_ci": [
-      6.26865671641791,
-      60.87782608695648
-    ],
+    "n": 40,
+    "output_tokens": 105029,
+    "p95_latency_ms": 223300,
+    "reasoning_tokens": 103414,
     "scoring_version": "1.0",
     "status_counts": {
-      "correct": 13,
+      "correct": 18,
       "unparseable": 1,
       "wrong": 21
     },
-    "total_cost_usd": 3.927569999999999,
-    "total_tokens": 132653,
-    "weighted_accuracy": 0.2714285714285714
+    "total_cost_usd": 5.982950000000001,
+    "total_tokens": 178179
   },
-  "started_at": "2026-10-31T09:01:03+00:00",
+  "started_at": "2026-11-09T05:12:00+00:00",
   "status": "complete",
   "summary": {
-    "accuracy": 0.37142857142857144,
-    "accuracy_ci": [
-      0.08571428571428572,
-      0.7142857142857143
-    ],
-    "by_family": {
-      "linear": {
-        "accuracy": 0.37142857142857144,
-        "correct": 13,
-        "n": 35,
-        "score": 27.142857142857142
-      }
-    },
+    "accuracy": 0.45,
     "by_level": {
       "10": {
         "accuracy": 0.0,
@@ -463,6 +463,11 @@
         "correct": 3,
         "n": 5
       },
+      "7.5": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "n": 5
+      },
       "8": {
         "accuracy": 0.0,
         "correct": 0,
@@ -475,30 +480,23 @@
       }
     },
     "completion_rate": 1.0,
-    "correct": 13,
+    "correct": 18,
     "cost_known": true,
-    "cost_per_100": 11.22162857142857,
-    "input_tokens": 67627,
-    "median_latency_ms": 38038,
+    "input_tokens": 73150,
+    "median_latency_ms": 57353,
     "missing": 0,
-    "n": 35,
-    "output_tokens": 65026,
-    "p95_latency_ms": 173813,
-    "reasoning_tokens": 63651,
-    "score": 27.142857142857142,
-    "score_ci": [
-      6.26865671641791,
-      60.87782608695648
-    ],
+    "n": 40,
+    "output_tokens": 105029,
+    "p95_latency_ms": 223300,
+    "reasoning_tokens": 103414,
     "scoring_version": "1.0",
     "status_counts": {
-      "correct": 13,
+      "correct": 18,
       "unparseable": 1,
       "wrong": 21
     },
-    "total_cost_usd": 3.927569999999999,
-    "total_tokens": 132653,
-    "weighted_accuracy": 0.2714285714285714
+    "total_cost_usd": 5.982950000000001,
+    "total_tokens": 178179
   },
   "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
 }

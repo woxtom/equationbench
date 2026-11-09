@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 
-from equationbench.runner import RunConfig, run_benchmark, select_tasks
+from equationbench.frontier_run import build_ladder_bundle
+from equationbench.runner import RunConfig, run_benchmark
 
 
 def test_runner_writes_complete_receipt(tiny_dataset, fake_provider_factory, tmp_path):
@@ -23,7 +24,7 @@ def test_runner_writes_complete_receipt(tiny_dataset, fake_provider_factory, tmp
     )
     assert result.status == "complete"
     assert result.summary.correct == 5
-    assert result.summary.score == 100.0
+    assert result.summary.accuracy == 1.0
     assert len(result.predictions) == 5
     assert (out / "run.json").exists()
     assert (out / "summary.json").exists()
@@ -66,37 +67,6 @@ def test_runner_resumes_without_recalling_provider(tiny_dataset, fake_provider_f
     assert result.summary.correct == 5
 
 
-def test_select_tasks_is_balanced_for_small_limits(tiny_dataset):
-    selected = select_tasks(tiny_dataset.tasks, limit=2)
-    assert len(selected) == 2
-    assert {task.family for task in selected} == {"linear"}
-    assert [task.level for task in selected] == [1, 2]
-    selected = select_tasks(tiny_dataset.tasks, limit=5)
-    assert len(selected) == 5
-    assert {task.level for task in selected} == {1, 2, 3, 4, 5}
-
-
-def test_partial_run_limits_tasks(tiny_dataset, fake_provider_factory, tmp_path):
-    from equationbench.types import ModelSpec
-
-    spec = ModelSpec(key="fake-model", name="Fake Model", lab="Test", provider="fake", model="fake")
-    provider = fake_provider_factory(spec, accuracy=1.0)
-    result = run_benchmark(
-        RunConfig(
-            model=spec,
-            dataset=tiny_dataset,
-            out_dir=tmp_path / "partial",
-            concurrency=4,
-            retries=0,
-            limit=2,
-            provider=provider,
-        )
-    )
-    assert result.summary.n == 2
-    assert result.summary.correct == 2
-    assert result.status == "complete"
-
-
 def test_zero_timeout_means_unlimited(tiny_dataset, fake_provider_factory, tmp_path):
     from equationbench.types import ModelSpec
 
@@ -110,7 +80,6 @@ def test_zero_timeout_means_unlimited(tiny_dataset, fake_provider_factory, tmp_p
             concurrency=1,
             retries=0,
             timeout=0,
-            limit=1,
             provider=provider,
         )
     )
@@ -126,7 +95,8 @@ def test_resume_retries_provider_errors(tiny_dataset, fake_provider_factory, tmp
     spec = ModelSpec(key="fake-model", name="Fake Model", lab="Test", provider="fake", model="fake")
     out = tmp_path / "retry"
     out.mkdir()
-    task = select_tasks(tiny_dataset.tasks, limit=1)[0]
+    one_task = build_ladder_bundle([1], tasks_per_level=1)
+    task = one_task.tasks[0]
     failed = Prediction(
         task_id=task.task_id,
         model_key=spec.key,
@@ -141,11 +111,10 @@ def test_resume_retries_provider_errors(tiny_dataset, fake_provider_factory, tmp
     result = run_benchmark(
         RunConfig(
             model=spec,
-            dataset=tiny_dataset,
+            dataset=one_task,
             out_dir=out,
             concurrency=1,
             retries=0,
-            limit=1,
             provider=provider,
         )
     )

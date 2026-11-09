@@ -31,8 +31,8 @@ A task is a pure function of
 ```
 
 The task id is a hash of those fields plus the derived seed. The public season
-seed is published, so every public task can be regenerated. The sealed holdout
-uses a different seed and is encrypted at rest; only its commitment is public.
+seed is published, so every public task can be regenerated. A sealed holdout
+is planned but not implemented yet.
 
 ## 3. Prompt and answer contract
 
@@ -60,13 +60,13 @@ not the v2 rank.
 ## 5. Contamination
 
 - The public ladder uses a published season seed.
-- The sealed holdout uses an unpublished seed and a published hash commitment.
-- Official top rows will be checked on the sealed set.
+- A sealed holdout with an unpublished seed and a published hash commitment is
+  planned but not implemented yet. Until it exists, no row is checked against one.
 - A new season rotates the public seed and freezes a new task bank.
 
 Procedural generation reduces memorization risk but does not eliminate it. A
-model may have seen similar systems during training. The sealed holdout is the
-mitigation.
+model may have seen similar systems during training. The planned sealed holdout is
+the mitigation.
 
 ## 6. Cost and reasoning effort
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import math
 
 import pytest
 
@@ -11,7 +12,6 @@ from equationbench.ladder import (
     PRECISION_TASKS,
     TASKS_PER_LEVEL,
     X_BOUND,
-    build_bank,
     build_ladder_task,
     build_level_tasks,
     estimate_prompt_chars,
@@ -75,15 +75,6 @@ def test_level_tasks_are_distinct_and_share_the_level():
     assert all(task.metadata["n"] == size_for_level(5) for task in tasks)
 
 
-def test_build_bank_contains_core_and_precision_tasks():
-    tasks = build_bank([1, 2], tasks_per_level=2, precision_tasks=1)
-    assert len(tasks) == 6
-    assert {task.level for task in tasks} == {1, 2}
-    level_one = [task for task in tasks if task.level == 1]
-    assert len(level_one) == 3
-    assert max(task.metadata["task_index"] for task in level_one) == 3
-
-
 def test_prompt_estimates_are_monotonic():
     rows = ladder_rows(20)
     assert [row["level"] for row in rows] == list(range(1, 21))
@@ -104,3 +95,35 @@ def test_ladder_manifest_describes_the_public_protocol():
     assert manifest["season_seed"] == DEFAULT_SEASON_SEED
     assert len(manifest["levels"]) == 20
     assert manifest["levels"][9]["size"] == 24
+
+
+@pytest.mark.parametrize(
+    ("level", "size"),
+    [(4.5, 7), (5.5, 9), (6.5, 11), (7.5, 13), (8.5, 17), (9.5, 21), (10.5, 27), (11.5, 34)],
+)
+def test_half_levels_split_the_real_gap(level, size):
+    assert size_for_level(level) == size
+    assert size_for_level(math.floor(level)) < size < size_for_level(math.ceil(level))
+
+
+@pytest.mark.parametrize("level", [1.5, 2.5, 3.5])
+def test_half_level_between_adjacent_sizes_does_not_exist(level):
+    with pytest.raises(ValueError, match="no system size"):
+        size_for_level(level)
+
+
+def test_only_half_steps_are_levels():
+    with pytest.raises(ValueError, match="half steps"):
+        size_for_level(9.25)
+
+
+def test_whole_level_tasks_do_not_depend_on_the_number_type():
+    # A level's text is hashed into the seed: "10.0" must never reach it.
+    assert build_ladder_task(10.0, 0).task_id == build_ladder_task(10, 0).task_id
+
+
+def test_half_level_tasks_are_new_and_the_right_size():
+    task = build_ladder_task(9.5, 0)
+    assert task.metadata["n"] == 21
+    assert task.level == 9.5
+    assert task.task_id not in {build_ladder_task(level, 0).task_id for level in (9, 10)}

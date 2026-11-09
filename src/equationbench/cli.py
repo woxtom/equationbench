@@ -8,32 +8,10 @@ from typing import List, Optional
 
 import typer
 from rich.console import Console
-from rich.panel import Panel
-from rich.progress import (
-    BarColumn,
-    MofNCompleteColumn,
-    Progress,
-    TextColumn,
-    TimeElapsedColumn,
-)
 from rich.table import Table
 
-from . import (
-    BENCHMARK_NAME,
-    DATASET_VERSION,
-    FAMILIES,
-    LEVELS,
-    __version__,
-)
-from .dataset import (
-    DEFAULT_PROFILES,
-    DatasetProfile,
-    load_dataset,
-    secrets_dir,
-    verify_dataset,
-    write_dataset,
-)
-from .frontier_run import run_frontier
+from . import BENCHMARK_NAME, DATASET_VERSION, __version__
+from .frontier_run import bundle_from_receipt, frontier_from_predictions, run_frontier
 from .ladder import (
     DEFAULT_SEASON_SEED,
     MAX_PUBLIC_LEVEL,
@@ -42,10 +20,19 @@ from .ladder import (
     ladder_manifest,
     size_for_level,
 )
+from .leaderboard import (
+    CSV_OUT,
+    JSON_OUT,
+    MD_OUT,
+    build_payload,
+    render_outputs,
+    stale_outputs,
+    write_outputs,
+)
 from .providers import load_models, models_by_key
-from .runner import RunConfig, run_benchmark, select_tasks
+from .runner import load_predictions
 from .scoring import score_predictions
-from .types import Prediction
+from .types import Level, normalize_level
 
 app = typer.Typer(
     name="eqb",
@@ -54,10 +41,6 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
-
-
-def _dataset_path(profile: str) -> Path:
-    return Path("datasets") / f"equationbench-{DATASET_VERSION}-{profile}"
 
 
 def _parse_seed(value: str | None) -> int | str | None:
@@ -72,8 +55,9 @@ def _parse_seed(value: str | None) -> int | str | None:
         return value
 
 
-def _parse_levels(value: str) -> list[int]:
-    levels: set[int] = set()
+def _parse_levels(value: str) -> list[Level]:
+    """Parse ``1-8``, ``4,5,8-10``, or half levels such as ``9.5,10.5``."""
+    levels: set[Level] = set()
     for part in value.split(","):
         part = part.strip()
         if not part:
@@ -85,7 +69,7 @@ def _parse_levels(value: str) -> list[int]:
                 raise ValueError(f"invalid level range: {part}")
             levels.update(range(start, end + 1))
         else:
-            levels.add(int(part))
+            levels.add(normalize_level(float(part)))
     if not levels:
         raise ValueError("no levels supplied")
     if min(levels) < 1:
@@ -220,97 +204,6 @@ def ladder_command(
     )
 
 
-@app.command("build-dataset")
-def build_dataset_command(
-    profile: str = typer.Option("dev", "--profile", "-p", help="dev, test, sealed, or a custom name."),
-    out: Optional[Path] = typer.Option(None, "--out", "-o", help="Output directory."),
-    per_cell: Optional[int] = typer.Option(None, "--per-cell", help="Tasks per level cell."),
-    family: Optional[List[str]] = typer.Option(None, "--family", "-f", help="Restrict the dataset to one or more tracks."),
-    master_seed: Optional[str] = typer.Option(None, "--master-seed", help="Override the master seed."),
-    sealed: bool = typer.Option(False, "--sealed", help="Encrypt the dataset."),
-    key_file: Optional[Path] = typer.Option(None, "--key-file", help="Fernet key file for sealed data."),
-    seed_file: Optional[Path] = typer.Option(None, "--seed-file", help="Where to save the sealed master seed."),
-    overwrite: bool = typer.Option(False, "--force", help="Overwrite an existing output directory."),
-) -> None:
-    """Generate a deterministic dataset from the public or private seed."""
-    if profile in DEFAULT_PROFILES:
-        base = DEFAULT_PROFILES[profile]
-        resolved = DatasetProfile(
-            name=base.name,
-            per_cell=per_cell if per_cell is not None else base.per_cell,
-            master_seed=master_seed if master_seed is not None else base.master_seed,
-            sealed=sealed or base.sealed,
-            description=base.description,
-            families=tuple(family) if family else base.families,
-            levels=base.levels,
-            prompt_version=base.prompt_version,
-        )
-    else:
-        resolved = DatasetProfile(
-            name=profile,
-            per_cell=per_cell or 1,
-            master_seed=master_seed or "default",
-            sealed=sealed,
-            description=f"Custom EquationBench dataset {profile}.",
-            families=tuple(family) if family else FAMILIES,
-            levels=LEVELS,
-        )
-    path = out or _dataset_path(profile)
-    if path.exists() and any(path.iterdir()) and not overwrite:
-        console.print(f"[red]{path} already exists.[/red] Use --force to overwrite.")
-        raise typer.Exit(2)
-    if resolved.sealed and seed_file is None:
-        seed_file = secrets_dir() / f"{profile}_seed.txt"
-    bundle = write_dataset(
-        resolved,
-        path,
-        key_file=key_file or secrets_dir() / "sealed.key",
-        seed_file=seed_file,
-    )
-    problems = verify_dataset(bundle)
-    table = Table(title=f"{BENCHMARK_NAME} dataset: {profile}")
-    table.add_column("Field")
-    table.add_column("Value", overflow="fold")
-    table.add_row("Path", str(path))
-    table.add_row("Tasks", str(len(bundle.tasks)))
-    table.add_row("Cells", f"{len(resolved.families)} families x {len(resolved.levels)} levels")
-    table.add_row("Per cell", str(resolved.per_cell))
-    table.add_row("Dataset hash", bundle.manifest["dataset_sha256"])
-    table.add_row("Master seed", "hidden (sealed)" if resolved.sealed else str(resolved.master_seed))
-    table.add_row("Integrity", "ok" if not problems else f"{len(problems)} problem(s)")
-    console.print(table)
-    if problems:
-        for problem in problems[:20]:
-            console.print(f"[red]- {problem}[/red]")
-        raise typer.Exit(1)
-    if resolved.sealed:
-        console.print(
-            f"[yellow]Sealed key and seed are in {secrets_dir()} (outside the repo). "
-            "Do not publish them before the reveal date.[/yellow]"
-        )
-
-
-@app.command("verify-dataset")
-def verify_dataset_command(
-    path: Path = typer.Option(..., "--path", "-p", help="Dataset directory."),
-    key: Optional[str] = typer.Option(None, "--key", help="Sealed dataset key."),
-    key_file: Optional[Path] = typer.Option(None, "--key-file", help="Sealed key file."),
-    no_regenerate: bool = typer.Option(False, "--no-regenerate", help="Only check internal hashes."),
-) -> None:
-    """Verify task ids, answer hashes, and optionally regenerate every task."""
-    bundle = load_dataset(path, key=key, key_file=key_file)
-    problems = verify_dataset(bundle, regenerate=not no_regenerate)
-    if problems:
-        console.print(f"[red]{len(problems)} problem(s) found:[/red]")
-        for problem in problems[:50]:
-            console.print(f"[red]- {problem}[/red]")
-        raise typer.Exit(1)
-    console.print(
-        f"[green]OK[/green] {len(bundle.tasks)} tasks; "
-        f"hash {bundle.manifest['dataset_sha256'][:24]}..."
-    )
-
-
 @app.command("list-models")
 def list_models_command(
     config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
@@ -345,218 +238,13 @@ def list_models_command(
     Console(width=180).print(table)
 
 
-@app.command("show-task")
-def show_task_command(
-    dataset: Path = typer.Option(Path("datasets/equationbench-v2-dev"), "--dataset", "-d"),
-    family: str = typer.Option("linear", "--family", "-f"),
-    level: int = typer.Option(1, "--level", "-l"),
-    index: int = typer.Option(0, "--index", "-i"),
-    key: Optional[str] = typer.Option(None, "--key"),
-    show_solution: bool = typer.Option(False, "--solution"),
-) -> None:
-    """Print one task (dev/test sets include answers)."""
-    bundle = load_dataset(dataset, key=key)
-    matches = [t for t in bundle.tasks if t.family == family and t.level == level]
-    if index < 0 or index >= len(matches):
-        console.print(f"[red]index out of range (0..{len(matches) - 1})[/red]")
-        raise typer.Exit(2)
-    task = matches[index]
-    console.print(Panel(task.prompt, title=f"{task.family} L{task.level} · {task.task_id}", expand=False))
-    console.rule("ground truth")
-    console.print(f"[bold]Answer:[/bold] {task.answer}")
-    console.print(f"[bold]Type:[/bold] {task.answer_type}")
-    console.print_json(json.dumps(task.metadata))
-    if show_solution:
-        console.print(f"[bold]Solution note:[/bold] {task.solution}")
-
-
-@app.command("decrypt-dataset")
-def decrypt_dataset_command(
-    path: Path = typer.Option(..., "--path", "-p"),
-    out: Path = typer.Option(..., "--out", "-o"),
-    key: Optional[str] = typer.Option(None, "--key"),
-    key_file: Optional[Path] = typer.Option(None, "--key-file"),
-) -> None:
-    """Decrypt a sealed dataset to a local working directory."""
-    bundle = load_dataset(path, key=key, key_file=key_file)
-    out.mkdir(parents=True, exist_ok=True)
-    with (out / "tasks.jsonl").open("w", encoding="utf-8") as handle:
-        for task in bundle.tasks:
-            handle.write(json.dumps(task.to_dict(), ensure_ascii=False, sort_keys=True) + "\n")
-    with (out / "prompts.jsonl").open("w", encoding="utf-8") as handle:
-        for task in bundle.tasks:
-            handle.write(json.dumps(task.public_dict(), ensure_ascii=False, sort_keys=True) + "\n")
-    (out / "manifest.json").write_text(
-        json.dumps(bundle.manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
-    console.print(f"[green]Decrypted {len(bundle.tasks)} tasks to {out}[/green]")
-    console.print("[yellow]Do not commit this directory. It contains answers.[/yellow]")
-
-
-def _run_one(
-    model,
-    dataset,
-    *,
-    out_dir: Optional[Path],
-    concurrency: int,
-    timeout: float,
-    retries: int,
-    thinking: Optional[str],
-    limit: Optional[int],
-    families: Optional[List[str]],
-    levels: Optional[List[int]],
-    force: bool,
-    max_cost: Optional[float],
-    notes: str,
-    quiet: bool = False,
-):
-    selected = select_tasks(dataset.tasks, families=families, levels=levels, limit=limit)
-    progress = Progress(
-        TextColumn("[bold cyan]{task.description}"),
-        BarColumn(),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        console=console,
-        transient=not quiet,
-    )
-    progress_task = progress.add_task(model.name, total=len(selected))
-
-    def on_progress(done: int, total: int, prediction: Prediction) -> None:
-        marker = "✓" if prediction.correct else "·"
-        progress.update(
-            progress_task,
-            completed=done,
-            description=f"{model.name}  [dim]{marker} {prediction.parse_status}[/dim]",
-        )
-
-    config = RunConfig(
-        model=model,
-        dataset=dataset,
-        out_dir=out_dir,
-        concurrency=concurrency,
-        timeout=timeout if timeout and timeout > 0 else None,
-        retries=retries,
-        thinking=thinking,
-        families=families,
-        levels=levels,
-        limit=limit,
-        force=force,
-        max_cost=max_cost,
-        notes=notes,
-        on_progress=on_progress,
-    )
-    with progress:
-        result = run_benchmark(config)
-
-    summary = result.summary
-    table = Table(title=f"{model.name} · {result.status}")
-    table.add_column("Metric")
-    table.add_column("Value", justify="right")
-    table.add_row("Score (difficulty-weighted)", f"{summary.score:.1f}")
-    table.add_row("95% CI", f"{summary.score_ci[0]:.1f} – {summary.score_ci[1]:.1f}")
-    table.add_row("Accuracy", f"{summary.accuracy * 100:.1f}%")
-    table.add_row("Correct", f"{summary.correct} / {summary.n}")
-    table.add_row("Cost", "unknown" if not summary.cost_known else f"${summary.total_cost_usd:.4f}")
-    table.add_row("Latency (median)", f"{summary.median_latency_ms or 0} ms")
-    table.add_row("Reasoning (actual)", ", ".join(result.metadata.get("actual_thinking_levels", {})) or "n/a")
-    table.add_row("Run directory", str(result.run_dir))
-    console.print(table)
-    if result.status != "complete":
-        console.print(f"[yellow]Run status: {result.status} ({result.aborted_reason})[/yellow]")
-    return result
-
-
-@app.command("run")
-def run_command(
-    model: Optional[List[str]] = typer.Option(None, "--model", "-m", help="Model key(s); repeat or comma-separate."),
-    all_models: bool = typer.Option(False, "--all", help="Run every enabled model."),
-    division: Optional[str] = typer.Option(None, "--division", help="Only models in this division."),
-    config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
-    dataset: Path = typer.Option(Path("datasets/equationbench-v2-test"), "--dataset", "-d"),
-    out: Optional[Path] = typer.Option(None, "--out", "-o", help="Run directory (single model only)."),
-    concurrency: int = typer.Option(4, "--concurrency", "-j", min=1, max=32),
-    timeout: float = typer.Option(0.0, "--timeout", help="Per-task wall-clock limit in seconds; 0 means wait until the model answers."),
-    retries: int = typer.Option(2, "--retries", min=0, max=8),
-    thinking: Optional[str] = typer.Option(None, "--thinking", help="Override the model's thinking level."),
-    limit: Optional[int] = typer.Option(None, "--limit", help="Balanced task limit per model."),
-    family: Optional[List[str]] = typer.Option(None, "--family", "-f", help="Restrict to a family."),
-    level: Optional[List[int]] = typer.Option(None, "--level", "-l", help="Restrict to a level."),
-    force: bool = typer.Option(False, "--force", help="Re-run tasks even if cached."),
-    max_cost: Optional[float] = typer.Option(None, "--max-cost", help="Abort a model after this USD cost."),
-    notes: str = typer.Option("", "--notes", help="Free-form run note."),
-    dry_run: bool = typer.Option(False, "--dry-run", help="Print the plan without calling models."),
-    include_disabled: bool = typer.Option(False, "--include-disabled"),
-) -> None:
-    """Run one or more models on a dataset."""
-    models = _resolve_models(
-        config,
-        model,
-        all_models=all_models,
-        division=division,
-        include_disabled=include_disabled,
-    )
-    if out is not None and len(models) > 1:
-        console.print("[red]--out can only be used with one model.[/red]")
-        raise typer.Exit(2)
-    bundle = load_dataset(dataset)
-    selected = select_tasks(bundle.tasks, families=family, levels=level, limit=limit)
-    if not selected:
-        console.print("[red]No tasks matched the filters.[/red]")
-        raise typer.Exit(2)
-    console.print(
-        f"[bold]{BENCHMARK_NAME} run[/bold] · dataset {bundle.manifest.get('name')} · "
-        f"{len(selected)} tasks · {len(models)} model(s)"
-    )
-    for item in models:
-        console.print(
-            f"  • {item.name} [dim]({item.provider}/{item.model}, thinking={thinking or item.thinking})[/dim]"
-        )
-    if dry_run:
-        console.print("[yellow]Dry run: no provider calls made.[/yellow]")
-        return
-    results = []
-    for item in models:
-        result = _run_one(
-            item,
-            bundle,
-            out_dir=out if len(models) == 1 else None,
-            concurrency=concurrency,
-            timeout=timeout,
-            retries=retries,
-            thinking=thinking,
-            limit=limit,
-            families=family,
-            levels=level,
-            force=force,
-            max_cost=max_cost,
-            notes=notes,
-        )
-        results.append(result)
-    console.print("\n[bold]Run summary[/bold]")
-    table = Table()
-    table.add_column("Model")
-    table.add_column("Score", justify="right")
-    table.add_column("95% CI", justify="right")
-    table.add_column("Cost", justify="right")
-    table.add_column("Status")
-    for item, result in zip(models, results):
-        table.add_row(
-            item.name,
-            f"{result.summary.score:.1f}",
-            f"{result.summary.score_ci[0]:.1f}–{result.summary.score_ci[1]:.1f}",
-            "n/a" if not result.summary.cost_known else f"${result.summary.total_cost_usd:.3f}",
-            result.status,
-        )
-    console.print(table)
-
-
 @app.command("run-frontier")
 def run_frontier_command(
     model: Optional[List[str]] = typer.Option(None, "--model", "-m", help="Model key(s)."),
     all_models: bool = typer.Option(False, "--all", help="Run every enabled model."),
     division: Optional[str] = typer.Option(None, "--division", help="Only models in this division."),
     config: Path = typer.Option(Path("config/models.toml"), "--config", "-c"),
-    levels: str = typer.Option("1-8", "--levels", help="Levels to run, e.g. 1-8 or 4,5,8-10."),
+    levels: str = typer.Option("1-8", "--levels", help="Levels to run, e.g. 1-8, 4,5,8-10, or 9,9.5,10."),
     tasks_per_level: int = typer.Option(5, "--tasks-per-level", min=1, max=10),
     precision_levels: str = typer.Option(
         "",
@@ -592,6 +280,12 @@ def run_frontier_command(
     if selected_levels[-1] > MAX_PUBLIC_LEVEL:
         console.print(f"[red]levels must be at most L{MAX_PUBLIC_LEVEL}.[/red]")
         raise typer.Exit(2)
+    try:
+        for level in selected_levels:
+            size_for_level(level)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(2) from exc
     try:
         selected_precision_levels = (
             _parse_levels(precision_levels) if precision_levels.strip() else []
@@ -675,11 +369,7 @@ def run_frontier_command(
             bootstrap_replicates=bootstrap,
             on_progress=progress,
         )
-        valid = sum(
-            1
-            for prediction in result.predictions
-            if prediction.parse_status not in ("provider_error", "timeout")
-        )
+        valid = sum(1 for prediction in result.predictions if not prediction.is_infra)
         rows.append((item, result, score, valid / len(bundle.tasks) if bundle.tasks else 0.0))
         console.print(f"[green]Wrote {result.run_dir / 'frontier.json'}[/green]")
 
@@ -724,34 +414,72 @@ def run_frontier_command(
 @app.command("score")
 def score_command(
     run: Path = typer.Option(..., "--run", "-r", help="Run directory."),
-    dataset: Optional[Path] = typer.Option(None, "--dataset", "-d", help="Override dataset path."),
     bootstrap: int = typer.Option(2000, "--bootstrap", help="Bootstrap replicates."),
 ) -> None:
     """Re-score an existing run from its stored predictions."""
     run_json = json.loads((run / "run.json").read_text(encoding="utf-8"))
-    dataset_path = dataset or Path(run_json["dataset"]["path"])
-    bundle = load_dataset(dataset_path)
+    bundle = bundle_from_receipt(run_json)
+    if bundle is None:
+        console.print(f"[red]{run} is not a ladder run receipt.[/red]")
+        raise typer.Exit(2)
     selected_ids = set(run_json["dataset"]["selected_tasks"])
     tasks = [task for task in bundle.tasks if task.task_id in selected_ids]
-    predictions = []
-    for line in (run / "predictions.jsonl").read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            predictions.append(Prediction.from_dict(json.loads(line)))
-    pred_by_id = {p.task_id: p for p in predictions}
+    pred_by_id = {p.task_id: p for p in load_predictions(run / "predictions.jsonl")}
     selected_predictions = [pred_by_id[t.task_id] for t in tasks if t.task_id in pred_by_id]
-    summary = score_predictions(selected_predictions, tasks, bootstrap_replicates=bootstrap)
+    summary = score_predictions(selected_predictions, tasks)
     console.print_json(json.dumps(summary.to_dict(), indent=2))
+    updated = {
+        **run_json,
+        "score": summary.to_dict(),
+        "summary": summary.to_dict(),
+        "frontier": frontier_from_predictions(
+            selected_predictions, tasks, bootstrap_replicates=bootstrap
+        ).to_dict(),
+    }
     (run / "summary.json").write_text(
-        json.dumps(
-            {**run_json, "score": summary.to_dict(), "summary": summary.to_dict()},
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n",
+        json.dumps(updated, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     console.print(f"[green]Updated {run / 'summary.json'}[/green]")
 
+
+@app.command("build-leaderboard")
+def build_leaderboard_command(
+    root: Path = typer.Option(Path("."), "--root", help="Repository root."),
+    bootstrap: int = typer.Option(2000, "--bootstrap", help="Bootstrap replicates per row."),
+    include_probes: bool = typer.Option(False, "--include-probes", help="Include unranked probes."),
+    generated_at: Optional[str] = typer.Option(
+        None, "--generated-at", help="Override the build timestamp (default: newest run)."
+    ),
+    json_out: Path = typer.Option(JSON_OUT, "--json-out"),
+    csv_out: Path = typer.Option(CSV_OUT, "--csv-out"),
+    md_out: Path = typer.Option(MD_OUT, "--md-out"),
+    check: bool = typer.Option(
+        False, "--check", help="Fail if the published files differ from a fresh build."
+    ),
+) -> None:
+    """Re-score every receipt and publish the leaderboard files."""
+    root = root.resolve()
+    payload = build_payload(
+        root,
+        bootstrap=bootstrap,
+        include_probes=include_probes,
+        generated_at=generated_at,
+    )
+    outputs = render_outputs(root, payload, json_out=json_out, csv_out=csv_out, md_out=md_out)
+    if check:
+        stale = stale_outputs(outputs)
+        if stale:
+            for path in stale:
+                console.print(f"[red]Out of date:[/red] {path}")
+            console.print("Run [bold]eqb build-leaderboard[/bold] and commit the result.")
+            raise typer.Exit(1)
+        console.print("[green]Leaderboard files are up to date.[/green]")
+        return
+    write_outputs(outputs)
+    for path in outputs:
+        console.print(f"Wrote {path}")
+    console.print(f"ranked: {payload['ranked_count']}, unranked: {payload['unranked_count']}")
 
 
 if __name__ == "__main__":  # pragma: no cover

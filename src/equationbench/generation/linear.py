@@ -8,18 +8,6 @@ from ..mathutil import det_bareiss, format_integer_list, format_linear_equation
 from ..prompts import wrap_task
 from ..types import GenResult
 
-LEVEL_SPECS = {
-    1: {"n": 3, "coeff_bound": 5, "x_bound": 5},
-    2: {"n": 4, "coeff_bound": 9, "x_bound": 7},
-    3: {"n": 6, "coeff_bound": 12, "x_bound": 9},
-    4: {"n": 9, "coeff_bound": 20, "x_bound": 9},
-    5: {"n": 14, "coeff_bound": 30, "x_bound": 9},
-    6: {"n": 24, "coeff_bound": 50, "x_bound": 9},
-    7: {"n": 30, "coeff_bound": 60, "x_bound": 9},
-    8: {"n": 18, "coeff_bound": 36, "x_bound": 9},
-    9: {"n": 22, "coeff_bound": 45, "x_bound": 9},
-}
-
 
 def generate_size(
     n: int,
@@ -30,9 +18,7 @@ def generate_size(
 ) -> GenResult:
     """Generate a dense n x n system with a known exact integer solution.
 
-    This is the size-first entry point used by the open-ended ladder.  The
-    legacy ``generate(level, ...)`` wrapper below keeps the v1 datasets
-    reproducible.
+    The ladder decides the size; this only builds the system.
     """
     if n < 2:
         raise ValueError(f"system size must be at least 2, got {n}")
@@ -88,22 +74,4 @@ def generate_size(
             "fraction-free Gaussian elimination recovers it uniquely."
         ),
         metadata=metadata,
-    )
-
-
-def generate(
-    level: int,
-    rng: random.Random,
-    *,
-    n_override: int | None = None,
-    coeff_override: int | None = None,
-) -> GenResult:
-    if level not in LEVEL_SPECS:
-        raise ValueError(f"unknown linear level: {level}")
-    spec = LEVEL_SPECS[level]
-    return generate_size(
-        n_override or spec["n"],
-        rng,
-        coeff_bound=coeff_override or spec["coeff_bound"],
-        x_bound=spec["x_bound"],
     )

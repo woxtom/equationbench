@@ -1,14 +1,14 @@
 {
   "completion": 1.0,
-  "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+  "dataset_sha256": "303802e4b6609d586b9c481a6209e1e3795f4d8107d1f8dbbc23e72d724dbe8a",
   "frontier": {
     "bootstrap_replicates": 1000,
     "bound": null,
     "bound_size": null,
     "censored": null,
     "ci": [
-      5.625,
-      6.5
+      6.049932735054938,
+      6.811703676874211
     ],
     "levels": [
       {
@@ -24,7 +24,15 @@
         "level": 6,
         "p": 0.6,
         "size": 10,
-        "smoothed": 0.6,
+        "smoothed": 0.7,
+        "valid": 5
+      },
+      {
+        "correct": 4,
+        "level": 6.5,
+        "p": 0.8,
+        "size": 11,
+        "smoothed": 0.7,
         "valid": 5
       },
       {
@@ -69,12 +77,12 @@
       }
     ],
     "method": "isotonic-log-interpolation",
-    "score": 6.166666666666667,
-    "scoring_version": "2.0",
-    "size": 9.898327132023631,
+    "score": 6.731005252677445,
+    "scoring_version": "2.2",
+    "size": 11.276891887624101,
     "size_ci": [
-      8.733919097053125,
-      10.690784617684074
+      9.634924839989964,
+      11.489125293076059
     ]
   },
   "ladder_version": "1",
@@ -83,6 +91,7 @@
     "11": 5,
     "5": 5,
     "6": 5,
+    "6.5": 5,
     "7": 5,
     "8": 5,
     "9": 5
@@ -90,6 +99,7 @@
   "levels_tested": [
     5,
     6,
+    6.5,
     7,
     8,
     9,
@@ -122,23 +132,20 @@
     "metadata": {
       "aborted_reason": null,
       "actual_thinking_levels": {
-        "low": 35
+        "low": 40
       },
       "benchmark": "EquationBench",
       "config": {
         "concurrency": 5,
-        "families": null,
-        "levels": null,
-        "limit": null,
-        "max_cost": 10.0,
-        "notes": "GPT-6 Astra low-effort bracket: L5-L9 added; L10-L11 reused.",
+        "max_cost": 4.62,
+        "notes": "GPT-6 Astra low-effort bracket: L5-L11; L6.5 (n=11) added to split the L6-L7 gap.",
         "retries": 0,
         "system_prompt": "You are solving EquationBench, a closed-book benchmark of exactly verifiable\nmathematical problems. Tools, code execution, and external resources are not\navailable. Work exactly: do not round, approximate, or guess.\n\nYour response may contain reasoning. It must end with a single JSON object\ncontaining the final answer. Do not put anything after that JSON object. The\nanswer must be exact; the benchmark parses and compares it symbolically or as\nan exact integer/rational.",
         "thinking_requested": "low",
         "timeout": 1800.0
       },
       "dataset": {
-        "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+        "dataset_sha256": "303802e4b6609d586b9c481a6209e1e3795f4d8107d1f8dbbc23e72d724dbe8a",
         "manifest": {
           "base_size": 3,
           "coefficient_bound": 30,
@@ -148,13 +155,14 @@
               "11": 5,
               "5": 5,
               "6": 5,
+              "6.5": 5,
               "7": 5,
               "8": 5,
               "9": 5
             },
-            "total": 35
+            "total": 40
           },
-          "dataset_sha256": "937f1215b0eefe106b446729a738fd2a6c63c0a3f2e500885c5dc63939ab8a59",
+          "dataset_sha256": "303802e4b6609d586b9c481a6209e1e3795f4d8107d1f8dbbc23e72d724dbe8a",
           "description": "Fixed paired ladder set: 5 core tasks per level, L5 to L11.",
           "formula": "round(3 * 2 ** ((level - 1) / 3))",
           "generator_version": "2.0.0+ladder1",
@@ -164,6 +172,7 @@
             "11": 5,
             "5": 5,
             "6": 5,
+            "6.5": 5,
             "7": 5,
             "8": 5,
             "9": 5
@@ -184,6 +193,15 @@
               "level": 6,
               "precision_tasks": 5,
               "size": 10,
+              "tasks_per_level": 5,
+              "zone": "core"
+            },
+            {
+              "approx_prompt_chars": 1748,
+              "approx_prompt_tokens": 437,
+              "level": 6.5,
+              "precision_tasks": 5,
+              "size": 11,
               "tasks_per_level": 5,
               "zone": "core"
             },
@@ -236,6 +254,7 @@
           "levels_included": [
             5,
             6,
+            6.5,
             7,
             8,
             9,
@@ -258,7 +277,9 @@
             "143eef2fda2a95ac": "b05c4f1a73715a61535b3ca49ff40dd83c5239ab13e9a0575db0ffd7d6c4985b",
             "1cd5941d522f3750": "18483fb0811c082aca86935cf309a56fa19d7e52a5a6dafc0540200a234ce51e",
             "27a0653f23943fb0": "e7311eaec8314a169be6176782bac7e6dc8f0dcb4eff9113e7416898c58ae269",
+            "28b1067d0654dba0": "deae4f641487a71f200ccb65c0a1c726527bb280061609f5589ab6a23c5d9d3a",
             "2a7bcaef7bf381e5": "da6f487da3feed00963a15f0756e890e5d4729e4918e64e3017d98ebb5590c1f",
+            "3480720a4809eb74": "a6d662851f603d983b451df8c14954e4c076c42b342bf8f5b3df322dd7151281",
             "39419e7d696f5801": "c4083ea9be2aaca8b011252626b342b2334176458ec583ab5093bfba5eb1e56b",
             "39d9e53c1cdb8c4a": "3c998fee2d9d84194b53e6cd438930cf3470a88f4b3efd7b7fa87d16c17f163a",
             "3ecec0de44b4ea74": "d0295e7382c0713f2b586fc913a8bf845bd4ad6ac26876f71f8043abbd733aee",
@@ -281,11 +302,14 @@
             "933a8ef20c6f53f5": "411b8df837b96d4db55bacf68528198c805b0a878b68722ca0edcd5827656ebb",
             "9dcd83b02f2ca113": "66749315303dc9a30d7a4f644be63adad5b0743f7d874f9bb71290ad53cf0b56",
             "ad0fc46fd5b7e852": "7a0c83a06bbb09db75a327677f5e5148c8da28cdd9e181795588000202b5d1dd",
+            "b84d55035f869e0b": "5ca2cef1b42d3993d6d235fe4bdb11b1baff849c8fadbfb7e99c324d4812266b",
             "b8999b6f928ac90f": "adafe63a471d8a2843dde1d7b78f4ecaffe19a28823c5f08d9ea298fa5e3f56e",
             "bc7a9a97096b60be": "a30a95b63635984474751598bc8a469cf5e45faf0d31734ed0bdf7f68339682b",
             "c18e2954377b5798": "9f4694512fb30e39aa407e12aee361bde7fa6d5a52e52b7c6afb918795809fcc",
+            "c98653a0d4970810": "8e1eb6e47a0889cdad7a5bc3405c7afa2dabc67353ada2172f56de5e21bbe7eb",
             "e991fd15bedee602": "5d5ccf9008649833b90f3502346487057f95fc1e5bcdaa43e89c1893dbb2fa9e",
-            "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e"
+            "eb0f22245e95e0e2": "df693c68c3a52cc4ab068eef1e94da80f4910cb9b2456879c011c7dde93d087e",
+            "f9e08099246c95e8": "250cc5720a24636ebc69b851dc4ffb5e3e5e649446d5915c5515620445065866"
           },
           "tasks_per_level": 5
         },
@@ -302,6 +326,11 @@
           "5d14ba9969ef40bc",
           "7f7033cb8ea831b2",
           "44df8ff62e117134",
+          "c98653a0d4970810",
+          "3480720a4809eb74",
+          "b84d55035f869e0b",
+          "28b1067d0654dba0",
+          "f9e08099246c95e8",
           "0420ea9c2ffe3113",
           "933a8ef20c6f53f5",
           "9dcd83b02f2ca113",
@@ -332,18 +361,16 @@
       "dataset_version": "v2",
       "environment": {
         "argv": [
-          ".venv/bin/eqb",
+          "/home/wot/project/equationbench/.venv/bin/eqb",
           "run-frontier",
-          "--model",
+          "-m",
           "openai-gpt-6-astra",
-          "--levels",
-          "5-11",
-          "--tasks-per-level",
-          "5",
-          "--out",
-          "runs/provisional/2026-10/astra/openai-gpt-6-astra-low",
           "--thinking",
           "low",
+          "--levels",
+          "5,6,6.5,7,8,9,10,11",
+          "--out",
+          "runs/provisional/2026-10/astra/openai-gpt-6-astra-low",
           "--concurrency",
           "5",
           "--timeout",
@@ -351,18 +378,19 @@
           "--retries",
           "0",
           "--max-cost",
-          "10",
-          "--bootstrap",
-          "1000",
+          "4.62",
           "--notes",
-          "GPT-6 Astra low-effort bracket: L5-L9 added; L10-L11 reused."
+          "GPT-6 Astra low-effort bracket: L5-L11; L6.5 (n=11) added to split the L6-L7 gap.",
+          "--include-disabled",
+          "--bootstrap",
+          "1000"
         ],
-        "git_commit": "6a155cf64bb53018635e09363047778321fbda10",
+        "git_commit": "b97369b04e1de3453a7f992648b21bb9d0b2dbaa",
         "host": "wot",
         "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
         "python": "3.14.7"
       },
-      "finished_at": "2026-10-31T09:05:45+00:00",
+      "finished_at": "2026-11-09T05:15:11+00:00",
       "generator_version": "2.0.0",
       "model": {
         "api_key_env": null,
@@ -383,33 +411,21 @@
         "provider_kind": "pi",
         "thinking": "low"
       },
-      "n_existing_at_start": 10,
-      "n_predictions": 35,
-      "n_selected": 35,
+      "n_existing_at_start": 35,
+      "n_predictions": 40,
+      "n_selected": 40,
       "prompt_fingerprint": "a00a9e3f7543ce3ea1fe1922a4335de63444f7d53aee946756c57db13914f8bd",
       "prompt_version": "1.0",
-      "run_id": "20261031T090103Z-openai-gpt-6-astra-6dbc3f8d",
-      "started_at": "2026-10-31T09:01:03+00:00",
+      "run_id": "20261109T051200Z-openai-gpt-6-astra-dcb51a95",
+      "started_at": "2026-11-09T05:12:00+00:00",
       "status": "complete",
       "system_prompt_sha256": "cc2c4ac01001bcc14d3e5167c7a5f46fdc4f3a00ac5db0708968b48952d807bb"
     },
     "run_dir": "runs/provisional/2026-10/astra/openai-gpt-6-astra-low",
-    "run_id": "20261031T090103Z-openai-gpt-6-astra-6dbc3f8d",
+    "run_id": "20261109T051200Z-openai-gpt-6-astra-dcb51a95",
     "status": "complete",
     "summary": {
-      "accuracy": 0.22857142857142856,
-      "accuracy_ci": [
-        0.0,
-        0.5142857142857142
-      ],
-      "by_family": {
-        "linear": {
-          "accuracy": 0.22857142857142856,
-          "correct": 8,
-          "n": 35,
-          "score": 15.357142857142858
-        }
-      },
+      "accuracy": 0.3,
       "by_level": {
         "10": {
           "accuracy": 0.0,
@@ -431,6 +447,11 @@
           "correct": 3,
           "n": 5
         },
+        "6.5": {
+          "accuracy": 0.8,
+          "correct": 4,
+          "n": 5
+        },
         "7": {
           "accuracy": 0.0,
           "correct": 0,
@@ -448,30 +469,23 @@
         }
       },
       "completion_rate": 1.0,
-      "correct": 8,
+      "correct": 12,
       "cost_known": true,
-      "cost_per_100": 7.487342857142856,
-      "input_tokens": 67642,
-      "median_latency_ms": 21956,
+      "input_tokens": 71914,
+      "median_latency_ms": 31356,
       "missing": 0,
-      "n": 35,
-      "output_tokens": 38883,
-      "p95_latency_ms": 116646,
-      "reasoning_tokens": 32239,
-      "score": 15.357142857142858,
-      "score_ci": [
-        0.0,
-        41.27801418439715
-      ],
+      "n": 40,
+      "output_tokens": 59506,
+      "p95_latency_ms": 147445,
+      "reasoning_tokens": 52664,
       "scoring_version": "1.0",
       "status_counts": {
-        "correct": 8,
-        "unparseable": 10,
+        "correct": 12,
+        "unparseable": 11,
         "wrong": 17
       },
-      "total_cost_usd": 2.62057,
-      "total_tokens": 106525,
-      "weighted_accuracy": 0.15357142857142858
+      "total_cost_usd": 3.69444,
+      "total_tokens": 131420
     }
   },
   "season_seed": 731992,

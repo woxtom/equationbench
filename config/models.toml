@@ -4,7 +4,7 @@
 # useful for exploration but are not eligible for an official row until their
 # provider-error rate is measured and disclosed.
 #
-# To add a model: add a [[models]] entry, run `eqb run --model <key>`, then
+# To add a model: add a [[models]] entry, run `eqb run-frontier --model <key>`, then
 # rebuild the leaderboard.
 
 [[models]]

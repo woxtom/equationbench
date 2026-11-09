@@ -12,12 +12,11 @@ That makes every level reproducible without shipping a huge fixed dataset.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable
 
 from . import GENERATOR_VERSION, PROMPT_VERSION
 from .generation.linear import generate_size
 from .rng import rng_for, task_id_for
-from .types import Task
+from .types import Level, Task, normalize_level
 
 LADDER_VERSION = "1"
 LADDER_GENERATOR_VERSION = f"{GENERATOR_VERSION}+ladder{LADDER_VERSION}"
@@ -52,16 +51,25 @@ def ideal_size_for_level(level: float) -> float:
     return BASE_SIZE * LEVEL_STEP ** (level - 1)
 
 
-def size_for_level(level: int) -> int:
+def size_for_level(level: float) -> int:
     """Return the integer system size ``n`` for a ladder level.
 
-    ``level`` must be >= 1.  The result is rounded to the nearest integer, so
-    adjacent levels are always strictly increasing for the levels shipped in
-    the public protocol.
+    A whole level rounds the ideal geometric size.  A half level is the rounded
+    geometric midpoint of its two whole neighbours, so it splits a real gap.
+    Where the neighbours are adjacent integers there is nothing to split and
+    the half level does not exist.
     """
     if level < 1:
         raise ValueError(f"level must be at least 1, got {level}")
-    return max(2, round(ideal_size_for_level(level)))
+    level = normalize_level(level)
+    if isinstance(level, int):
+        return max(2, round(ideal_size_for_level(level)))
+    lower = size_for_level(math.floor(level))
+    upper = size_for_level(math.ceil(level))
+    size = round(math.sqrt(lower * upper))
+    if not lower < size < upper:
+        raise ValueError(f"L{level} has no system size between {lower} and {upper}")
+    return size
 
 
 def level_for_size(size: float) -> float:
@@ -91,7 +99,7 @@ def estimate_prompt_tokens(size: int) -> int:
 
 
 def build_ladder_task(
-    level: int,
+    level: Level,
     index: int,
     *,
     season_seed: int | str = DEFAULT_SEASON_SEED,
@@ -105,6 +113,7 @@ def build_ladder_task(
     """
     if index < 0:
         raise ValueError(f"task index must be non-negative, got {index}")
+    level = normalize_level(level)
     size = size_for_level(level)
     seed, rng = rng_for(
         season_seed,
@@ -150,7 +159,7 @@ def build_ladder_task(
 
 
 def build_level_tasks(
-    level: int,
+    level: Level,
     count: int = TASKS_PER_LEVEL,
     *,
     start_index: int = 0,
@@ -173,28 +182,18 @@ def build_level_tasks(
     ]
 
 
-def build_bank(
-    levels: Iterable[int],
-    *,
-    tasks_per_level: int = TASKS_PER_LEVEL,
-    precision_tasks: int = PRECISION_TASKS,
-    season_seed: int | str = DEFAULT_SEASON_SEED,
-    coeff_bound: int = COEFF_BOUND,
-    x_bound: int = X_BOUND,
-) -> list[Task]:
-    """Build the core + precision bank for a range of levels."""
-    tasks: list[Task] = []
-    for level in levels:
-        tasks.extend(
-            build_level_tasks(
-                level,
-                tasks_per_level + precision_tasks,
-                season_seed=season_seed,
-                coeff_bound=coeff_bound,
-                x_bound=x_bound,
-            )
-        )
-    return tasks
+def ladder_row(level: Level, *, official_cap: int = OFFICIAL_CAP_LEVEL) -> dict:
+    """One row of the human-readable ladder table."""
+    size = size_for_level(level)
+    return {
+        "level": level,
+        "size": size,
+        "approx_prompt_chars": estimate_prompt_chars(size),
+        "approx_prompt_tokens": estimate_prompt_tokens(size),
+        "tasks_per_level": TASKS_PER_LEVEL,
+        "precision_tasks": PRECISION_TASKS,
+        "zone": "core" if level <= official_cap else "extension",
+    }
 
 
 def ladder_rows(
@@ -202,24 +201,10 @@ def ladder_rows(
     *,
     official_cap: int = OFFICIAL_CAP_LEVEL,
 ) -> list[dict]:
-    """Rows for the human-readable ladder table."""
+    """Rows for every whole level, up to ``max_level``."""
     if max_level < 1:
         raise ValueError(f"max_level must be at least 1, got {max_level}")
-    rows = []
-    for level in range(1, max_level + 1):
-        size = size_for_level(level)
-        rows.append(
-            {
-                "level": level,
-                "size": size,
-                "approx_prompt_chars": estimate_prompt_chars(size),
-                "approx_prompt_tokens": estimate_prompt_tokens(size),
-                "tasks_per_level": TASKS_PER_LEVEL,
-                "precision_tasks": PRECISION_TASKS,
-                "zone": "core" if level <= official_cap else "extension",
-            }
-        )
-    return rows
+    return [ladder_row(level, official_cap=official_cap) for level in range(1, max_level + 1)]
 
 
 def ladder_manifest(
@@ -257,13 +242,13 @@ __all__ = [
     "PRECISION_TASKS",
     "TASKS_PER_LEVEL",
     "X_BOUND",
-    "build_bank",
     "build_ladder_task",
     "build_level_tasks",
     "estimate_prompt_chars",
     "estimate_prompt_tokens",
     "ideal_size_for_level",
     "ladder_manifest",
+    "ladder_row",
     "ladder_rows",
     "level_for_size",
     "size_for_level",

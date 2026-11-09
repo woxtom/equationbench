@@ -8,38 +8,50 @@ level.  The adaptive staircase can replace it later without changing the score.
 from __future__ import annotations
 
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
-from typing import Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from .dataset import DatasetBundle, dataset_hash
 from .frontier import FrontierScore, LevelResult, estimate_frontier
 from .ladder import (
+    COEFF_BOUND,
     DEFAULT_SEASON_SEED,
     MAX_PUBLIC_LEVEL,
+    X_BOUND,
     build_level_tasks,
     ladder_manifest,
+    ladder_row,
 )
 from .runner import RunConfig, RunResult, run_benchmark
-from .types import ModelSpec, Prediction, Task, canonical_json, sha256_text
+from .types import (
+    Level,
+    ModelSpec,
+    Prediction,
+    Task,
+    canonical_json,
+    normalize_level,
+    sha256_text,
+)
 
 
 def build_ladder_bundle(
-    levels: Sequence[int],
+    levels: Sequence[float],
     *,
     tasks_per_level: int = 5,
-    precision_levels: Sequence[int] | None = None,
+    precision_levels: Sequence[float] | None = None,
     precision_tasks: int = 0,
     season_seed: int | str = DEFAULT_SEASON_SEED,
-    coeff_bound: int | None = None,
-    x_bound: int | None = None,
+    coeff_bound: int = COEFF_BOUND,
+    x_bound: int = X_BOUND,
 ) -> DatasetBundle:
     """Build a deterministic fixed ladder task set.
 
     ``precision_levels`` receive ``precision_tasks`` extra tasks after the
     core bank.  This is the protocol's bracket-level precision step.
     """
-    selected_levels = sorted(set(int(level) for level in levels))
+    selected_levels = sorted({normalize_level(level) for level in levels})
     if not selected_levels:
         raise ValueError("at least one level is required")
     if selected_levels[0] < 1 or selected_levels[-1] > MAX_PUBLIC_LEVEL:
@@ -48,7 +60,7 @@ def build_ladder_bundle(
         raise ValueError("tasks_per_level must be positive")
     if precision_tasks < 0:
         raise ValueError("precision_tasks must be non-negative")
-    precision_set = {int(level) for level in (precision_levels or [])}
+    precision_set = {normalize_level(level) for level in (precision_levels or [])}
     if precision_set and precision_tasks < 1:
         raise ValueError("precision_tasks must be positive when precision_levels are set")
     missing = precision_set - set(selected_levels)
@@ -58,7 +70,7 @@ def build_ladder_bundle(
         raise ValueError("core plus precision tasks must not exceed the 10-task bank")
 
     tasks: list[Task] = []
-    level_task_counts: dict[int, int] = {}
+    level_task_counts: dict[Level, int] = {}
     for level in selected_levels:
         count = tasks_per_level + (precision_tasks if level in precision_set else 0)
         level_task_counts[level] = count
@@ -67,14 +79,13 @@ def build_ladder_bundle(
                 level,
                 count,
                 season_seed=season_seed,
-                coeff_bound=coeff_bound or 30,
-                x_bound=x_bound or 9,
+                coeff_bound=coeff_bound,
+                x_bound=x_bound,
             )
         )
 
-    manifest = ladder_manifest(max(selected_levels), season_seed=season_seed)
-    level_set = set(selected_levels)
-    manifest["levels"] = [row for row in manifest["levels"] if row["level"] in level_set]
+    manifest = ladder_manifest(math.ceil(selected_levels[-1]), season_seed=season_seed)
+    manifest["levels"] = [ladder_row(level) for level in selected_levels]
     manifest["name"] = f"ladder-L{selected_levels[0]}-L{selected_levels[-1]}"
     precision_note = (
         f"; +{precision_tasks} precision tasks at L{','.join(str(level) for level in sorted(precision_set))}"
@@ -111,6 +122,31 @@ def build_ladder_bundle(
     return DatasetBundle(path=Path("ladder"), tasks=tasks, manifest=manifest)
 
 
+def bundle_from_receipt(run: Mapping[str, Any]) -> DatasetBundle | None:
+    """Regenerate the task bank a ladder run recorded in its ``run.json``.
+
+    Returns ``None`` for a receipt that does not describe a ladder run.
+    """
+    manifest = run.get("dataset", {}).get("manifest") or {}
+    levels = manifest.get("levels_included")
+    if levels is None:
+        levels = [row.get("level") for row in manifest.get("levels", [])]
+    levels = sorted({normalize_level(level) for level in (levels or []) if level is not None})
+    tasks_per_level = int(manifest.get("tasks_per_level") or 0)
+    season_seed = manifest.get("season_seed")
+    if season_seed is None:
+        season_seed = run.get("config", {}).get("season_seed")
+    if not levels or tasks_per_level < 1 or season_seed is None:
+        return None
+    return build_ladder_bundle(
+        levels,
+        tasks_per_level=tasks_per_level,
+        precision_levels=manifest.get("precision_levels") or [],
+        precision_tasks=int(manifest.get("precision_tasks") or 0),
+        season_seed=season_seed,
+    )
+
+
 def frontier_from_predictions(
     predictions: Sequence[Prediction],
     tasks: Sequence[Task],
@@ -120,12 +156,12 @@ def frontier_from_predictions(
 ) -> FrontierScore:
     """Aggregate predictions into per-level counts and estimate the frontier."""
     by_task = {prediction.task_id: prediction for prediction in predictions}
-    counts: dict[int, list[int]] = defaultdict(lambda: [0, 0])
+    counts: dict[Level, list[int]] = defaultdict(lambda: [0, 0])
     for task in tasks:
         prediction = by_task.get(task.task_id)
         if prediction is None:
             continue
-        if prediction.parse_status in ("provider_error", "timeout"):
+        if prediction.is_infra:
             continue
         counts[task.level][1] += 1
         if prediction.correct:
@@ -147,11 +183,11 @@ def frontier_from_predictions(
 
 def run_frontier(
     model: ModelSpec,
-    levels: Sequence[int],
+    levels: Sequence[float],
     *,
     out_dir: Path | None = None,
     tasks_per_level: int = 5,
-    precision_levels: Sequence[int] | None = None,
+    precision_levels: Sequence[float] | None = None,
     precision_tasks: int = 0,
     concurrency: int = 2,
     timeout: float | None = 900.0,
@@ -193,16 +229,12 @@ def run_frontier(
         bootstrap_replicates=bootstrap_replicates,
     )
 
-    valid = sum(
-        1
-        for prediction in result.predictions
-        if prediction.parse_status not in ("provider_error", "timeout")
-    )
+    valid = sum(1 for prediction in result.predictions if not prediction.is_infra)
     payload = {
         "model": model.to_dict(),
         "levels_tested": list(levels),
         "tasks_per_level": tasks_per_level,
-        "precision_levels": sorted({int(level) for level in (precision_levels or [])}),
+        "precision_levels": sorted({normalize_level(level) for level in (precision_levels or [])}),
         "precision_tasks": precision_tasks,
         "level_task_counts": bundle.manifest.get("level_task_counts"),
         "status": result.status,
@@ -231,6 +263,7 @@ def run_frontier(
 
 __all__ = [
     "build_ladder_bundle",
+    "bundle_from_receipt",
     "frontier_from_predictions",
     "run_frontier",
 ]

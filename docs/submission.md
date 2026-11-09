@@ -42,9 +42,9 @@ rate.
 
 ## 3. Run the protocol
 
-The v2 staircase command is not wired yet. Until `eqb run-frontier` lands, a
-community run can use the fixed-set v1 harness for continuity, but it is a
-different benchmark version.
+Use `eqb run-frontier`. The adaptive staircase is not wired yet, so choose the
+levels around the model's frontier by hand. The older fixed-set harness has been
+removed; it is preserved at tag `v1-multitrack`.
 
 The intended v2 protocol:
 
@@ -89,9 +89,8 @@ be rejected or shown as unranked.
 
 ## 6. Verification
 
-Top community rows may be re-run on the sealed holdout before receiving a
-`verified` badge. The sealed seed is published only after the season closes, so
-the commitment can be checked.
+A sealed holdout for verifying top community rows is planned but not implemented
+yet.
 
 ## Code of conduct
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 
 import pytest
 
@@ -41,8 +42,9 @@ def test_frontier_interpolates_the_50_percent_bracket():
         },
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(4.75)
-    assert score.size == pytest.approx(ideal_size_for_level(4.75))
+    expected_size = 6 * (8 / 6) ** 0.75
+    assert score.size == pytest.approx(expected_size)
+    assert score.score == pytest.approx(1 + 3 * math.log2(expected_size / 3))
     assert score.censored is None
     assert score.ci is None
     assert score.levels[3]["p"] == pytest.approx(0.8)
@@ -75,7 +77,6 @@ def test_all_pass_is_upper_censored():
     assert score.size is None
     assert score.censored == "upper"
     assert score.bound == 3
-    assert score.rank_key == float("inf")
 
 
 def test_all_fail_is_lower_censored():
@@ -86,7 +87,6 @@ def test_all_fail_is_lower_censored():
     assert score.score is None
     assert score.censored == "lower"
     assert score.bound == 1
-    assert score.rank_key == float("-inf")
 
 
 def test_exact_half_at_the_last_level_is_finite():
@@ -94,7 +94,7 @@ def test_exact_half_at_the_last_level_is_finite():
         {1: (5, 5), 2: (5, 10)},
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(2.0)
+    assert score.size == pytest.approx(4)
     assert score.censored == "upper"
     assert score.is_finite
 
@@ -104,7 +104,7 @@ def test_flat_half_curve_is_ambiguous():
         {1: (5, 10), 2: (5, 10), 3: (5, 10)},
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(2.0)
+    assert score.size == pytest.approx(math.sqrt(3 * 5))
     assert score.censored == "ambiguous"
 
 
@@ -113,7 +113,7 @@ def test_empty_levels_are_ignored():
         {1: (5, 5), 2: (0, 0), 3: (0, 5)},
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(2.0)
+    assert score.size == pytest.approx(math.sqrt(3 * 5))
 
 
 def test_non_monotonic_noise_is_smoothed():
@@ -157,7 +157,7 @@ def test_estimate_from_outcomes():
         },
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(2.5)
+    assert score.size == pytest.approx(math.sqrt(4 * 5))
 
 
 def test_requires_at_least_one_valid_level():
@@ -204,7 +204,34 @@ def test_final_half_plateau_is_ambiguous_not_upper_censored():
         },
         bootstrap_replicates=0,
     )
-    assert score.score == pytest.approx(5.5)
+    assert score.size == pytest.approx(math.sqrt(8 * 10))
     assert score.censored == "ambiguous"
     assert score.bound == 6
     assert score.is_finite
+
+
+def test_interpolation_uses_the_real_integer_sizes():
+    # L10 is 24 variables and L11 is 30; the ideal L11 size is 30.24.
+    score = estimate_from_counts({10: (5, 5), 11: (0, 5)}, bootstrap_replicates=0)
+    assert score.size == pytest.approx(math.sqrt(24 * 30))
+    assert score.score == pytest.approx(1 + 3 * math.log2(math.sqrt(24 * 30) / 3))
+    assert score.score < 10.5
+
+
+def test_score_and_size_stay_on_the_same_scale():
+    score = estimate_from_counts({3: (5, 5), 4: (4, 5), 5: (1, 5)}, bootstrap_replicates=0)
+    assert ideal_size_for_level(score.score) == pytest.approx(score.size)
+
+
+def test_crossing_on_a_tested_size_is_exact():
+    # Exact equality on purpose: the leaderboard band compares this to levels.
+    score = estimate_from_counts({9: (6, 10), 10: (5, 10), 11: (0, 10)}, bootstrap_replicates=0)
+    assert score.size == 24.0
+    assert score.score == 10.0
+
+
+def test_half_level_narrows_the_bracket():
+    coarse = estimate_from_counts({10: (5, 5), 11: (0, 5)}, bootstrap_replicates=0)
+    fine = estimate_from_counts({10: (5, 5), 10.5: (5, 5), 11: (0, 5)}, bootstrap_replicates=0)
+    assert coarse.size == pytest.approx(math.sqrt(24 * 30))
+    assert fine.size == pytest.approx(math.sqrt(27 * 30))

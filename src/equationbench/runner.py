@@ -14,12 +14,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable, Sequence
+from typing import Callable
 
 from . import (
     BENCHMARK_NAME,
     DATASET_VERSION,
-    FAMILIES,
     GENERATOR_VERSION,
     PROMPT_VERSION,
 )
@@ -30,8 +29,6 @@ from .providers.base import Provider
 from .scoring import ScoreSummary, score_predictions
 from .types import Completion, ModelSpec, Prediction, Task, sha256_text
 from .verify import grade_response
-
-FAMILY_ORDER = {family: index for index, family in enumerate(FAMILIES)}
 
 
 def utc_now() -> str:
@@ -64,46 +61,6 @@ def _atomic_json(path: Path, data: dict) -> None:
     tmp.replace(path)
 
 
-def select_tasks(
-    tasks: Sequence[Task],
-    *,
-    families: Sequence[str] | None = None,
-    levels: Sequence[int] | None = None,
-    limit: int | None = None,
-) -> list[Task]:
-    filtered = [
-        task
-        for task in tasks
-        if (not families or task.family in families) and (not levels or task.level in levels)
-    ]
-    if limit is None or limit >= len(filtered):
-        return filtered
-    # Balanced round-robin across (family, level) cells. Cells are ordered
-    # level-major so a small run still covers every family at the easier levels
-    # before adding deeper levels.
-    groups: dict[tuple[str, int], list[Task]] = {}
-    for task in filtered:
-        groups.setdefault((task.family, task.level), []).append(task)
-    ordered_cells = sorted(
-        groups,
-        key=lambda key: (key[1], FAMILY_ORDER.get(key[0], 99), key[0]),
-    )
-    selected: list[Task] = []
-    offset = 0
-    while len(selected) < limit:
-        progressed = False
-        for key in ordered_cells:
-            if len(selected) >= limit:
-                break
-            if offset < len(groups[key]):
-                selected.append(groups[key][offset])
-                progressed = True
-        if not progressed:
-            break
-        offset += 1
-    return selected
-
-
 def _is_refusal(text: str) -> bool:
     lowered = text.lower()
     patterns = [
@@ -128,9 +85,6 @@ class RunConfig:
     timeout: float | None = 900.0
     retries: int = 2
     thinking: str | None = None
-    families: list[str] | None = None
-    levels: list[int] | None = None
-    limit: int | None = None
     force: bool = False
     max_cost: float | None = None
     notes: str = ""
@@ -211,7 +165,7 @@ def _prediction_from_completion(
     )
 
 
-def _load_predictions(path: Path) -> list[Prediction]:
+def load_predictions(path: Path) -> list[Prediction]:
     if not path.exists():
         return []
     predictions = []
@@ -220,7 +174,7 @@ def _load_predictions(path: Path) -> list[Prediction]:
             continue
         try:
             predictions.append(Prediction.from_dict(json.loads(line)))
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError, TypeError):
             continue
     return predictions
 
@@ -230,12 +184,7 @@ def run_benchmark(config: RunConfig) -> RunResult:
     timeout = config.timeout if config.timeout and config.timeout > 0 else None
     if config.thinking:
         model = ModelSpec(**{**model.__dict__, "thinking": config.thinking})
-    tasks = select_tasks(
-        config.dataset.tasks,
-        families=config.families,
-        levels=config.levels,
-        limit=config.limit,
-    )
+    tasks = config.dataset.tasks
     if not tasks:
         raise ValueError("no tasks selected")
     selected_ids = [task.task_id for task in tasks]
@@ -247,7 +196,7 @@ def run_benchmark(config: RunConfig) -> RunResult:
     run_path = run_dir / "run.json"
     summary_path = run_dir / "summary.json"
 
-    existing = [] if config.force else _load_predictions(predictions_path)
+    existing = [] if config.force else load_predictions(predictions_path)
     if config.force:
         predictions_path.write_text("", encoding="utf-8")
     else:
@@ -295,9 +244,6 @@ def run_benchmark(config: RunConfig) -> RunResult:
             "timeout": timeout,
             "retries": config.retries,
             "thinking_requested": model.thinking,
-            "limit": config.limit,
-            "families": config.families,
-            "levels": config.levels,
             "max_cost": config.max_cost,
             "notes": config.notes,
             "system_prompt": config.system_prompt,
@@ -368,7 +314,7 @@ def run_benchmark(config: RunConfig) -> RunResult:
                     handle.write(json.dumps(prediction.to_dict(), ensure_ascii=False) + "\n")
                 if prediction.cost_usd:
                     cost_so_far += prediction.cost_usd
-                if prediction.parse_status in ("provider_error", "timeout") and prediction.error:
+                if prediction.is_infra and prediction.error:
                     if any(kind in prediction.error.lower() for kind in ("insufficient_balance", "402 payment required")):
                         abort.set()
                         abort_reason.append(prediction.error)
@@ -386,7 +332,7 @@ def run_benchmark(config: RunConfig) -> RunResult:
                 for pending_future in futures:
                     pending_future.cancel()
 
-    predictions = _load_predictions(predictions_path)
+    predictions = load_predictions(predictions_path)
     prediction_by_id = {p.task_id: p for p in predictions}
     # Keep only predictions for the selected task set, in dataset order.
     selected_predictions = [prediction_by_id[task.task_id] for task in tasks if task.task_id in prediction_by_id]
